@@ -90,7 +90,7 @@ include root.'\Common\header.php';
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Modal Header</h4>
+        <h4 class="modal-title">Biller</h4>
       </div>
       <div class="modal-body">
         <div class="invoice-box">
@@ -146,6 +146,9 @@ include root.'\Common\header.php';
                 <td>
                     Charged On
                 </td>
+                <td>
+                    Status
+                </td>
             </tr>
             
             
@@ -153,7 +156,9 @@ include root.'\Common\header.php';
     </div>
       </div>
       <div class="modal-footer">
+        <button type="button" class="btn btn-default" id="paid">Mark Paid</button>
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <p id="bil_resp"></p>
       </div>
     </div>
 
@@ -166,6 +171,7 @@ $(document).ready(function(){
     var amt = 0;
     var type = 0;
     var price = 0;
+    var payments = 0;
     var total = 0;
     var row = "";
     var medicines = [];
@@ -213,35 +219,28 @@ $(document).ready(function(){
         
     }); 
     $('#gen_bil').on('click',function(){
-        $('.item').html("");
+        gen_bill();
+    });
+    $('#paid').on('click',function(){
         $.ajax({
           url: '<?php echo biller ?>',
           method : 'post',
           dataType : 'json',
-          data: {'gen_bil' : 1 , 'reg_num' : reg_id},
+          data: {'pay_bil' : 1 , 'details' : payments ,'reg_id' : reg_id},
 
           success: function(response) {
-            var data = "";
-            for(var i = 0; i< response.data.length ; i++)
+            console.log(response);
+            if(response.status=="success")
             {
-                data += "<tr class='item'>"
-                for(var j = 0 ; j< response.data[i].length;j++)
-                {
-                    // if(response.data[i][j].medicines)
-                    // {
-                    //     data += generate_table(response.data[i][j].medicines);
-                    // }
-                    data +="<td>"+response.data[i][j]+"</td>"
-
-                }
-                data += "</tr>"; 
-                if(response.data[i].total)
-                {
-                    data += "<tr class='item'><td>Total</td><td>"+response.data[i].total+"</td>";
-                }
-            }    
-            $('#amt').append(data);
+                // $('#bill').modal('hide');
+                $('#bil_resp').html("Payment Made Successfully");
+                // $('#gen_bil').trigger("click");
+                gen_bill();
+            }
+            else
+                $('#bil_resp').html("Payment Failed");    
           }
+
         });
     });
     function generate_table(val)
@@ -252,6 +251,45 @@ $(document).ready(function(){
         response += "<th>Qty</th>";
         response += "<th>Date</th>";
 
+    }
+    function gen_bill()
+    {
+        $('.item').html("");
+        $.ajax({
+          url: '<?php echo biller ?>',
+          method : 'post',
+          dataType : 'json',
+          data: {'gen_bil' : 1 , 'reg_num' : reg_id},
+
+          success: function(response) {
+            var data = "";
+            var data1 = 0;
+            payments = response.data;
+            for(var i = 0; i < response.data.length ; i++)
+            {
+                if(response.data[i].total)
+                {
+                    data1 = "<tr class='item'><td>Total</td><td>"+response.data[i].total+"</td>";
+                }    
+                else
+                {
+                
+                    data += "<tr class='item'>"
+                    data +="<td>"+response.data[i][1]+"</td>"
+                    data +="<td>"+response.data[i][2]+"</td>"
+                    data +="<td>"+response.data[i][3]+"</td>"
+                    data +="<td>"+(response.data[i][4] == "1"?"Paid":"Not Paid")+"</td>"
+                    // data +="<td>"+response.data[i][4]+"</td>"
+                    data += "</tr>"; 
+                }
+                
+
+            }   
+                 
+            
+            $('#amt').append(data+data1);
+          }
+        });
     }
 });
 </script>

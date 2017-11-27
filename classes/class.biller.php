@@ -7,7 +7,7 @@ class biller{
 	function generate_bill($reg_num)
 	{
 		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
-		$query = "SELECT charged_by,amt,charged_at from patient_charges  where registration_id = '$reg_num'";
+		$query = "SELECT charge_id,charged_by,amt,charged_at,status from patient_charges  where registration_id = '$reg_num'";
 		// print_r($query);
 		$result = $con->query($query);
 		$re = [];
@@ -32,19 +32,7 @@ class biller{
 				if($key ==  "charged_by")
 				{
 					$name = amountController::get_charger_type($value);
-					// if($value == 5)
-					// {
-					// 	$value1 = new stdClass();
-
-					// 	$medicines = pharmacy::get_med_for_reg_id($reg_num);
-					// 	$value1->charger = $name;
-					// 	$value1->medicines = $medicines;
-					// 	$value = $value1;
-					// }
-					// else
-					// {
-						$value = $name;
-					// }
+					$value = $name;
 					
 
 				}
@@ -61,6 +49,15 @@ class biller{
 		$total_amt = new stdClass();
 		$total_amt->total = $total;
 		array_push($result,$total_amt);
+		return $result;
+	}
+	function pay_bill($reg_num)
+	{
+		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
+		$query = "update patient_charges set status=1 where registration_id = '$reg_num'";
+		// print_r($query);
+		$result = $con->query($query);
+		$con->close();
 		return $result;
 	}
 }

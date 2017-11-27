@@ -1,12 +1,30 @@
+input[type=search]{
+  border-radius: 30px;
+  outline-style: none !important;
+}
+select{
+ border-radius: 20px; 
+ outline-style: none !important;
+}
+.boxs{
+  margin : 20px 20px 20px 20px; 
+  padding: 20px;
+  border-width: 2px;
+  border-radius: 20px;
+  border-style: inset;
+  height: 80px;
+  background-color: #fff;
+}
 .select_box{
   border-radius: 10px;
 }
 
 .big-button{
-  margin-left: 30px;
+  margin-left: 80px;
+  /*margin-top: 100px;*/
   font-size: 25px;
-  width: 330px;
-  height: 130px;
+  width: 230px;
+  height: 70px;
 }
 .container{
   margin-top: 10px;
@@ -63,6 +81,7 @@ span{
 
 .table{
   text-align: center;
+
 }
 
 tbody tr:hover{
@@ -71,6 +90,7 @@ tbody tr:hover{
 
 th{
   text-align: center;
+  border-radius: 5px;
 }
 .req th{
   background-color: #F3F3F3;
@@ -86,9 +106,25 @@ th{
   transform: scale(1.01);
 }*/
 
+.dropdown-toggle:hover{
+  cursor: hand;
+}
+.box-card:hover{
+  transform: scale(1.02);
+  transform-style: preserve-3d;
+}
+.box-card{
+  border-style: solid;
+  border-width: 0px;
+  background-color: #ffffff;
+  height: 150;
+  width: 350;
+  padding: 30px;
+}
 
 .panel{
   transform: scale(1.01);
+  background-image: url(imgs/panel_img.jpg);
   
   background-color: #ffffff;
   border-radius : 20px;
@@ -101,6 +137,8 @@ th{
 body,html{
   background-image: url(imgs/hosp.jpg);
   background-color: #efeda2;
+   font-family: Tahoma;
+   font-size: 14px;
     height: 100%;
     background-repeat: none;
   }
@@ -112,9 +150,11 @@ body,html{
   color: #fff;
 }
 thead{
-
-  background-color: #161C32;
-  color: #FFFFFF;
+  /*font-size: 20px;*/
+  /*font-family: Tahoma*/
+  border-radius: 20px;
+  background-color: #637280;
+  color: #000000;
 }
 
   nav.sidebar, .main{
@@ -379,72 +419,4 @@ td{
   font-size: 20px;
   color: #fff;
   font-weight: 700;
-}
-
-/* Navbar container */
-.navbar {
-  overflow: hidden;
-  background-color: #333;
-  font-family: Arial;
-}
-
-/* Links inside the navbar */
-.navbar a {
-  float: left;
-  font-size: 16px;
-  color: white;
-  text-align: center;
-  padding: 14px 16px;
-  text-decoration: none;
-}
-
-/* The dropdown container */
-.dropdown {
-  float: left;
-  overflow: hidden;
-}
-
-/* Dropdown button */
-.dropdown .dropbtn {
-  font-size: 16px; 
-  border: none;
-  outline: none;
-  color: white;
-  padding: 14px 16px;
-  background-color: inherit;
-}
-
-/* Add a red background color to navbar links on hover */
-.navbar a:hover, .dropdown:hover .dropbtn {
-  background-color: red;
-}
-
-/* Dropdown content (hidden by default) */
-.dropdown-content {
-  display: none;
-  position: absolute;
-  background-color: #f9f9f9;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  z-index: 1;
-}
-
-/* Links inside the dropdown */
-.dropdown-content a {
-  float: none;
-  color: black;
-  padding: 12px 16px;
-  text-decoration: none;
-  display: block;
-  text-align: left;
-}
-
-/* Add a grey background color to dropdown links on hover */
-.dropdown-content a:hover {
-  background-color: #ddd;
-}
-
-/* Show the dropdown menu on hover */
-.dropdown:hover .dropdown-content {
-  display: block;
 }

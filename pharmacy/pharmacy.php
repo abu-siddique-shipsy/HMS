@@ -239,7 +239,8 @@ $(document).ready(function() {
                 {     "data"     :     "medicine_name"     },  
                 {     "data"     :     "total_available"},  
                 {     "data"     :     "price"}  
-           ]
+           ],
+        
            
     });
     }

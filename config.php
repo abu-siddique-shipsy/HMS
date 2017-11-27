@@ -17,6 +17,7 @@ define("ConsultantDetails",domain."/Common/consultant_details.php");
 define("med_price",domain."/Common/med_price.php");
 define("update_op",domain."/Common/update_op.php");
 define("biller",domain."/Common/biller.php");
+define("inpatient",domain."/Common/inpatient.php");
 
 
 ?>

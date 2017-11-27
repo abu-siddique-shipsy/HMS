@@ -10,5 +10,14 @@ if(isset($_POST['gen_bil']))
 	$obj =  new biller($reg_num);
 	$response->data = $obj->generate_bill($reg_num);
 }
+if(isset($_POST['pay_bil']))
+{
+	$reg_num = $_POST['reg_id'];
+	$data = $_POST['details'];
+	$obj =  new biller();
+	$response->data = $obj->pay_bill($reg_num);
+	if($response->data)
+		$response->status = "success";
+}
 echo json_encode($response);
 ?>

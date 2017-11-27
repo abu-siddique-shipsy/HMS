@@ -24,20 +24,25 @@ if(isset($_POST['medicines']))
 	$res;
 	$int = $_POST['internal'];
 	foreach ($request as $key => $value) {
-		$query = "insert into pharmacy_transaction (med_id,qty) values ($value->id,$value->qty)";
-		$msg= $DBcon->query($query);
-		$result += $msg;
-		if($msg)
+		$res = pharmacy::check_quantity($value->qty,$value->id);
+
+		if($res >= 0)
 		{
-			$res = pharmacy::deduct_inventory($value->qty,$value->id);
-		}
-		if($int)
-		{
-			$query = "update medicine_used set status = 1 where medicine_id = '$value->id' and reg_id = '$reg_id'";
-			print_r($query);
+			$query = "insert into pharmacy_transaction (med_id,qty) values ($value->id,$value->qty)";
 			$msg= $DBcon->query($query);
+			$result += $msg;
+			if($msg)
+			{
+				$res = pharmacy::deduct_inventory($value->qty,$value->id);
+			}
+			if($int)
+			{
+				$query = "update medicine_used set status = 1 where medicine_id = '$value->id' and reg_id = '$reg_id'";
+				print_r($query);
+				$msg= $DBcon->query($query);
+			}
 		}
-		
+
 	}
 	
 	

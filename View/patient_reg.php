@@ -324,6 +324,7 @@ include root.'\assets\bootstrap.php';
   </div>
   </div>
   <button type="button" class="btn btn-default" onclick='printDiv("printer");'>Print</button>
+  <button type="button" class="btn btn-default" onclick='javascript:window.location.href = "<?php echo domain ?>"'>Back To Home</button>
 </div>
 
 

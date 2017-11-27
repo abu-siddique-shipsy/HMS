@@ -62,18 +62,10 @@ $result = $DBcon->query($query);
 	<br>
 
 	<div class="row" style="max-height: 100px">
-		<div class="col-md-3">
-			<div class="form-group">
-			  
-			  <select class="form-control" id="sel1" >
-			    
-			  </select>
-			</div>
-		</div>
-		<div class="col-md-3"  id="no_vis">
-			
-		</div>
-		<div class="col-md-3" style="margin-top: -10px" id="las_vis">
+		
+		
+		
+		<div class="col-md-12" style="margin-top: -10px ; text-align: center;" id="las_vis">
 			<a class="btn btn-default" href="<?php echo domain.'/View/patient_reg.php'?>">Book An Appointment</a>
 		</div>
 	</div>

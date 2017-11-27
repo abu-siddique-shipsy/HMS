@@ -223,7 +223,7 @@ td{
 </div>
 <div class="row">
 	<div class="col-sm-4" style="text-align: center;">
-		<button class="btn btn-warning big-button" data-toggle="modal" data-target="#test">Assign Test</button>
+		<button class="btn btn-default big-button" data-toggle="modal" data-target="#test">Assign Test</button>
 
 	</div>
 	<div class="col-sm-4  ">
@@ -237,7 +237,7 @@ td{
 		</div>
 	</div>
 	<div class="col-sm-2">
-		<button type="button" class="btn btn-default big-button" data-toggle="modal" data-target="#pres">Total Priscribed</button>
+		<button type="button" class="btn btn-default big-button" data-toggle="modal" data-target="#pres">Total Prescribed</button>
 	</div>
 </div>
 <div class="row">

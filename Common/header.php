@@ -9,11 +9,11 @@ if (isset($_SESSION['userSession'])=="") {
 ?>
 
 <link rel="stylesheet" type="text/css" href="../assets/style.css">
-<nav class="navbar" style="color: #fff; margin-bottom: 0px;border-radius: 0px;background-color: #007D9D">
+<nav class="navbar" style="color: #fff; margin-bottom: 0px;border-radius: 0px;background-color: #36476A">
   <div class="container-fluid">
     <div class="navbar-header">
       <a class="navbar-brand" href="<?php echo domain ?>">
-        <img class="img-circle" src="<?php echo domain.'/assets/imgs/logo.jpeg';?>" style="width: 100px;height: 100px; margin-top: -40px ; padding: 10px;">
+        <img class="img-rounded" src="<?php echo domain.'/assets/imgs/logo.jpeg';?>" style="width: 100px;height: 87px; margin-top: -40px ; padding: 10px;">
       </a>
     </div>
     <ul class="nav navbar-nav" style="">
@@ -21,7 +21,7 @@ if (isset($_SESSION['userSession'])=="") {
       <li>  
         <a class="dropdown-toggle" data-toggle="dropdown" >Patient<span class="caret"></span></a></a>
         <ul class="dropdown-menu">
-          <li><a href="<?php echo domain.'/patient/register.php' ?>">Registration</a></li>
+          <li><a href="<?php echo domain.'/View/patient_reg.php' ?>">Registration</a></li>
           <li><a href="<?php echo domain.'/patient/op.php' ?>">OP Details</a></li>
           <li><a href="<?php echo domain.'/billing/opdbilling.php' ?>">OPD Billing</a></li>
           <li><a href="<?php echo domain.'/patient/inpatient.php' ?>">In Patient Management</a></li>

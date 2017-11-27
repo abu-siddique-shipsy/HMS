@@ -1,16 +1,18 @@
 <?php
 require __DIR__.'\..\config.php';
 require root.'\assets\bootstrap.php';
-require root.'\assets\style.php';
+// require root.'\assets\style.php';
 
 $DBcon = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
 $token = $_GET['token'];
+// print_r($token);die;
 $query = "select * from users where token = '$token'";
 $result = $DBcon->query($query);
 
 $exe = $result->fetch_array();
 
 ?>
+<link rel="stylesheet" type="text/css" href="../assets/style.css">
 <style type="text/css">
 body{
     background-image: url("../assets/imgs/books.jpg");

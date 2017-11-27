@@ -11,7 +11,7 @@ $id = $_POST['patient_id'];
 if($id != 0)
 {
 	
-	$query = "SELECT rg.is_inp,rg.registration_id as reg_id,id,sex,name,address,phone_number,dob,(SELECT COUNT(*) from registration rg where rg.patient_id = pt.id) as num_vis,(SELECT MAX(rg.in_at) from registration rg where rg.patient_id = pt.id) as last_visit from patient pt join registration rg on rg.patient_id = pt.id where rg.registration_id = $id group by pt.id";
+	$query = "SELECT rg.room_id,rg.is_inp,rg.registration_id as reg_id,id,sex,name,address,phone_number,dob,(SELECT COUNT(*) from registration rg where rg.patient_id = pt.id) as num_vis,(SELECT MAX(rg.in_at) from registration rg where rg.patient_id = pt.id) as last_visit from patient pt join registration rg on rg.patient_id = pt.id where rg.registration_id = $id group by pt.id";
 }
 else
 {$query = "SELECT rg.registration_id as reg_id,id,sex,name,address,phone_number,dob,(SELECT COUNT(*) from registration rg where rg.patient_id = pt.id) as num_vis,(SELECT MAX(rg.in_at) from registration rg where rg.patient_id = pt.id) as last_visit from patient pt join registration rg on rg.patient_id = pt.id group by pt.id";}
