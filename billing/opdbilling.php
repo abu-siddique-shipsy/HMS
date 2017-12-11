@@ -285,9 +285,10 @@ $(document).ready(function(){
                 
 
             }   
-                 
+                
+            $('#amt').append(data+data1); 
             
-            $('#amt').append(data+data1);
+            
           }
         });
     }

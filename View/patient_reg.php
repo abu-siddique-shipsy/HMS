@@ -115,7 +115,13 @@ include root.'\assets\bootstrap.php';
 				            <input type="text" class="form-control" id="ph_num">
 				            </div>
 				        </div>
-
+                <div class="form-group">
+                    <label class="col-md-2 control-label" >Email
+                    </label>
+                    <div class="col-md-10">
+                    <input type="text" class="form-control" id="email">
+                    </div>
+                </div>
 				        <div class="form-group">
 				            <label class="col-md-2 control-label" >Referal
 				            </label>
@@ -398,7 +404,9 @@ $( document ).ready(function() {
       pat_dob = $('#dob1').val();
       pat_gen = $("input[name='gender']:checked").val();
       pat_ph_num = $('#ph_num').val();
+      pat_email = $('#email').val();
       pat_ref = $('#ref').val();
+
       pat_add = $('#add1').val();
       console.log(pat_name);
       console.log(pat_dob);
@@ -410,7 +418,7 @@ $( document ).ready(function() {
         url: "<?php echo patientDetails1; ?>",
         method : 'post',
         dataType: 'JSON',
-        data: {'pat_reg' : 1,'data' : {'name' : pat_name , 'dob' : pat_dob, 'sex' : pat_gen ,'phone_number' : pat_ph_num,'referer' : pat_ref,'address' : pat_add}},
+        data: {'pat_reg' : 1,'data' : {'name' : pat_name , 'dob' : pat_dob, 'sex' : pat_gen ,'phone_number' : pat_ph_num,'email' : pat_email,'referer' : pat_ref,'address' : pat_add}},
         success: function(response) {
           if(response.patient_id)
           {

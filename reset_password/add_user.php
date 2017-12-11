@@ -28,10 +28,16 @@ else
 {
 	$inputs = $_POST;
 
+
+
 	$hashed_password = password_hash($inputs['pwd'], PASSWORD_DEFAULT);
 	$uname = $inputs['uname'];
 	$email = $inputs['email'];
-	$query = "INSERT INTO  `user_credentials` (`username`,`password`,`email`) values ('$uname','$hashed_password','$email')";
+	$query2 = "select * from users where email = '$email'";
+	$result2 = $DBcon->query($query2); 
+	$exe = $result2->fetch_array();
+
+	$query = "INSERT INTO  `user_credentials` (`user_id`,`username`,`password`,`email`) values ('$exe[id]','$uname','$hashed_password','$email')";
 	$query1 = "update users set username = '$uname',token = '' where email ='$email'";
 	$result = $DBcon->query($query); 
 	if($result)

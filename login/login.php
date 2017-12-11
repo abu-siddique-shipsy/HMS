@@ -9,20 +9,23 @@ if (isset($_SESSION['userSession'])!="") {
 }
 
 ?>
+<link rel="stylesheet" type="text/css" href="../assets/style.css">
 <style type="text/css">
 label{
     font-size: 15px;
 }
 body{
-    background-image: url("../assets/imgs/login.jpeg");
+    background-image: none;
+    background-color: white;
 /* The image used */
 }
 </style>
 
-<link rel="stylesheet" type="text/css" href="../assets/style.css">
+
     <div class="col-sm-12 dLogin">
             <div class="col-sm-3">
-                <h2>Hospital LOGO here</h2>
+                <!-- <h2>Hospital LOGO here</h2> -->
+                <img src="../assets/imgs/logo.jpeg" width="350">
             </div>
             <div class="col-sm-4 d-gray-sec">
                 <form action="login_submit.php" class="navbar-form navbar-left" role="search" method="POST"> 

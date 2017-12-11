@@ -13,34 +13,22 @@ if (isset($_POST['del_email'])) {
 
     echo json_encode($result1);
 }
-else
+if(isset($_POST['send_mail']))
 {
-
-    $result = $_POST;
-    switch ($result['type']) {
-        case 1:
-            $role = "Student";
-            break;
-        case 2:
-            $role = "Staff";
-            break;
-        case 3:
-            $role = "Admin";
-            break;
-    }
     $mail_result = false;
-
-    $token = bin2hex($result['name']);
-    $query = "insert into users (name,email,role,token) values ('$result[name]','$result[email]','$role','$token')";
+    $data = json_decode($_POST['data']);
+    $token = bin2hex($data->name);
+    $query = "insert into users (name,email,role,token,id) values ('$data->name','$data->email','$data->type','$token','$data->id')";
+    print_r($query);
     $result1 = $DBcon->query($query);
     if($result1)
     {
     	$headers  = 'MIME-Version: 1.0' . "\r\n";
     	$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
      
-    	$msg = "Hello $result[name], <br>Your Account has been Created.<br> Please Click the following link to reset the Password and Login.<br><br>";
-    	$msg .= domain."reset_password/reset.php?token=$token";
-    	$mail_result = mail($result['email'],"Welcome to so and so school",$msg,$headers);
+    	$msg = "Hello $data->name, <br>Your Account has been Created.<br> Please Click the following link to reset the Password and Login.<br><br>";
+    	$msg .= domain."/reset_password/reset.php?token=$token";
+    	$mail_result = mail($data->email,"Welcome to HMS",$msg,$headers);
     }
      echo json_encode($mail_result);
 }

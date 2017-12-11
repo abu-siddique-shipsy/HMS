@@ -2,6 +2,7 @@
 
 require __DIR__.'/../config.php';
 include Class_path.'class.amount.php';
+include Class_path.'class.mailer.php';
 // include Class_path.'class.pharmacy.php';
 class register{
 	public $pat_id;
@@ -37,9 +38,10 @@ class register{
 		$query1 = "SELECT id from patient where name = '$name' order by added_at DESC limit 1";
 		$res = $con->query($query1);
 		$exe = $res->fetch_array();
-		// print_r($exe);
+		
 		foreach ($data as $key => $value) {
 			$query = "UPDATE patient set `$key` = '$value' where id = '$exe[id]'";
+			// echo "$key => $value";
 			$con->query($query);
 		}
 		$con->close();	
@@ -53,7 +55,12 @@ class register{
 			$query = "update registration set ins_num = '$insurance' where patient_id = '$this->pat_id' and registration_id = '$this->reg_id'";
 			$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
 			$res = $con->query($query);
+			if($res)
+			{
+				$res = mailer::registration($this->reg_id);
+			}
 		}
+
 		$con->close();		
 		return $res;
 	}
@@ -75,4 +82,5 @@ class register{
 		}
 		return $res;
 	}
+	
 }

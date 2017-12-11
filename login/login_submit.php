@@ -23,6 +23,8 @@ if($result->num_rows)
 		$_SESSION['userSession'] = $row1['name'];
 		$_SESSION['userType'] = $row1['staff_type'];
 		$_SESSION['userId'] = $row1['id'];
+		$_SESSION['screens'] = get_screens($inputs['email']);
+		$_SESSION['email'] = $inputs['email'];
 		header('Location: ../reception/reception.php');
 	}
 	else
@@ -35,4 +37,16 @@ else
 	header("Location: login.php?message=1");
 }
 
- ?>
+
+function get_screens($email){
+	$sql = "SELECT * FROM `screens` scr join screen_staff_map ssm on ssm.screen_id =  scr.screen_id join staff stf  on stf.staff_id = ssm.staff_id where stf.email = '$email'";
+	$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
+	$result = $con->query($sql);
+	$re = [];
+	while ($exe = $result->fetch_assoc()) {
+		$re[] = $exe;
+	}
+	return $re;	
+
+}
+?>

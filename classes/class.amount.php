@@ -2,7 +2,6 @@
 
 require __DIR__.'/../config.php';
 class amountController{
-	
 	function add_amt($cid,$rid,$amt,$check)
 	{
 		$insert = !$check;
@@ -46,6 +45,14 @@ class amountController{
 		$exe = $resul->fetch_array();
 		$con->close();
 		return $exe['fee'];	
+	}
+	function get_ot_charge($value)
+	{
+		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
+		$resul = $con->query("Select * from physician where id = $value");
+		$exe = $resul->fetch_array();
+		$con->close();
+		return $exe['ot_fee'];	
 	}
 	function get_charger_type($value)
 	{

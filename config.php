@@ -8,7 +8,9 @@ define("DBPASS", "test1");
 define("DBNAME", "hospital");
 define("root",__DIR__); 
 
+
 define("domain","http://hospital.localhost:8080"); 
+define("controller",domain."/Common/");
 define("patientDetails",domain."/Common/patient_details.php");
 define("patientDetails1",domain."/Common/patient_details1.php");
 define("pharmacy",domain."/Common/pharmacy.php");
