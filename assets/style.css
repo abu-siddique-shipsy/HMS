@@ -1,3 +1,78 @@
+.sample{
+  max-height: 50%;
+  overflow: auto;
+}
+.pharm{
+  padding: 20px;
+  font-size: 20px;
+  background-color: #00cdc2;
+}
+.pharm > .modal-body > label {
+  color: black;
+}
+
+.full-btn{
+  width: 100%;
+}
+.fileContainer{
+  
+}
+.fileContainer {
+    text-align: left;
+    overflow: hidden;
+    position: relative;
+}
+
+.fileContainer [type=file] {
+    cursor: inherit;
+    display: block;
+    font-size: 999px;
+    filter: alpha(opacity=0);
+    min-height: 100%;
+    min-width: 100%;
+    opacity: 0;
+    position: absolute;
+    right: 0;
+    text-align: right;
+    top: 0;
+}
+
+/* Example stylistic flourishes */
+
+.fileContainer {
+    background: red;
+    border-radius: .5em;
+    float: left;
+    padding: .5em;
+}
+
+.fileContainer [type=file] {
+    cursor: pointer;
+}
+}
+.left_not_pan{
+  border-style: inset;
+  position: absolute;
+  left: 0px;
+  background-color: #fff;
+  /*top: 200px;*/
+  padding: 10px;
+  width: 180px;
+  height: 85%;
+  max-height: 100%;
+  overflow-y: auto;
+  overflow-x: none;
+}
+.left_not_pan h4{
+  font-weight: 500; 
+}
+.noti{
+  margin: 5px 5px 5px 5px;
+  background-color: #f7f7f7;
+  border-style: solid ;
+  border-radius: 10px;
+}
+
 input[type=search]{
   border-radius: 30px;
   outline-style: none !important;
@@ -87,7 +162,7 @@ span{
 .btn{
   margin-top: 10px;
   padding: 10px;
-  border-radius: 0px;
+  border-radius: 10px;
   /*background-color: #343225;*/
   /*color: #fff;*/
   font-weight: 700;
@@ -104,7 +179,7 @@ span{
 }
 
 tbody tr:hover{
-  transform: scale(1.02);
+  transform: scale(0.98);
 }
 
 th{
@@ -196,7 +271,9 @@ thead{
   color: #fff; margin-bottom: 0px;border-radius: 0px;background-color: #2E3F84;
 
 }
-/*.navbar li:hover{
+
+/*.navbar li:
+hover{
   transform: scale(1.02);
   
 }*/

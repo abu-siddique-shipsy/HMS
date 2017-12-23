@@ -17,21 +17,26 @@ class pathology{
 	}
 	function update_procedures($reg_id,$data)
 	{
-		print_r($data);
+		// print_r($data);
 		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
-		foreach ($data as $key => $value) {
-			$query = "UPDATE lab_requests set status = 1,result = '$value->result' ,result_value = '$value->result_value' where reg_id = $reg_id and test_id = $value->test_id ";
+		$query = "UPDATE lab_requests set status = 1,result = '$data->result' ,result_value = '$data->result_value', sample_used = '$data->sample_used' , sample_used_qty = '$data->sample_used_qty' where reg_id = $reg_id and test_id = $data->test_id ";
 
 
-			$result = $con->query($query);
-			if($result)
-			{
-				$res = new amountController();
-				$res->add_lab_cost($reg_id,$value->test_id);
-			}	
-
+		$result = $con->query($query);
+		if($result)
+		{
+			$res = new amountController();
+			$res->add_lab_cost($reg_id,$data->test_id);
 		}
 		
+		return $res;	
+	}
+	function update_sample_inventory($reg_id,$sample_log_id,$sample_used_qty)
+	{
+		print_r($data);
+		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
+		$query = "UPDATE sample_inventory set qty = qty - $sample_used_qty where sample_log_id = $sample_log_id";
+		$result = $con->query($query);
 		return $res;	
 	}
 

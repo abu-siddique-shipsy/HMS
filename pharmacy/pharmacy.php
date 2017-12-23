@@ -9,6 +9,14 @@ $result = $DBcon->query($query);
 
 ?>
 <!-- <link rel="stylesheet" type="text/css" href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables.css"> -->
+<div class="left_not_pan">
+	<h4>Current Notifications</h4>
+	<br><br>
+	<div class="requirements">
+		
+	</div>
+	
+</div>
 <div class="container">
 	<div class="row">
 		<div class="col-md-4">
@@ -221,7 +229,9 @@ $result = $DBcon->query($query);
   <!-- <script type="text/javascript" src="https://cdn.datatables.net/r/bs-3.3.5/jqc-1.11.3,dt-1.10.8/datatables.min.js"></script>   -->
 <script type="text/javascript">
 $(document).ready(function() {
+	var req_list = [];
 	datatable();
+	
 	function datatable()
 	{
     $('#example').DataTable({
@@ -251,6 +261,9 @@ $(document).ready(function() {
 	var row = "";
 	var medicines = [];
 	var reg_id = 0;
+	$(document).on('click','.med_save_ot',function(){
+		dispatch_ot_meds($(this).val());
+	});
     $('#med_nam').on('change',function(){
 		var med_name = $(this).val();
 		$.ajax({
@@ -358,5 +371,85 @@ $(document).ready(function() {
 		}
 		else{alert("Please Add Medicines");}
 	}
+	function dispatch_ot_meds(log_id)	
+	{
+		if(log_id)
+		{
+		$.ajax({
+		  url: '<?php echo pharmacy; ?>',
+		  method : 'post',
+		  dataType : 'json',
+		  data: {'ot_med_log_id' : log_id},
+		  success: function(response) {
+		  	$('#example').DataTable().ajax.reload();
+		  	// rowq = "";
+		  	$(this).parent().find('.resultt').html("dispatched");
+			  // 	for(var i = 0; i< response.data.length ; i++)
+			  // 	{
+					// rowq += "<tr><td>"+response.data[i].medicine_name+"</td><td>"+response.data[i].on_date+"</td></tr>";
+			  // 	}
+			  // 	$('.med_pres').html(rowq);
+		  }
+		 });
+		}
+		else{alert("Please Add Medicines");}
+	}
+	
+    setInterval(function() 
+    {
+    	$.ajax({
+			url: '<?php echo pharmacy;?>',
+			method : 'get',
+			dataType : 'json',
+			data: {'req_list_all': 1,},
+			success: function(response) 
+			{
+				medicines = [];
+				$('.med').html("");
+				for(var i = 0 ; i < response.data.length ; i++)
+				{
+					if($.inArray(response.data[i].log_med_id,req_list) == -1)
+					{
+						req_list.push(response.data[i].log_med_id);
+						construct_medicine_request_list(".requirements",response.data[i]);
+					}
+				}
+				
+			}
+		});
+    },5000);
+    function construct_medicine_request_list(label,response)
+    {
+      var data = "";
+        data = "<button class='noti ' data-toggle='modal' data-target='#"+response.log_med_id+"''>";
+        			
+        
+        data += "Requested "+response.medicine_name+" from OT</button>";
+        $(label).append(data);
+
+        var master = response.medicine_name+" of quantity "+response.qty+ "<br> requested at room number "+response.room.room_id+"<br> on floor number "+response.room.floor_num+"<br> of " +response.room.ward_name+ " ward in<br> block " +response.room.block_name;  
+        create_modal(response.log_med_id,master);
+      
+      
+    }
+    function create_modal(id,body)
+    {
+    	data = '<div id="'+id+'" class="modal fade" role="dialog">';
+		data +=				  	'<div class="modal-dialog">';
+
+		data +='<!-- Modal content-->';
+		data +='<div class="modal-content pharm">';
+		data +=		      '<div class="modal-body">';
+		data +=		        '<label>'+body+'</label>';
+		data +=		      '</div>';
+		data +=		      '<div class="modal-footer">';
+		data +=		        '<label class="resultt"></label>'
+		data +=		        '<button type="button" class="btn btn-default med_save_ot" value="'+id+'" >Dispatch</button>';
+		data +=		      '</div>';
+		data +=		    '</div>';
+		data +=		  '</div>';
+		data +=		'</div>';
+		$('body').append(data);
+    }
 } );
 </script>

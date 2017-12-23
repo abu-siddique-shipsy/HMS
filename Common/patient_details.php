@@ -62,6 +62,7 @@ if (isset($_POST['test_results'])) {
 	$data = json_decode($_POST['test_results']);
 	$reg_id = $_POST['reg_id'];
 	$result = pathology::update_procedures($reg_id,$data);
+	$result = pathology::update_sample_inventory($reg_id,$data->sample_used,$data->sample_used_qty);
 	// $query = "SELECT * FROM lab_requests where reg_id = $reg_id and status = 0";
 	// $query1 = "SELECT * FROM registration_flow where registration_id = '$id'";
 	// $result1 = $DBcon->query($query1);

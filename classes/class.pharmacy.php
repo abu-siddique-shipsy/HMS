@@ -2,6 +2,19 @@
 require __DIR__.'/../config.php';
 // include Class_path.'class.amount.php';
 class pharmacy{
+	function get_med_with_log_id($log_id)
+	{
+		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
+		$query = "SELECT * from  medicine_used where log_med_id = '$log_id'";
+		$result = $con->query($query);
+
+		$re = [];
+		while ($exe = $result->fetch_assoc()) {
+			$re[] = $exe;
+		}
+		// print_r($re);
+		return $re;	
+	}
 	function get_all_med()
 	{
 		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);

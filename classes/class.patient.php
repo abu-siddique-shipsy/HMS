@@ -1,0 +1,24 @@
+<?php
+
+require __DIR__.'/../config.php';
+// include Class_path.'class.amount.php';
+// include Class_path.'class.mailer.php';
+// include Class_path.'class.pharmacy.php';
+class patient{
+	function get_patient_with_reg_id($reg_id)
+	{
+		$DBcon = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
+		$id = $reg_id;
+		// echo $id;
+		
+			
+		$query = "SELECT rg.room_id,rg.is_inp,rg.registration_id as reg_id,id,sex,name,address,phone_number,dob from patient pt join registration rg on rg.patient_id = pt.id where rg.registration_id = $id group by pt.id";
+		$result_array= [];
+		$result = $DBcon->query($query);
+		while ($exe = $result->fetch_assoc()) {
+			$result_array = $exe;
+		}
+		return $result_array;
+	}
+
+}

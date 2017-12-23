@@ -1,12 +1,17 @@
 <?php
 
 ini_set('display_errors', 0);
-error_reporting(E_ERROR | E_WARNING | E_PARSE); 
 define("DBHOST", "localhost:3306");
 define("DBUSER", "test1");
 define("DBPASS", "test1");
 define("DBNAME", "hospital");
 define("root",__DIR__); 
+define("root1","c:/xampp/htdoc/hospital"); 
+
+define('KB', 1024);
+define('MB', 1048576);
+define('GB', 1073741824);
+define('TB', 1099511627776);
 
 
 define("domain","http://hospital.localhost:8080"); 

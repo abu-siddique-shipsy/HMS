@@ -6,8 +6,11 @@ session_start();
 
 
  $inputs = ($_POST);
+
 $query = ("select * from user_credentials where email = '$inputs[email]' or username = '$inputs[email]'");
 $query1 = ("select * from users urs join staff stf on stf.email = urs.email where urs.email = '$inputs[email]'");
+print_r($query);echo "<br>";
+print_r($query1);echo "<br>";
 $DBcon = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
 $result = $DBcon->query($query);
 $result1 = $DBcon->query($query1);

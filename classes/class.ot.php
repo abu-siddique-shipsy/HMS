@@ -170,5 +170,29 @@ class ot{
 		$con->close();
 		return $result;
 	}
+	function add_medicine($medicine)
+	{
+		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
+		foreach ($medicine as $key => $value) {
+
+			$query = "insert into medicine_used (medicine_id,reg_id,qty,is_op) values ($value->id,'$this->reg_id',$value->qty,1)";
+			$msg= $con->query($query);
+		}
+		$con->close();
+
+	}
+	function get_medicines()
+	{
+		$query = "select * from medicine_used mu join medicines m on mu.medicine_id = m.id where reg_id = '$this->reg_id' and is_op = 1 ";
+		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
+		$result = $con->query($query);
+		$re = [];
+		while ($exe = $result->fetch_assoc()) {
+			$re[] = $exe;
+		}
+		$con->close();
+		return $re;
+
+	}
 
 }

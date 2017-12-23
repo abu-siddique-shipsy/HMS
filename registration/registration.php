@@ -18,7 +18,30 @@ body{
 /* The image used */
 }
 </style>
+<div id="get_access_details" class="modal fade" role="dialog">
+  <div class="modal-dialog">
 
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Select Accessable Screens</h4>
+      </div>
+      <div class="modal-body">
+
+        <div id="screens" style="padding: 20px;">
+        	
+        </div>
+      </div>
+      <div class="modal-footer">
+      	<label id="screen_result"></label>
+        <button type="button" class="btn btn-success" id="add_screens">Submit</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
 <div class="container-fluid">
 	<div class="row">
 		<div class="panel panel-default">	
@@ -371,7 +394,9 @@ body{
 				  			$('#Add_User').modal('hide');
 				  			$('.staff_id').html(response.data);
 				  			id = response.data;
-				  			$('#add_staff_contact').modal('show');
+				  			get_screens(type);
+				  			$('#get_access_details').modal('show');
+				  			// $('#add_staff_contact').modal('show');
 				  			
 				  		}
 					  }
@@ -492,5 +517,74 @@ body{
 			 
 			
 		});
+		function get_screens(type)
+		{
+			$.ajax({
+			  url: "<?php echo controller.'admin.php'; ?>",
+			  method : 'post',
+			  dataType : 'json',
+			  data: {'get_screens_with_access': type },
+			  success:function(data){
+			  	console.log(data);
+			  	data = data.data;
+			  	if(data)
+			  	{
+			  		var content = "";
+			  		for(var i = 0; i< data.length ; i++)
+			  		{
+			  			if(data[i].selected.toLowerCase() == "yes")
+			  			{
+			  				content += '<label class="checkbox"><input type="checkbox" class="screen_names" value="'+data[i].screen_id+'" checked>'+data[i].screen_name+'</label>'
+			  			}
+			  			else
+			  				content += '<label class="checkbox"><input type="checkbox" class="screen_names" value="'+data[i].screen_id+'">'+data[i].screen_name+'</label>'
+			  		}
+			  		$('#screens').html(content);
+			  		
+			  	}
+			  }
+				
+			});		
+		}
+		$('#add_screens').on('click',function(){
+		selected_screens = get_all_screens();
+		update_access(selected_screens);
+
+		});
+		function get_all_screens()
+		{
+			var  all_screens = []
+			$('.screen_names:checkbox:checked').each( function() { 
+		        
+		        all_screens.push( $(this).val() );
+
+		    });
+			
+			return all_screens;
+		}
+		function update_access(screens)
+		{
+
+			$.ajax({
+			  url: "<?php echo controller.'admin.php'; ?>",
+			  method : 'post',
+			  dataType : 'json',
+			  data: {'update_screens_for_staff': JSON.stringify(screens) ,'staff_id' : id},
+			  success:function(data){
+			  	if(data)
+			  	{
+					$('#screen_result').html('Addition Successful');
+					$('#get_access_details').modal('hide');
+				  	$('#add_staff_contact').modal('show');
+			  		
+			  	}
+			  	else
+			  		$('#screen_result').html('Addition Failed');
+			  }
+				
+			});		
+		}
 	});
+
+
 </script>

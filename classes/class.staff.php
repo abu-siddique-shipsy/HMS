@@ -21,6 +21,16 @@ class staff{
 		$con->close();
 		return $exe;
 	}
+	function update_type_screen_access($data,$type_id)
+	{
+		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
+		foreach ($data as $key => $value) {
+			$query = "INSERT INTO staff_type_screen_map (staff_type_id,screen_access_id) VALUES ('$type_id','$value')";	
+			$result = $con->query($query);
+		}
+		$con->close();
+		return $result;	
+	}
 	function get_all_staff()
 	{
 		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
@@ -65,14 +75,25 @@ class staff{
 		$con->close();
 		return $response;
 	}
+	function get_staff_type_by_name($type_name)
+	{
+		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
+		$get_staff_query = "select * from staff_type_map where staff_type_name = '$type_name'";
+		$result = $con->query($get_staff_query);
+		$exe = $result->fetch_array();
+		$con->close();
+		return $exe;	
+	}
 	function add_staff_type($staff_type)
 	{
 		$response = "";
 		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
+		
+
 		$query = "insert into staff_type_map (staff_type_name) values ('$staff_type')";
 		$result = $con->query($query);
 		$con->close();
-		return $result;
+		// return $result;
 	}
 	function create_staff($staff)
 	{
@@ -163,4 +184,42 @@ class staff{
 		$con->close();
 		return $response;
 	}
+	function get_selected_screens($type_id)
+	{
+		$response = [];
+		// print_r($staff);
+		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
+		$query = "select * from staff_type_screen_map where staff_type_id = '$type_id'";
+		$result = $con->query($query);
+		while($exe = $result->fetch_assoc()) {
+		
+				$response[] = $exe['screen_access_id'];
+		}
+		
+		$con->close();
+		return $response;
+	}
+	function get_all_screens_with_access($all_screens,$selected_screens)
+	{
+
+		$response = $ret = [];
+		foreach ($all_screens as $key => $value) {
+			$response['screen_id'] = $value['screen_id'];
+			$response['screen_name'] = $value['screen_name'];
+			$response['selected'] = (in_array($response['screen_id'],$selected_screens) ? "Yes" : "No");
+			$ret[] = $response;
+		}
+		return $ret;
+
+	}
+	function update_screens_for_staff($data,$staff_id)
+	{
+		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
+		foreach ($data as $key => $value) {
+			$query = "INSERT INTO screen_staff_map (staff_id,screen_id) VALUES ('$type_id','$value')";	
+			$result = $con->query($query);
+		}
+		$con->close();
+		return $result;	
+	}	
 }

@@ -117,4 +117,19 @@ class structure{
 		return $response;
 		
 	}
+	function get_room_details($room_id)
+	{
+		$response = [];
+		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
+	
+		$query = "SELECT wrd.ward_id as id,ward_name as ward_name,bck.block_id,bck.block_name as block_name,floor_num,rm.room_id from ward wrd join block bck on bck.block_id = wrd.block_id join rooms rm on rm.ward_id = wrd.ward_id where rm.room_id = '$room_id'";
+		// print_r($query);
+		$result = $con->query($query);
+		while ($exe = $result->fetch_assoc()) {
+			$response[] = $exe; 
+		}
+		$con->close();
+		return $response;
+		
+	}
 }

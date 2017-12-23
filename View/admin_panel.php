@@ -21,6 +21,8 @@ include root.'\Common\header.php';
         </div>
       </div>
       <div class="modal-footer">
+      	<label id="screen_result"></label>
+        <button type="button" class="btn btn-success" id="add_screens">Submit</button>
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
       </div>
     </div>
@@ -196,6 +198,7 @@ include root.'\Common\header.php';
 	<button class="btn btn-default" data-toggle="modal" data-target="#ward" id="add_ward" >Add Ward</button>
 </div>
 <script type="text/javascript">
+	var type_id = 0;
 $(document).ready(function(){
 	$('#add_staff').on('click',function(){
 		get_staff();
@@ -221,9 +224,12 @@ $(document).ready(function(){
 		  success:function(response){
 		  	if(response.data)
 		  	{
+		  		$('#stf_typ').empty();
+		  		type_id = response.data.type_id;
 		  		get_staff();
 		  		$('#staff').modal('hide');
 		  		get_screens();
+		  		console.log(type_id);
 		  		$('#get_access_details').modal('show');
 		  	}
 		  	else
@@ -282,6 +288,11 @@ $(document).ready(function(){
 		  }
 			
 		});
+	});
+	$('#add_screens').on('click',function(){
+		selected_screens = get_all_screens();
+		update_access(selected_screens);
+
 	});
 	function get_incharge()
 	{
@@ -412,11 +423,42 @@ $(document).ready(function(){
 		  		var content = "";
 		  		for(var i = 0; i< data.length ; i++)
 		  		{
-		  			content += '<label class="checkbox"><input type="checkbox" value="'+data[i].screen_id+'">'+data[i].screen_name+'</label>'
+		  			content += '<label class="checkbox"><input type="checkbox" class="screen_names" value="'+data[i].screen_id+'">'+data[i].screen_name+'</label>'
 		  		}
 		  		$('#screens').html(content);
 		  		
 		  	}
+		  }
+			
+		});		
+	}
+	function get_all_screens()
+	{
+		var  all_screens = []
+		$('.screen_names:checkbox:checked').each( function() { 
+	        
+	        all_screens.push( $(this).val() );
+
+	    });
+		
+		return all_screens;
+	}
+	function update_access(screens)
+	{
+
+		$.ajax({
+		  url: "<?php echo controller.'admin.php'; ?>",
+		  method : 'post',
+		  dataType : 'json',
+		  data: {'update_screens': JSON.stringify(screens) ,'type_id' : type_id},
+		  success:function(data){
+		  	if(data)
+		  	{
+				$('#screen_result').html('Addition Successful');
+		  		
+		  	}
+		  	else
+		  		$('#screen_result').html('Addition Failed');
 		  }
 			
 		});		
