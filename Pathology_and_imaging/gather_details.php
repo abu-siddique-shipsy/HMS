@@ -1,6 +1,6 @@
 <?php
 
-include __DIR__.'\..\config.php';
+include __DIR__.'/../config.php';
 // include root.'\assets\bootstrap.php';
 // include root.'\assets\style.php';
 

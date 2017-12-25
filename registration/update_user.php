@@ -1,5 +1,5 @@
 <?php
-include __DIR__.'\..\config.php';
+include __DIR__.'/../config.php';
 
 $DBcon = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
 
@@ -23,8 +23,8 @@ if(isset($_POST['send_mail']))
     $result1 = $DBcon->query($query);
     if($result1)
     {
-    	$headers  = 'MIME-Version: 1.0' . "\r\n";
-    	$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+    	$headers  = 'MIME-Version: 1.0' . "/r/n";
+    	$headers .= 'Content-type: text/html; charset=iso-8859-1' . "/r/n";
      
     	$msg = "Hello $data->name, <br>Your Account has been Created.<br> Please Click the following link to reset the Password and Login.<br><br>";
     	$msg .= domain."/reset_password/reset.php?token=$token";

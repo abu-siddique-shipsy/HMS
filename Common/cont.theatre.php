@@ -1,7 +1,7 @@
 <?php
 
-include __DIR__.'\..\config.php';
-// include root.'\assets\bootstrap.php';
+include __DIR__.'/../config.php';
+// include root.'/assets/bootstrap.php';
 include Class_path.'class.ot.php';
 $response = new stdClass();
 if(isset($_GET['comment']))

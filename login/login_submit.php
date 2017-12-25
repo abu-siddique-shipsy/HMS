@@ -1,7 +1,7 @@
 <?php
-include __DIR__.'\..\config.php';
-include root.'\assets\bootstrap.php';
-include root.'\assets\style.php'; 
+include __DIR__.'/../config.php';
+include root.'/assets/bootstrap.php';
+include root.'/assets/style.php'; 
 session_start();
 
 

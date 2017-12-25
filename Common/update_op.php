@@ -1,9 +1,9 @@
 <?php
 
-include __DIR__.'\..\config.php';
+include __DIR__.'/../config.php';
 include Class_path.'class.amount.php';
-// include root.'\assets\bootstrap.php';
-// include root.'\assets\style.php';
+// include root.'/assets/bootstrap.php';
+// include root.'/assets/style.php';
 $DBcon = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
 $response = new stdClass();
 if(isset($_POST['data']))

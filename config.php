@@ -19,7 +19,7 @@ define("controller",domain."/Common/");
 define("patientDetails",domain."/Common/patient_details.php");
 define("patientDetails1",domain."/Common/patient_details1.php");
 define("pharmacy",domain."/Common/pharmacy.php");
-define("Class_path",root."\classes\\");
+define("Class_path",root."/classes/");
 define("ConsultantDetails",domain."/Common/consultant_details.php");
 define("med_price",domain."/Common/med_price.php");
 define("update_op",domain."/Common/update_op.php");

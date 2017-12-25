@@ -1,5 +1,5 @@
 <?php
-include __DIR__.'\..\config.php';
+include __DIR__.'/../config.php';
 include Class_path.'class.laboratory.php';
 include Class_path.'class.fileuploader.php';
 $response = new stdClass();

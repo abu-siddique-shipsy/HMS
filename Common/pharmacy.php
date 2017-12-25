@@ -1,8 +1,8 @@
 <?php
 
-include __DIR__.'\..\config.php';
-// include root.'\assets\bootstrap.php';
-// include root.'\assets\style.php';
+include __DIR__.'/../config.php';
+// include root.'/assets/bootstrap.php';
+// include root.'/assets/style.php';
 include Class_path.'class.patient.php';
 include Class_path.'class.pharmacy.php';
 include Class_path.'class.structure.php';

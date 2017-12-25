@@ -1,8 +1,8 @@
 <?php
 
-include __DIR__.'\..\config.php';
-include root.'\assets\bootstrap.php';
-include root.'\Common\header.php';
+include __DIR__.'/../config.php';
+include root.'/assets/bootstrap.php';
+include root.'/Common/header.php';
 $DBcon = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
 ?>
 <link rel="stylesheet" type="text/css" href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables.css">

@@ -1,9 +1,9 @@
 <?php
 
-include __DIR__.'\..\config.php';
-include root.'\assets\bootstrap.php';
+include __DIR__.'/../config.php';
+include root.'/assets/bootstrap.php';
 
-include root.'\Common\header.php';
+include root.'/Common/header.php';
 // session_start();
 $DBcon = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
 $dept = $DBcon->query("select * from departments");

@@ -1,8 +1,8 @@
 <?php
 
-include __DIR__.'\..\config.php';
-include root.'\assets\bootstrap.php';
-include root.'\Common\header.php';
+include __DIR__.'/../config.php';
+include root.'/assets/bootstrap.php';
+include root.'/Common/header.php';
 $DBcon = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
 
 $query = "select * from lab_procedures";

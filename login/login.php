@@ -1,6 +1,6 @@
 <?php
-include __DIR__.'\..\config.php';
-include root.'\assets\bootstrap.php';
+include __DIR__.'/../config.php';
+include root.'/assets/bootstrap.php';
 session_start();
 
 if (isset($_SESSION['userSession'])!="") {

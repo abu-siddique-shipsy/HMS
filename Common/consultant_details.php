@@ -1,8 +1,8 @@
 <?php
 
-include __DIR__.'\..\config.php';
-// include root.'\assets\bootstrap.php';
-// include root.'\assets\style.php';
+include __DIR__.'/../config.php';
+// include root.'/assets/bootstrap.php';
+// include root.'/assets/style.php';
 $DBcon = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
 $id = $_POST['consultant_id'];
 // echo $id;

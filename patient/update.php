@@ -1,8 +1,8 @@
 <?php
 
-include __DIR__.'\..\config.php';
+include __DIR__.'/../config.php';
  
-// include root.'\assets\style.php';
+// include root.'/assets/style.php';
 
 $DBcon = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
 if(isset($_POST['dept_id']))
@@ -67,7 +67,7 @@ else if(isset($_GET))
 		$DBcon->query($sql6);
 		// print_r($exe1);
 		// print_r($exe);
-		include root.'\assets\bootstrap.php';
+		include root.'/assets/bootstrap.php';
 ?>
 <link rel="stylesheet" type="text/css" href="../assets/style.css">
 <div class="container" id="tet">

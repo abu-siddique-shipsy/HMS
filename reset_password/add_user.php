@@ -1,6 +1,6 @@
 <?php
 
-include __DIR__.'\..\config.php';
+include __DIR__.'/../config.php';
 
 $DBcon = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
 if(isset($_POST['check_uname']))

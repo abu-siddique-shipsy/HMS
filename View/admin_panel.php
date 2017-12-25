@@ -1,8 +1,8 @@
 <?php
 
-include __DIR__.'\..\config.php';
-include root.'\assets\bootstrap.php';
-include root.'\Common\header.php';
+include __DIR__.'/../config.php';
+include root.'/assets/bootstrap.php';
+include root.'/Common/header.php';
 
 ?>
 <div id="get_access_details" class="modal fade" role="dialog">

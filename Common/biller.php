@@ -1,6 +1,6 @@
 <?php
 
-include __DIR__.'\..\config.php';
+include __DIR__.'/../config.php';
 include Class_path.'class.biller.php';
 // $DBcon = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
 $response = new stdClass();

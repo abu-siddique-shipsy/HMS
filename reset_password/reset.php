@@ -1,7 +1,7 @@
 <?php
-require __DIR__.'\..\config.php';
-require root.'\assets\bootstrap.php';
-// require root.'\assets\style.php';
+require __DIR__.'/../config.php';
+require root.'/assets/bootstrap.php';
+// require root.'/assets/style.php';
 
 $DBcon = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
 $token = $_GET['token'];

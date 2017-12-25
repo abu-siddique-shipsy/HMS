@@ -1,9 +1,9 @@
 <?php 
 
-include __DIR__.'\..\config.php';
-include root.'\assets\bootstrap.php';
-include root.'\Common\header.php';
-// include root.'\Common\reception_sidebar.php';
+include __DIR__.'/../config.php';
+include root.'/assets/bootstrap.php';
+include root.'/Common/header.php';
+// include root.'/Common/reception_sidebar.php';
 
 //session_start();
 // if (isset($_SESSION['userSession'])=="") {

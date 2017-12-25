@@ -1,6 +1,6 @@
 <?php
 
-include __DIR__.'\..\config.php';
+include __DIR__.'/../config.php';
 include Class_path.'class.staff.php';
 include Class_path.'class.department.php';
 include Class_path.'class.structure.php';
