@@ -27,6 +27,28 @@ class laboratory{
 		}
 		return $re;
 	}
+	function get_tests($reg_id)
+	{
+		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
+		$query = "SELECT * FROM lab_requests lq join lab_procedures lp on lq.test_id = lp.procedure_id where reg_id = $reg_id";
+		$result = $con->query($query);
+		$re = [];
+		while ($exe = $result->fetch_assoc()) {
+			switch ($exe['status']) {
+				case '1':
+					$exe['status'] = "Completed";
+					break;
+				case '2':
+					$exe['status'] = "Cancelled";
+					break;
+				case '0':
+					$exe['status'] = "Prescriped";
+					break;
+			}
+			$re[] = $exe;
+		}
+		return $re;
+	}
 	function add_samples($data)
 	{
 		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);

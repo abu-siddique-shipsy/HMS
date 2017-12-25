@@ -55,10 +55,6 @@ class register{
 			$query = "update registration set ins_num = '$insurance' where patient_id = '$this->pat_id' and registration_id = '$this->reg_id'";
 			$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
 			$res = $con->query($query);
-			if($res)
-			{
-				$res = mailer::registration($this->reg_id);
-			}
 		}
 
 		$con->close();		
@@ -81,6 +77,10 @@ class register{
 			}
 		}
 		return $res;
+	}
+	function send_mail()
+	{
+		$this->mail_result = mailer::registration($this->reg_id);
 	}
 	
 }

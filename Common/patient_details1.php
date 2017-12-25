@@ -8,6 +8,7 @@ include Class_path.'class.register.php';
 include Class_path.'class.structure.php';
 // include Class_path.'class.inpatient.php';
 $DBcon = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
+$response = new stdClass();
 if(isset($_POST['patient_id']))
 {
 	$id = $_POST['patient_id'];
@@ -49,6 +50,7 @@ if(isset($_POST['inp_pat']))
 		$insurance =  $data['ins_num'];
 		$register_obj->register_ip($room_id,$insurance);
 	}
+	$register_obj->send_mail();
 	$response->data = $register_obj;
 	$response->status = "success";
 	unset($register_obj);	

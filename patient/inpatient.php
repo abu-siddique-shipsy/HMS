@@ -11,6 +11,29 @@ $result1 = $DBcon->query($query1);
 // print_r();
 ?>
 <!-- Modal -->
+<div id="inp_pat" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Alert !</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <label> The Entered ID is an out Patient </label>
+        </div>  
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Go Back</button>
+        <button type="button" class="btn btn-default" onclick="javascript: window.location.href = '/patient/op.php'">Go to OUT patient</button>
+      </div>
+    </div>
+
+  </div>
+</div>
 <div id="pres" class="modal fade" role="dialog">
   <div class="modal-dialog">
 
@@ -518,7 +541,7 @@ $(document).ready(function() {
           }
           else
           {
-            $('#out_pat').modal('show');  
+            $('#inp_pat').modal('show');
           }
         }
         

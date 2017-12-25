@@ -221,6 +221,7 @@ td{
 
   </div>
 </div>
+<div class="container-fluid">
 <div class="row">
 	<div class="col-sm-4" style="text-align: center;">
 		<button class="btn btn-default big-button" data-toggle="modal" data-target="#test">Assign Test</button>
@@ -310,6 +311,7 @@ td{
 		</div>
 	</div>
 
+</div>
 </div>
 
 <script type="text/javascript">

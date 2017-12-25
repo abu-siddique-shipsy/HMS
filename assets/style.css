@@ -33,22 +33,60 @@
     opacity: 0;
     position: absolute;
     right: 0;
-    text-align: right;
+    /*text-align: right;*/
     top: 0;
 }
 
 /* Example stylistic flourishes */
 
 .fileContainer {
-    background: red;
-    border-radius: .5em;
-    float: left;
-    padding: .5em;
+    
+}
+
+.pad1{
+  padding-bottom: 10px;
 }
 
 .fileContainer [type=file] {
     cursor: pointer;
 }
+.navbar{
+  background-color: #2B3643 !important;
+}
+.navbar .btn{
+  margin-left: 20px;
+  background-color: inherit;
+}
+.navbar-right{
+  margin-right: 20px;
+}
+.header_panel{
+  border-style: solid;
+  border-width: 0px;
+  position: absolute;
+  left: 0px;
+  background-color: #364051;
+  /*padding: 10px;*/
+  width: 180px;
+  height: 90%;
+  text-align: left;
+
+}
+.header_panel a{
+  margin-left: 0px;
+  margin-top : 20px;
+  color: #fff;
+}
+.header_panel ul{
+  /*margin-left: 15px;*/
+  padding: 10px;
+}
+.header_panel li{
+  padding: 10px;
+  border-style: solid;
+  border-width: 0px 0px 1px 0px;
+  border-color: #3D4A5E;
+  color: #fff;
 }
 .left_not_pan{
   border-style: inset;
@@ -161,6 +199,7 @@ span{
 
 .btn{
   margin-top: 10px;
+  margin-bottom: 10px;
   padding: 10px;
   border-radius: 10px;
   /*background-color: #343225;*/
@@ -178,8 +217,17 @@ span{
 
 }
 
+tr {
+  text-align: center;
+}
+
 tbody tr:hover{
   transform: scale(0.98);
+}
+
+tbody {
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 th{
@@ -223,7 +271,7 @@ th{
 
 .panel{
   transform: scale(1.01);
-  background-image: url(imgs/panel_img.jpg);
+  /*background-image: url(imgs/panel_img.jpg);*/
   
   background-color: #ffffff;
   border-radius : 20px;
@@ -234,8 +282,8 @@ th{
   padding: 10px;
 }
 body,html{
-  background-image: url(imgs/hosp.jpg);
-  background-color: #efeda2;
+  /*background-image: url(imgs/hosp.jpg);*/
+  background-color: #ffffff;
    font-family: Tahoma;
    font-size: 14px;
     height: 100%;
@@ -252,8 +300,8 @@ thead{
   /*font-size: 20px;*/
   /*font-family: Tahoma*/
   border-radius: 20px;
-  background-color: #637280;
-  color: #000000;
+  background-color: #167F92;
+  color: #FFFFFF;
 }
 
   nav.sidebar, .main{
@@ -404,12 +452,14 @@ body{
 
 }
 td{
+  vertical-align: middle !important;
   color: #000;
 	font-size: 15px;
 	font-family: 'montreal';
 	font-weight: 400;
 }
 .panel{
+  background : linear-gradient(50deg, #63b36f 10%, #63b36f 10%, #49a3c5 30%);
 	margin-top: 10px;
 }
 .dLogin {

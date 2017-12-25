@@ -3,6 +3,16 @@ include __DIR__.'\..\config.php';
 include Class_path.'class.laboratory.php';
 include Class_path.'class.fileuploader.php';
 $response = new stdClass();
+if(isset($_POST['get_reports']))
+{
+	$data = $_POST['get_reports'];
+	$response->data = laboratory::get_tests($data);
+}
+if(isset($_POST['get_tests']))
+{
+	$data = $_POST['get_tests'];
+	$response->data = laboratory::get_tests($data);
+}
 if(isset($_POST['get_samples']))
 {
 	$data = $_POST['get_samples'];

@@ -13,6 +13,7 @@ include root.'\Common\header.php';
 	margin-top: -10px;
 }
 </style>
+<div class="container-fluid">
 <div class="row">
 	<div class="col-sm-4">
 		<div class="panel panel-default panel1">
@@ -81,6 +82,7 @@ include root.'\Common\header.php';
 			</div>
 		</div>
 	</div>
+</div>
 </div>
 
 <div id="bill" class="modal fade" role="dialog">

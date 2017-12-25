@@ -39,21 +39,61 @@ $result = $DBcon->query($query);
 			
 		</div>
 	</div>
+	<div class="row" id="buttons_div" style="display: none">
+		<div class="col-md-12">
+				<div class="panel panel-default">
+				  	<div class="panel-body" style="padding: 0px !important;">
+				  			<div class="col-md-3 col-lg-3 col-xs-3 col-sm-3 center">
+				  				<label class="fileContainer btn btn-info">
+				  					Upload Image
+					  			<input type="file" id="upload_image">
+				  				</label>
+				  			</div>
+				  			<div class="col-md-3 col-lg-3 col-xs-3 col-sm-3">
+				  				<button class="btn btn-success" id="show_path" data-toggle="modal" data-target="#pathology">Show Pathology Reports</button>
+				  			</div>
+				  			<div class="col-md-3 col-lg-3 col-xs-3 col-sm-3">
+				  				<button class="btn btn-success" id="show_reports" data-toggle="modal" data-target="#report">Show Reports</button>
+				  			</div>
+				  			<div class="col-md-3 col-lg-3 col-xs-3 col-sm-3">
+				  				<button class="btn btn-warning" id="add_sam" data-toggle="modal" data-target="#sample_modal">Collect Sample</button>
+				  			</div>
+				  		
+				  	</div>
+				</div>
+			</div>
+		</div>
+	<div class="row" id="tests" style="display: none">
+		<div class="col-md-12">
+				<div class="panel panel-default panel1">
+				  	<div class="panel-body patient sample">
+				  		<table class="table table-hover table-default" id="test_table">
+				  			<thead>
+				  				<th>Test Name</th>
+				  				<th>Adviced On</th>
+				  				<th>Status</th>
+				  			</thead>
+				  			
+				  			<tbody id="test_body">
+
+				  			</tbody>
+				  			
+				  		</table>
+				  	</div>
+				</div>
+		</div>
+	</div>
 	<div class="row" id="sample_div" style="display: none">
 		<div class="col-md-12">
 				<div class="panel panel-default panel1">
 				  	<div class="panel-body patient sample">
-				  		<label class="fileContainer">
-				  			Upload Image
-					  		<input type="file" id="upload_image">
-				  		</label>
-				  		<button class="btn btn-info" id="show_path" data-toggle="modal" data-target="#pathology">Show Pathology Reports</button>
-				  		<button class="btn btn-info pull-right" id="add_sam" data-toggle="modal" data-target="#sample_modal">Collect Sample</button>
-				  		<table class="table table-hover">
+				  		<table class="table table-hover table-default" id="sample_table">
 				  			<thead>
 				  				<th>Sample Name</th>
 				  				<th>Collected On</th>
 				  				<th>Remaining Quantity</th>
+				  				<th></th>
+				  				<th></th>
 				  			</thead>
 				  			
 				  			<tbody id="sample_body">
@@ -111,8 +151,10 @@ $result = $DBcon->query($query);
 	        	
 	        <table class="table">
 	        	<thead>
-	        		<th>Description</th>
-	        		<th>Results</th>
+	        		<th>Procedure Name</th>
+	        		<th>Submitted On</th>
+	        		<th>Result</th>
+	        		<th>Value</th>
 	        	</thead>
 	        	<tbody id="rep">
 	        		
@@ -220,6 +262,10 @@ $(document).ready(function(){
 	$('#add_sam').on('click',function(){
 		get_sample_types();
 	});
+	$('#show_reports').on('click',function(){
+		get_reports(reg_id);
+	});
+	
 	$('#sub_sample_mod').on('click',function(){
 		var sample = {
 			'id' : $('#sample_select_box').val(),
@@ -232,6 +278,8 @@ $(document).ready(function(){
 	$('#id').on('change',function(){
 		reg_id = $(this).val();
 		get_samples(reg_id);
+		get_tests(reg_id);
+
 		$.ajax({
 		  url: '<?php echo patientDetails; ?>',
 		  method : 'post',
@@ -247,6 +295,8 @@ $(document).ready(function(){
 		  	{
 		  		$('#sample_div').css('display','block');
 		  		$('.pat_det_pan').css('display','block');
+		  		$('#buttons_div').css('display','block');
+		  		$('#tests').css('display','block');
 		  		
 			  		var options = "";
 			  		var result = "";
@@ -254,9 +304,11 @@ $(document).ready(function(){
 			  		{
 				  		for(var i = 0 ; i< response.data.length ; i++)
 				  		{
+				  			result += '<tr>'
 				  			result += "<td>"+response.data[i].name+"</td>";
 							result += "<td>"+response.data[i].dob+"</td>";
 							result += "<td>"+response.data[i].sex+"</td>";
+							result += '</tr>'
 				  		}
 				  		$('#det').html(result);	
 				  		$.ajax({
@@ -457,6 +509,37 @@ function get_samples(reg_id)
 				
 			}
 			$('#sample_body').html(html);
+			$("#sample_table").DataTable();
+		}		  	
+	  }
+	});
+}
+function get_tests(reg_id)
+{
+	$.ajax({
+	  url: "<?php echo controller."cont.lab.php" ?>",
+	  method : 'post',
+	  dataType: 'JSON',
+	  data: {'get_tests' : reg_id},
+	  success: function(response) {
+	  	if(response.status="success")
+		{
+			var html = ""
+			if(!response.data.length)
+			{
+				html = "-----------No Sample Available-------------";	
+			}
+			for(var i = 0;i < response.data.length ; i++)
+			{
+				html += '<tr>';
+				html += '<td>'+response.data[i].procedure_name+'</td>'; 
+				html += '<td>'+response.data[i].at_time+'</td>';
+				html += '<td>'+(response.data[i].status)+'</td>';
+				html += '</tr>'; 
+				
+			}
+			$('#test_body').html(html);
+			$("#test_table").DataTable();
 		}		  	
 	  }
 	});
@@ -481,6 +564,38 @@ function get_sample_types()
 				html += '<option value="'+response.data[i].sample_id+'">'+response.data[i].sample_name+'</option>';
 			}
 			$('#sample_select_box').html(html);
+		}		  	
+	  }
+	});
+}
+function get_reports(reg_id)
+{
+	$.ajax({
+	  url: "<?php echo controller."cont.lab.php" ?>",
+	  method : 'post',
+	  dataType: 'JSON',
+	  data: {'get_reports' : reg_id},
+	  success: function(response) {
+	  	if(response.status="success")
+		{
+			var html = "";
+			if(!response.data.length)
+			{
+				html = "-----------No Sample Available-------------";	
+			}
+			for(var i = 0;i < response.data.length ; i++)
+			{
+				if(response.data[i].status == "Completed")
+				{
+					html += '<tr>';
+					html += '<td>'+response.data[i].procedure_name+'</td>'; 
+					html += '<td>'+response.data[i].updated_at+'</td>';
+					html += '<td>'+(response.data[i].result)+'</td>';
+					html += '<td>'+(response.data[i].result_value)+'</td>';
+					html += '</tr>'; 
+				}
+			}
+			$('#rep').html(html);
 		}		  	
 	  }
 	});
