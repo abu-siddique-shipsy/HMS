@@ -88,10 +88,10 @@
   border-color: #3D4A5E;
   color: #fff;
 }
-.left_not_pan{
+.right_not_pan{
   border-style: inset;
   position: absolute;
-  left: 0px;
+  right: 0px;
   background-color: #fff;
   /*top: 200px;*/
   padding: 10px;
@@ -466,10 +466,12 @@ td{
     display: flex;
     align-items: center;
     justify-content: center;
+    text-align: right;
     height: 100%;
     padding: 20px 20px;
 }
 .d-gray-sec{
+    text-align: left;
     border-left: 1px solid #f3f3f3;
     padding-left: 30px;
     padding-top: 0px;

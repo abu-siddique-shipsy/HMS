@@ -23,11 +23,11 @@ body{
 
 
     <div class="col-sm-12 dLogin">
-            <div class="col-sm-3">
+            <div class="col-sm-6">
                 <!-- <h2>Hospital LOGO here</h2> -->
                 <img src="../assets/imgs/logo.jpeg" width="350">
             </div>
-            <div class="col-sm-4 d-gray-sec">
+            <div class="col-sm-6 d-gray-sec">
                 <form action="login_submit.php" class="navbar-form navbar-left" role="search" method="POST"> 
                     <h3>Please Login to Continue!<h3>
                     <div class="form-group">

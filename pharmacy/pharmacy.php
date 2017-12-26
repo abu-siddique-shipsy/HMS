@@ -9,7 +9,12 @@ $result = $DBcon->query($query);
 
 ?>
 <!-- <link rel="stylesheet" type="text/css" href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables.css"> -->
-<div class="left_not_pan">
+<style type="text/css">
+	.container{
+		margin-right: 180px;
+	}
+</style>
+<div class="right_not_pan">
 	<h4>Current Notifications</h4>
 	<br><br>
 	<div class="requirements">
@@ -20,20 +25,6 @@ $result = $DBcon->query($query);
 <div class="container">
 	<div class="row">
 		<div class="col-md-4">
-			<div class="panel panel-default">
-				<div class="panel-body">
-					<select class="form-control select_box">
-						<option>Medicine Name</option>
-						<?php while ($exe = $result->fetch_assoc()) {
-        				echo "<option value=".$exe['id'].">".$exe['medicine_name']."</option>";
-	        			}
-	        			$result->data_seek(0);
-	        			?>
-
-					</select>
-
-				</div>
-			</div>
 			<div class="panel panel-default">
 				<div class="panel-body">
 					<button type="button" class="btn btn-warning btn-lg" data-toggle="modal" data-target="#external">External</button>
