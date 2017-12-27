@@ -70,21 +70,40 @@ $result = $DBcon->query($query);
       </div>
       <div class="modal-body">
       	<div class="row">
-      		<div class="col-md-4">
-      			<select class="form-control">
-      				<option>Medicine Name</option>
-      			</select>
+      		<div class="col-md-12">
+      			<input type="text" id="grn" placeholder="GRN Number" class="form-control">
       		</div>
-      		<div class="col-md-4">
-      			<input type="text" placeholder="Qty" class="form-control">
+      	</div>
+      	<div class="row">
+      		<div class="col-md-12">
+      			<input type="text" id="medi_type" placeholder="Medicine Type" class="form-control">
       		</div>
-      		<div class="col-md-4">
-      			<button type="button" class="btn">Add</button>	
+      	</div>
+      	<div class="row">
+      		<div class="col-md-12">
+      			<input type="text" id="medi_brand" placeholder="Medicine brand" class="form-control">
       		</div>
-        	
-        </div>
+      	</div>
+      	<div class="row">
+      		<div class="col-md-12">
+      			<input type="text" id="medi_nam" placeholder="Medicine Name" class="form-control">
+      		</div>
+      	</div>
+        <div class="row">
+      		<div class="col-md-12">
+      			<input type="text" id="quant" placeholder="Quantity" class="form-control">
+      		</div>
+      	</div>
+      	<div class="row">
+      		<div class="col-md-12">
+      			<input placeholder="Expiry Date" class="form-control" type="text" onfocus="(this.type='date')"  id="exp_date"> 
+      		</div>
+      	</div>
+        
       </div>
       <div class="modal-footer">
+      	<label id="alert_med"></label>
+      	<button type="button" class="btn btn-default" id="add_med_into_inventory">Add</button>
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
       </div>
     </div>
@@ -252,6 +271,17 @@ $(document).ready(function() {
 	var row = "";
 	var medicines = [];
 	var reg_id = 0;
+	$('#add_med_into_inventory').on('click',function(){
+		var to_inventrory = {
+			'grn' : $('#grn').val(),
+			'type' : $('#medi_type').val(),
+			'brand' : $('#medi_brand').val(),
+			'name' : $('#medi_nam').val(),
+			'qty' : $('#quant').val(),
+			'exp' : $('#exp_date').val()
+		};
+		add_to_inventory(to_inventrory);
+	});
 	$(document).on('click','.med_save_ot',function(){
 		dispatch_ot_meds($(this).val());
 	});
@@ -441,6 +471,19 @@ $(document).ready(function() {
 		data +=		  '</div>';
 		data +=		'</div>';
 		$('body').append(data);
+    }
+    function add_to_inventory(data)
+    {
+    	$.ajax({
+			url: '<?php echo pharmacy;?>',
+			method : 'POST',
+			dataType : 'json',
+			data: {'update_inventory': 1, 'data' : JSON.stringify(data)},
+			success: function(response) 
+			{
+				$('#alert_med').html(response.alert);			
+			}
+		});
     }
 } );
 </script>

@@ -1,3 +1,9 @@
+#pre_process{
+  vertical-align: middle !important;
+  text-align: center;
+  width: 100%;
+  background-color: #E8EEF2;
+}
 .sample{
   max-height: 50%;
   overflow: auto;
@@ -89,14 +95,16 @@
   color: #fff;
 }
 .right_not_pan{
+  text-align: center;
   border-style: inset;
   position: absolute;
   right: 0px;
-  background-color: #fff;
+  background-color: #364051;
   /*top: 200px;*/
-  padding: 10px;
+  color: #fff;
+  /*padding: 10px;*/
   width: 180px;
-  height: 85%;
+  height: 100%;
   max-height: 100%;
   overflow-y: auto;
   overflow-x: none;

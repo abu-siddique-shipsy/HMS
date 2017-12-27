@@ -14,8 +14,18 @@ $result1 = $DBcon->query($query1);
 td{
 	font-size: 20px;
 }
+.container-fluid{
+		margin-right: 180px;
+	}
 </style>
-
+<div class="right_not_pan">
+	<h4>Patients in Waiting Hall</h4>
+	<br><br>
+	<div class="waiting">
+		
+	</div>
+	
+</div>
 <div id="medicine" class="modal fade" role="dialog">
   <div class="modal-dialog">
 
@@ -263,12 +273,22 @@ td{
 		</div>
 	</div>
 </div>
-		
-<div class="row">
-	<div class="col-sm-3 pad">
-		<div class="panel panel-default">
-		  	<div class="panel-body">
-		  		<div class="form-group">
+
+
+<div id="history_modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Prescribed Medicines</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+        	<div class="col-sm-12">
+	        	<div>
+	        	<div class="form-group">
 					<label>History</label>
 
 					<table class="table">
@@ -281,10 +301,22 @@ td{
 						</tbody>
 					</table>
 				</div>
-			</div>
-		</div>
-	</div>
-	<div class="col-sm-9 pad">
+	        	</div>
+        	</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+<div style="text-align: center; margin-bottom: -40px; ">
+	<button class="btn btn-default" data-toggle="modal" data-target="#history_modal">Click of History</button>
+</div>
+<div class="row">
+	<div class="col-sm-12 pad">
 		<div class="panel panel-default">
 		  	<div class="panel-body">
 		  		<table class="table table-hover">
@@ -324,7 +356,7 @@ $(document).ready(function(){
 	var medicines = [];
 	var reg_id = 0;
 	var tests = [];
-
+	get_waiting_list();
 	$('#pat_id').on('change',function(){
 		value = $(this).val();
 		$.ajax({
@@ -346,6 +378,7 @@ $(document).ready(function(){
 			  		var options = "";
 			  		var result = "";
 			  		reg_id = value;
+			  		
 			  		for(var i = 0 ; i< response.complaint.length ; i++)
 			  		{
 			  			$('#alert').html("");
@@ -543,6 +576,20 @@ $(document).ready(function(){
 	});
 
 });
+function get_waiting_list(reg_id)
+{
+	$.ajax({
+		  url: '<?php echo patientDetails1; ?>',
+		  method : 'post',
+		  dataType : 'json',
+		  data: {'waiting_list' : 1},
+		  success: function(response) {
+			
+		  	console.log(response);
+		  	
+		  }
+		 });
+}
 </script>
 <!-- "The Amount of $amt for Registration Id $rid is already Charged. Do you want to charge Again?"; -->
 <!-- "The Amount of $amt for Registration Id $rid is Successfully Charged"; -->

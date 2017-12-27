@@ -68,7 +68,8 @@ class register{
 		if($res)
 		{
 			$sql6 = "update rooms set status = 1 where room_id = '$room_id'";
-			$res = $con->query($query);
+			$this->query = $sql6;
+			$res = $con->query($sql6);
 			if($res)
 			{
 				$amt = amountController::get_room_amt($room_id);
@@ -81,6 +82,20 @@ class register{
 	function send_mail()
 	{
 		$this->mail_result = mailer::registration($this->reg_id);
+	}
+	function waiting_list()
+	{
+		$query = "SELECT name,at_time,in_at FROM registration rg join patient pt on pt.id = rg.patient_id where is_inp = 0";
+		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
+		$result = $con->query($query);
+		$re = [];
+		while ($exe = $result->fetch_assoc())
+		{
+			$re[] = $exe;
+		}
+		
+		$con->close();
+		return $re;
 	}
 	
 }

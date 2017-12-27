@@ -69,6 +69,13 @@ if(isset($_POST['pat_reg']))
 	
 	
 }
+if(isset($_POST['waiting_list']))
+{
+	$data =  $_POST['waiting_list'];
+	$register_obj = register::waiting_list($data);
+	$response->data = $register_obj;
+	$response->status = "success";
+}
 else if(isset($_POST['get_room']))
 {
 	if(isset($_POST['data']))

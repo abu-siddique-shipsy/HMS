@@ -5,7 +5,9 @@ include root.'/assets/bootstrap.php';
 // include root.'/Common/header.php';
 ?>
 <link rel="stylesheet" type="text/css" href="../assets/style.css">
-
+<div class="col-sm-12" id="pre_process" style="display: none">
+    <img src="../assets/imgs/loader.webp" height="100%">
+</div>
 <div id="myModal" class="modal fade" role="dialog">
   <div class="modal-dialog">
 
@@ -347,7 +349,7 @@ $( document ).ready(function() {
         $('.consul').html("<option selected disabled>Select Doctor</option>");
         for(var i = 0 ; i<response.data.length;i++)
         {
-          $('.consul').append('<option value="'+response.data[i].staff_id+'">Dr. '+ response.data[i].name+'</option>');
+          $('.consul').append('<option value="'+response.data[i].staff_id+'">Dr. '+ response.data[i].f_name+" "+ response.data[i].l_name+'</option>');
         }
       }
         
@@ -488,11 +490,12 @@ $( document ).ready(function() {
   });
   $('#final_sub_op').click(function () {
     $('#op').modal('hide');
-    doctors = $('.consul :selected').val();
-    doctors_text = $('.consul :selected').text();
+    doctors = $('#op .consul :selected').val();
+    doctors_text = $('#op .consul :selected').text();
     $('.con').html(doctors_text);
     complaint = $('#comp').val();
     $('.com').html(complaint);
+    $('#pre_process').css('display','block');
      if(doctors)
      {
         var datum = {'pat_id' : pat_id , 'cons_id' : doctors , 'complaint' : complaint};
@@ -502,7 +505,7 @@ $( document ).ready(function() {
         dataType: 'JSON',
         data: {'inp_pat' : 0, 'data' : datum},
         success: function(response) {
-          
+            $('#pre_process').css('display','none');
             reg_id = response.data.reg_id; 
             $('.reg_id').html(reg_id);
             $('.container').css('display','block');
@@ -513,13 +516,14 @@ $( document ).ready(function() {
   });
   $('#final_sub_ip').click(function () {
     $('#ip').modal('hide');
-    doctors = $('.consul :selected').val();
+    doctors = $('#ip .consul :selected').val();
     room_id = $('#room').val();
-    doctors_text = $('.consul :selected').text();
+    doctors_text = $('#ip .consul :selected').text();
     $('.con').html(doctors_text);
     complaint = $('#comp1').val();
     ins_num = $('#ins_num').val();
     $('.com').html(complaint);
+    $('#pre_process').css('display','block');
      if(doctors)
      {
         var datum = {'pat_id' : pat_id , 'cons_id' : doctors , 'complaint' : complaint , 'ins_num' : ins_num , 'room' : room_id};
@@ -529,7 +533,7 @@ $( document ).ready(function() {
         dataType: 'JSON',
         data: {'inp_pat' : 1, 'data' : datum},
         success: function(response) {
-          
+          $('#pre_process').css('display','none');
             reg_id = response.data.reg_id; 
             $('.reg_id').html(reg_id);
             $('.container').css('display','block');

@@ -37,6 +37,33 @@ class pharmacy{
 		
 		return $result;
 	}
+	function update_inventory($data)
+	{
+		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
+		$date = date('d-m-y',strtotime($data->exp));
+		if($date < date('d-m-y')) return "Expiry Should be More than present date";
+		$query = "INSERT into pharmacy_inventory (grn,medicine_type,medicine_brand,medicine_name,qty,expiry_date) values ('$data->grn','$data->type','$data->brand','$data->name','$data->qty','$date')";
+		
+		$result = $con->query($query);
+		self::update_medicine($data,$date);
+		$re = "";
+		if($result) $re = "Added Successfully"; 
+		else $re = "Addition Failed";
+		$con->close();
+		return $re;	
+	}
+	function update_medicine($data,$date)
+	{
+		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
+		$query = "INSERT into medicines (med_type,med_brand,medicine_name,total_available,expiry_date) values ('$data->type','$data->brand','$data->name','$data->qty','$date')";
+		// print_r($query);
+		$result = $con->query($query);
+		$re = "";
+		if($result) $re = "Added Successfully"; 
+		else $re = "Addition Failed";
+		$con->close();
+		return $re;	
+	}
 	function get_med_for_reg_id($value)
 	{
 		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);

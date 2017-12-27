@@ -7,15 +7,14 @@ class mailer{
 	function registration($reg_id)
 	{
 		$query = "Select pt.name as pat_name,pt.email as pat_email, stf.email as doc_email,reg.at_time from registration reg join patient pt on pt.id = reg.patient_id left join staff stf on stf.staff_id  = reg.consultant_id where reg.registration_id = '$reg_id'";
-        print_r($query);
+        
 		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
 		$result = $con->query($query);
 		$data = $result->fetch_assoc();
 		$headers  = 'MIME-Version: 1.0' . "\r\n";
     	$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
-        print_r($query);
     	$msg = "Hello $data[pat_name], <br>
-    			Your Registration is successful.<br> 
+    			Your Registration is successful with ID $reg_id <br> 
     			Your Booking Has been Confirmed at $data[at_time] <br>
     			Please be 5 mins before time.<br>";
     	

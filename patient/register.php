@@ -10,7 +10,9 @@ $dept = $DBcon->query("select * from departments");
 $consul = $DBcon->query("select * from staff where staff_type=10");
 
 ?>
-
+<div class="col-sm-12 " id="pre_process">
+    <img src="../assets/imgs/loader.webp" width="350">
+</div>
 <div class="container-fluid">
 		<div class="panel panel-default">
 		  <div class="panel-heading">Personal Details</div>

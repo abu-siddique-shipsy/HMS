@@ -133,6 +133,22 @@ if(isset($_GET['req_list_all']))
 	$response->status = "success"; 
 	// else $response->status = "failed";
 }
+if(isset($_POST['update_inventory']))
+{
+	
+	$data = json_decode($_POST['data']);
+	$response->alert = "";
+	foreach ($data as $key => $value) {
+		// print_r($value);
+		if($value == ""){
+			$response->alert = "$key Cannot be empty";break;
+		}
+	}
+	if($response->alert == "")
+	{
+		$response->alert = pharmacy::update_inventory($data);
+	}
+}
 $DBcon->close();
 echo json_encode($response);
 ?>
