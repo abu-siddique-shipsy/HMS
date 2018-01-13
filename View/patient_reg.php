@@ -580,8 +580,11 @@ function checkPT(pt)
               $(".pat_ph_num").html(pat_ph_num);
               
               $('#patientid').modal('hide');
+
               <?php if(!$_GET['pat_id']){ ?>
               $('#confirm_pat').modal('show');
+              <?php }else{ ?>
+                get_latest_registration(pt);
               <?php } ?>
           }
           else
