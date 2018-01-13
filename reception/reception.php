@@ -77,6 +77,7 @@ $result = $DBcon->query($query);
 		<div class="panel panel-body" id="patient_det" style="display: none">
 			<table class="table table-hover" id="pat">
 			<thead id="head">
+				<th>Patient Id</th>
 				<th>Name</th>
 				<th>Date Of Birth</th>
 				<th>Sex</th>
@@ -111,6 +112,10 @@ $result = $DBcon->query($query);
 
 <script type="text/javascript">
 $(document).ready(function(){
+	$('#pat tbody').on( 'click', 'tr', function (){
+		window.location.href = "/View/patient_reg.php?pat_id="+($(this).find('td').html());
+		
+	});
 	var type = 0;
 	$('.type').on('change',function(){
 
@@ -139,30 +144,19 @@ $(document).ready(function(){
 	});
 	function patient(value)
 	{
-		// head = "<th>Name</th><th>Date Of Birth</th><th>Sex</th><th>Phone Number</th><th>Number of Visits</th><th>Last Visit</th>";
-		$('#pat').DataTable({   
-    	"ajax"     :     {
-    	"url"	   :  	"<?php echo patientDetails; ?>",  
-    	"contentType" : "application/json",
-    	"method"   :  		"post",
-    	"data"	   :  function(){
-    			return {'test':1};
-    			}
-
-    	  
-    	},
-    	"columns"     :     [  
-                {     "data"     :     "name"     },  
-                {     "data"     :     "dob"},  
-                {     "data"     :     "sex"},  
-                {     "data"     :     "phone_number"     },  
-                {     "data"     :     "num_vis"},  
-                {     "data"     :     "last_visit"}  
-           ],
-
-           
-    	});
-  		// $('#head').html(head);	
+		$.ajax({
+		  url: "<?php echo patientDetails; ?>",
+		  method : 'post',
+		  dataType: 'JSON',
+		  success: function(response) {
+		  	if(response.status="success")
+			{
+				initializeDataTable(response.data);		
+			}
+		  	
+		  }
+		});
+		
   		$('#patient_det').css('display','block');	
     }	
 	
@@ -191,7 +185,7 @@ $(document).ready(function(){
            
     	});
   		// $('#head').html(head);	
-  		$('#consultant_det').css('display','block');	
+  		$('#pat').css('display','block');	
 		// $.ajax({
 		//   url: '<?php //echo ConsultantDetails; ?>',
 		//   method : 'post',
@@ -226,6 +220,24 @@ $(document).ready(function(){
 
 		//   }		
 		// });	
+	}
+	function initializeDataTable(data)
+	{
+		$('#pat').DataTable({   
+    	"data": data,
+        "destroy": true,
+    	"columns"     :     [  
+    			{     "data"     :     "id"     },  
+                {     "data"     :     "name"     },  
+                {     "data"     :     "dob"},  
+                {     "data"     :     "sex"},  
+                {     "data"     :     "phone_number"     },  
+                {     "data"     :     "num_vis"},  
+                {     "data"     :     "last_visit"}  
+           ],
+
+           
+    	});
 	}
 });
 

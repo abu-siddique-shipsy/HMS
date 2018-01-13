@@ -21,6 +21,16 @@ class register{
 		$con->close();
 		$this->reg_id = $exe['registration_id'];
 	}
+	function getLatestReg($pat)
+	{
+		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);	
+		$query = "SELECT * from registration rg join registration_flow rf on rf.registration_id = rg.registration_id left join staff stf on stf.staff_id = rg.consultant_id where rg.patient_id = '$pat'  order by rg.in_at DESC limit 1";
+		// print_r($query);
+		$result = $con->query($query);
+		$exe = $result->fetch_object();
+		$con->close();
+		return $exe;
+	}
 	function register_compliant($data)
 	{
 		$query = "insert into registration_flow (patient_id,registration_id,complaint) values ('$this->pat_id','$this->reg_id','$data')";
@@ -40,8 +50,7 @@ class register{
 		$exe = $res->fetch_array();
 		
 		foreach ($data as $key => $value) {
-			$query = "UPDATE patient set `$key` = '$value' where id = '$exe[id]'";
-			// echo "$key => $value";
+			$query = "UPDATE patient set `$key` = '$value' where id = '$exe[id]'"	;
 			$con->query($query);
 		}
 		$con->close();	
@@ -96,6 +105,22 @@ class register{
 		
 		$con->close();
 		return $re;
+	}
+	function addVitals($data)
+	{
+		$query = "insert into vitals (reg_id) values ($data[reg_id])";
+		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
+		$con->query($query);
+		$query = "SELECT * FROM vitals Where reg_id = $data[reg_id] order by created_at DESC";
+		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
+		$result = $con->query($query);
+		$exe = $result->fetch_object();
+		foreach ($data as $key => $value) {
+			$query = "UPDATE vitals set `$key` = '$value' where vit_id = '$exe->vit_id'"	;
+			$con->query($query);
+		}
+		$con->close();	
+		return true;
 	}
 	
 }

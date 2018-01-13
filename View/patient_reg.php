@@ -3,6 +3,7 @@
 include __DIR__.'/../config.php';
 include root.'/assets/bootstrap.php';
 // include root.'/Common/header.php';
+
 ?>
 <link rel="stylesheet" type="text/css" href="../assets/style.css">
 <div class="col-sm-12" id="pre_process" style="display: none">
@@ -98,7 +99,7 @@ include root.'/assets/bootstrap.php';
 				            <label class="col-md-2 control-label" >DOB
 				            </label>
 				            <div class="col-md-10">
-				            <input placeholder="Date Of Birth" class="textbox-n form-control" type="text" onfocus="(this.type='date')"  id="dob1"> 
+				            <input class="form-control" type="date" id="dob1" min="2000-01-02" max="<?php echo date('Y-m-d')?>"> 
 				            </div>
 				        </div>
 
@@ -155,8 +156,7 @@ include root.'/assets/bootstrap.php';
       <div class="modal-body">
         <div class="row">
         	<div class="col-md-12">
-            <button class="btn" id="inp_pat">WP</button> <label>Or</label>
-        		<button class="btn" id="op_pat">OP</button>
+            
       		</div>
       	</div>
       </div>
@@ -248,6 +248,30 @@ include root.'/assets/bootstrap.php';
 
   </div>
 </div>
+<div id="gatherDetails" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">Gather Details</div>
+        </div>
+        
+      <div class="modal-body">
+        <form action="<?php echo patientDetails1 ?>" method="POST">
+          <input type="hidden" name="vitals" value="1">
+          <input type="hidden" name="reg_id" class="reg_id">
+          <input type="text" class="form-control" placeholder="height" name="height">
+          <input type="text"  placeholder="weight" class="form-control" name="weight">
+          <input type="text"  placeholder="BP" class="form-control" name="bp">
+          <button type="submit" class="btn btn-success center-block" >Submit</button>
+        </form>
+      </div>
+      <div class="modal-footer">
+        
+      </div>
+    </div>
+
+  </div>
+</div>
 <div id="confirm_pat" class="modal fade" role="dialog">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -278,57 +302,42 @@ include root.'/assets/bootstrap.php';
     </div>
       </div>
       <div class="modal-footer center-block">
-        <button type="button" class="btn " id="valid">OK</button>
+        <button class="btn" id="inp_pat">Inpatient</button>
+        <button class="btn" id="op_pat">OutPatient</button>
         <button type="button" class="btn " id="not_valid">NOT VALID</button>
       </div> 
     </div>
 
   </div>
 </div>
-<div class="container" style="display: none">
+<div class="container">
   <div id="printer">
   <div class="panel">
   <link rel="stylesheet" type="text/css" href="../assets/style.css">
   <div class="row">
-    <div class="col-md-3">
-    <label>Patient ID<span class="pat_id"></span></label>
-    </div>
-    <div class="col-md-3 col-md-offset-6 pull-right">
-    <label>Registration ID<span class="reg_id"></span></label>
-    </div>
-  </div>
-  <br>
-  <br>
-  <div class="row">
-    <div class="col-md-6 col-md-offset-3">
-      <div class="panel panel-default" style="text-align: left">
-        <div class="panel-body">
-          <div class="col-md-6">
-              
-              <label>Name</label><br>
-              <label>Date Of Birth</label><br>
-              <label>Gender</label><br>
-              <label>Contact Number</label><br>
-              <label>Complaint</label><br>
-              <label>Doctor</label><br>
-              
-              
-            </div>
-            <div class="col-md-6">
-              
-              <label class="pat_name">: </label><br>
-              <label class="pat_dob">: </label><br>
-              <label class="pat_gen">: </label><br>
-              <label class="pat_ph_num">: </label><br>
-              <label class="com">: </label><br>
-              <label class="con">: </label><br>
- 
+    <div class="col-md-6 pad">
+      <table class="table table-default" id="patientData">
+        <tr><td>Patient ID</td><td><span class="pat_id"></span></td></tr>
+        <tr><td>Name</td><td><span class="pat_name"></span></td></tr>
+        <tr><td>DOB</td><td><span class="pat_dob"></span></td></tr>
+        <tr><td>Gen</td><td><span class="pat_gen"></span></td></tr>
+        <tr><td>Phone Number</td><td><span class="pat_ph_num"></span></td></tr>
 
-            </div>
-        </div>
-      </div>
+      </table>
+      <button type="button" class="btn btn-default" data-toggle="modal" data-target="#patientid">Change Id</button>    
+    </div>
+    <div class="col-md-6 pad">
+      <table class="table table-default" id="regData">
+        <tr><td>Registration ID</td><td><span class="reg_id"></span></td></tr>
+        <tr><td>Complaint</td><td><span class="com"></span></td></tr>
+        <tr><td>Consultant</td><td><span class="con"></span></td></tr>
+      </table>
+      <button type="button" class="btn btn-default" data-toggle="modal" data-target="#confirm_pat">Change Id</button>    
+      <button type="button" class="btn btn-default" data-toggle="modal" data-target="#gatherDetails">Gather Vaitals</button>    
     </div>
   </div>
+  <br>
+  <br>
   </div>
   </div>
   <button type="button" class="btn btn-default" onclick='printDiv("printer");'>Print</button>
@@ -338,6 +347,12 @@ include root.'/assets/bootstrap.php';
 
 <script type="text/javascript">
 $( document ).ready(function() {
+<?php if($_GET['pat_id']){ ?>
+      var pat_id = <?php echo $_GET['pat_id']; ?>;
+      get_latest_registration(pat_id);
+<?php }else{ ?>
+      var pat_id = 0; 
+<?php } ?>
   $.ajax({
       url: "<?php echo patientDetails1; ?>",
       method : 'post',
@@ -355,8 +370,9 @@ $( document ).ready(function() {
         
       }
     });
+  checkPT(pat_id);
   var pat_name = "";
-  var pat_id = 0;
+  
   var pat_dob = 0;
   var pat_gen = "";
   var pat_ph_num = 0;
@@ -364,41 +380,11 @@ $( document ).ready(function() {
   var complaint = "";
   var doctors = 0;
   var reg_id = 0;
+  if (!pat_id) 
     $('#myModal').modal('show');
 
 	$('#checkPt_id').click(function () {
-		
-    $.ajax({
-      url: '<?php echo patientDetails1; ?>',
-      method : 'post',
-      dataType : 'json',
-      data: {'patient_id' : $('#pid').val()},
-      success : function(response){
-        if(response.status == "success")
-        {
-          if(response.data != 1)
-          {
-              pat_name = response.data[0].name;
-              pat_id = response.data[0].id;
-              pat_dob = response.data[0].dob;
-              pat_gen = response.data[0].sex;
-              pat_ph_num = response.data[0].phone_number;
-              $(".pat_name").html(pat_name);
-              $(".pat_id").html(pat_id);
-              $(".pat_dob").html(pat_dob);
-              $(".pat_gen").html(pat_gen);
-              $(".pat_ph_num").html(pat_ph_num);
-              
-              $('#patientid').modal('hide');
-              $('#confirm_pat').modal('show');
-          }
-          else
-          {
-              $('#error').html("Patient Id Not available");
-          }
-        }
-      }
-    });
+		checkPT($('#pid').val());
 	});
    $('#pat_det_sub').click(function () {
   //   // $('#patientdet').modal('hide');
@@ -408,6 +394,12 @@ $( document ).ready(function() {
       pat_ph_num = $('#ph_num').val();
       pat_email = $('#email').val();
       pat_ref = $('#ref').val();
+      
+      if(!validateEmail(email))
+      {
+        $('#email').focus();
+        $('#email').val('Enter A Valid Email');return;
+      } 
 
       pat_add = $('#add1').val();
       console.log(pat_name);
@@ -458,10 +450,12 @@ $( document ).ready(function() {
       $('#patientid').modal('show');
   })
 	$('#op_pat').click(function () {
+    $('#confirm_pat').modal('hide');
 		$('#patype').modal('hide');
   		$('#op').modal('show');
 	})
   $('#inp_pat').click(function () {
+    $('#confirm_pat').modal('hide');
     $('#patype').modal('hide');
     $.ajax({
       url: "<?php echo patientDetails1; ?>",
@@ -489,6 +483,7 @@ $( document ).ready(function() {
       
   });
   $('#final_sub_op').click(function () {
+    $('.container').hide();
     $('#op').modal('hide');
     doctors = $('#op .consul :selected').val();
     doctors_text = $('#op .consul :selected').text();
@@ -505,16 +500,18 @@ $( document ).ready(function() {
         dataType: 'JSON',
         data: {'inp_pat' : 0, 'data' : datum},
         success: function(response) {
-            $('#pre_process').css('display','none');
+            $('#pre_process').hide();
             reg_id = response.data.reg_id; 
             $('.reg_id').html(reg_id);
-            $('.container').css('display','block');
+            $('.container').show();
         }
         
       });  
      } 
   });
   $('#final_sub_ip').click(function () {
+    
+    $('.container').hide();
     $('#ip').modal('hide');
     doctors = $('#ip .consul :selected').val();
     room_id = $('#room').val();
@@ -533,10 +530,11 @@ $( document ).ready(function() {
         dataType: 'JSON',
         data: {'inp_pat' : 1, 'data' : datum},
         success: function(response) {
-          $('#pre_process').css('display','none');
+          $('#pre_process').hide();
             reg_id = response.data.reg_id; 
             $('.reg_id').html(reg_id);
-            $('.container').css('display','block');
+            $('.reg_id').val(reg_id);
+            $('.container').show();
         }
         
       });  
@@ -553,4 +551,74 @@ function printDiv(divName) {
    document.body.innerHTML = originalContents;
    }
 
+function validateEmail(email) 
+{
+  var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(email);
+}
+function checkPT(pt)
+{
+  $.ajax({
+      url: '<?php echo patientDetails1; ?>',
+      method : 'post',
+      dataType : 'json',
+      data: {'patient_id' : pt},
+      success : function(response){
+        if(response.status == "success")
+        {
+          if(response.data != 1)
+          {
+              pat_name = response.data[0].name;
+              pat_id = response.data[0].id;
+              pat_dob = response.data[0].dob;
+              pat_gen = response.data[0].sex;
+              pat_ph_num = response.data[0].phone_number;
+              $(".pat_name").html(pat_name);
+              $(".pat_id").html(pat_id);
+              $(".pat_dob").html(pat_dob);
+              $(".pat_gen").html(pat_gen);
+              $(".pat_ph_num").html(pat_ph_num);
+              
+              $('#patientid').modal('hide');
+              <?php if(!$_GET['pat_id']){ ?>
+              $('#confirm_pat').modal('show');
+              <?php } ?>
+          }
+          else
+          {
+              $('#error').html("Patient Id Not available");
+          }
+        }
+      }
+    });
+}
+function get_latest_registration(pt)
+{
+  $.ajax({
+      url: '<?php echo patientDetails1; ?>',
+      method : 'post',
+      dataType : 'json',
+      data: {'get_last_reg': 1 ,'pat_id' : pt},
+      success : function(response){
+        console.log(response);
+        $('.reg_id').html(response.data.registration_id);
+        $('.reg_id').val(response.data.registration_id);
+        $('.con').html("Dr "+response.data.f_name+" "+response.data.l_name);
+        $('.com').html(response.data.complaint);
+        var data = "";
+        if(parseInt(response.data.is_inp))
+        {
+
+          data = "<tr><td>Patient Type</td><td>In Patient</td></tr>";
+          data += "<tr><td>Room Number</td><td>"+response.data.room_id+"</td></tr>";
+          
+        }
+        else{
+          data = "<tr><td>Patient Type</td><td>Out Patient</td></tr>";
+        }
+        $('#regData').append(data);
+
+      }
+  });
+}
 </script>

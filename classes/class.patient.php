@@ -12,7 +12,7 @@ class patient{
 		// echo $id;
 		
 			
-		$query = "SELECT rg.room_id,rg.is_inp,rg.registration_id as reg_id,id,sex,name,address,phone_number,dob from patient pt join registration rg on rg.patient_id = pt.id where rg.registration_id = $id group by pt.id";
+		$query = "SELECT pt.id,rg.room_id,rg.is_inp,rg.registration_id as reg_id,id,sex,name,address,phone_number,dob from patient pt join registration rg on rg.patient_id = pt.id where rg.registration_id = $id group by pt.id";
 		$result_array= [];
 		$result = $DBcon->query($query);
 		while ($exe = $result->fetch_assoc()) {

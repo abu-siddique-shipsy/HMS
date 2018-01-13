@@ -6,7 +6,7 @@ include __DIR__.'/../config.php';
 include Class_path.'class.staff.php';
 include Class_path.'class.register.php';
 include Class_path.'class.structure.php';
-// include Class_path.'class.inpatient.php';
+include Class_path.'class.patient.php';
 $DBcon = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
 $response = new stdClass();
 if(isset($_POST['patient_id']))
@@ -183,6 +183,23 @@ if(isset($_POST['get_wards']))
 {	
 	$data = $_POST['get_wards'];
 	$response->data = structure::get_wards($data);
+}
+if(isset($_POST['get_last_reg']))
+{
+	$data =  $_POST['pat_id'];
+	if($data)
+	{
+		$register_obj = register::getLatestReg($data);
+	}
+	$response->data = $register_obj;
+	$response->status = "success";
+}
+if(isset($_POST['vitals']))
+{
+	$data =  $_POST;
+	register::addVitals($data);
+	$patient = patient::get_patient_with_reg_id($data['reg_id']);
+	header('Location: '.domain.'/View/patient_reg.php?pat_id='.$patient['id']);
 }
 
 echo json_encode($response);
