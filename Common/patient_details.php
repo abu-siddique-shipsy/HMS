@@ -30,6 +30,7 @@ while ($exe = $result->fetch_assoc()) {
 }
 
 if (isset($_POST['complaint'])) {
+
 	$query = "SELECT * FROM registration_flow where patient_id= '$patient_id' order by on_date DESC";
 	$query1 = "SELECT * FROM registration_flow where registration_id = '$id'";
 	$result1 = $DBcon->query($query1);
@@ -40,6 +41,14 @@ if (isset($_POST['complaint'])) {
 	while ($exe = $result->fetch_assoc()) {
 		$result_array1[] = $exe;
 		$response->complaint = $result_array1;
+	}
+	if (isset($_POST['single'])) 
+	{
+		$query1 = "SELECT * FROM registration_flow where registration_id = '$id' ";
+		$result = $DBcon->query($query1);
+		$exe = $result->fetch_object(); 
+		$response->complaint = $exe;
+		
 	}
 }
 if (isset($_POST['get_proc'])) {
