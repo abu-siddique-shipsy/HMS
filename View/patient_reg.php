@@ -114,8 +114,11 @@ include root.'/assets/bootstrap.php';
 				        <div class="form-group">
 				            <label class="col-md-2 control-label" >Phone Number
 				            </label>
-				            <div class="col-md-10">
-				            <input type="text" class="form-control" id="ph_num">
+                    <div class="col-md-2">
+                    <input type="text" class="form-control" id="ph_num_cc" placeholder="CC">
+                    </div>
+				            <div class="col-md-8">
+				            <input type="text" class="form-control" id="ph_num" placeholder="Number">
 				            </div>
 				        </div>
                 <div class="form-group">
@@ -190,11 +193,17 @@ include root.'/assets/bootstrap.php';
 				        <div class="form-group">
 				        	
 				            <div class="col-md-12">
-                      <select class="consul form-control">
+                      <select class="consul form-control" id="op_doc">
 				                <option>Doctor</option>
                       </select>
 				            </div>
 				        </div>				   
+                <div class="form-group">
+                  
+                    <div class="col-md-12" id="doctor_schedule">
+                      
+                    </div>
+                </div>           
 
 				        <div class="form-group">
 				            <button type="button" class="btn btn-success center-block" id="final_sub_op">Submit</button>
@@ -327,10 +336,13 @@ include root.'/assets/bootstrap.php';
       <button type="button" class="btn btn-default" data-toggle="modal" data-target="#patientid">Change Id</button>    
     </div>
     <div class="col-md-6 pad">
-      <table class="table table-default" id="regData">
+      <table class="table table-default" >
         <tr><td>Registration ID</td><td><span class="reg_id"></span></td></tr>
         <tr><td>Complaint</td><td><span class="com"></span></td></tr>
         <tr><td>Consultant</td><td><span class="con"></span></td></tr>
+        <tbody id="regData">
+          
+        </tbody>
       </table>
       <button type="button" class="btn btn-default" data-toggle="modal" data-target="#confirm_pat">Change Id</button>    
       <button type="button" class="btn btn-default" data-toggle="modal" data-target="#gatherDetails">Gather Vaitals</button>    
@@ -349,7 +361,6 @@ include root.'/assets/bootstrap.php';
 $( document ).ready(function() {
 <?php if($_GET['pat_id']){ ?>
       var pat_id = <?php echo $_GET['pat_id']; ?>;
-      get_latest_registration(pat_id);
 <?php }else{ ?>
       var pat_id = 0; 
 <?php } ?>
@@ -385,17 +396,18 @@ $( document ).ready(function() {
 
 	$('#checkPt_id').click(function () {
 		checkPT($('#pid').val());
+    pat_id = $('#pid').val();
 	});
    $('#pat_det_sub').click(function () {
   //   // $('#patientdet').modal('hide');
       pat_name = $('#name1').val();
       pat_dob = $('#dob1').val();
       pat_gen = $("input[name='gender']:checked").val();
-      pat_ph_num = $('#ph_num').val();
+      pat_ph_num = $('#ph_num_cc').val() + " " + $('#ph_num').val();
       pat_email = $('#email').val();
       pat_ref = $('#ref').val();
       
-      if(!validateEmail(email))
+      if(!validateEmail(pat_email))
       {
         $('#email').focus();
         $('#email').val('Enter A Valid Email');return;
@@ -487,13 +499,15 @@ $( document ).ready(function() {
     $('#op').modal('hide');
     doctors = $('#op .consul :selected').val();
     doctors_text = $('#op .consul :selected').text();
+    schedule = $('input[name="optradio"]:checked').val()
+    console.log(pat_id);
     $('.con').html(doctors_text);
     complaint = $('#comp').val();
     $('.com').html(complaint);
     $('#pre_process').css('display','block');
      if(doctors)
      {
-        var datum = {'pat_id' : pat_id , 'cons_id' : doctors , 'complaint' : complaint};
+        var datum = {'pat_id' : pat_id , 'cons_id' : doctors , 'complaint' : complaint,'schedule' : schedule};
         $.ajax({
         url: "<?php echo patientDetails1; ?>",
         method : 'post',
@@ -504,6 +518,7 @@ $( document ).ready(function() {
             reg_id = response.data.reg_id; 
             $('.reg_id').html(reg_id);
             $('.container').show();
+            get_latest_registration(pat_id);
         }
         
       });  
@@ -530,15 +545,19 @@ $( document ).ready(function() {
         dataType: 'JSON',
         data: {'inp_pat' : 1, 'data' : datum},
         success: function(response) {
-          $('#pre_process').hide();
+          $('#pre_process').css('display','none');
             reg_id = response.data.reg_id; 
             $('.reg_id').html(reg_id);
             $('.reg_id').val(reg_id);
             $('.container').show();
+            get_latest_registration(pat_id);
         }
         
       });  
      } 
+  });
+  $('#op_doc').on('change',function(){
+    getSchedule($(this).val());
   });
 
 }); 
@@ -580,12 +599,10 @@ function checkPT(pt)
               $(".pat_ph_num").html(pat_ph_num);
               
               $('#patientid').modal('hide');
-
               <?php if(!$_GET['pat_id']){ ?>
               $('#confirm_pat').modal('show');
-              <?php }else{ ?>
-                get_latest_registration(pt);
               <?php } ?>
+              get_latest_registration(pt);
           }
           else
           {
@@ -614,14 +631,41 @@ function get_latest_registration(pt)
 
           data = "<tr><td>Patient Type</td><td>In Patient</td></tr>";
           data += "<tr><td>Room Number</td><td>"+response.data.room_id+"</td></tr>";
+          data += "<tr><td>Insurance Number</td><td>"+response.data.ins_num+"</td></tr>";
           
         }
         else{
-          data = "<tr><td>Patient Type</td><td>Out Patient</td></tr>";
+          data += "<tr><td>Patient Type</td><td>Out Patient</td></tr>";
+          data += "<tr><td>Scheduled At</td><td>"+response.data.at_time+"</td></tr>";
         }
-        $('#regData').append(data);
+        $('#regData').html(data);
 
       }
   });
+}
+function getSchedule($doc)
+{
+  $.ajax({
+      url: '<?php echo patientDetails1; ?>',
+      method : 'post',
+      dataType : 'json',
+      data: {'sched_doc_id': $doc },
+      success : function(response){
+        var rest = createSlots(response.data);
+        $('#doctor_schedule').html(rest);
+      }
+  });
+}
+function createSlots(data1)
+{
+  data = '<div class="row">';
+  for(var i = 0 ; i < data1.length;i++)
+  {    
+    data += '<div class="radio-inline">';
+    data += '<label><input type="radio" name="optradio" value="'+data1[i].slot_id+'">'+'From '+data1[i].frm_time+' to '+data1[i].to_time;+'</label>';
+    data += '</div>';
+  }  
+  data +='</div>';
+  return data;
 }
 </script>

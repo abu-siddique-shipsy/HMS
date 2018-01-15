@@ -39,22 +39,13 @@ if(isset($_POST['medicines']))
 	$response = "";
 	$amt = 0;
 	foreach ($request as $key => $value) {
-		$query = "insert into medicine_used (medicine_id,reg_id,qty) values ($value->id,$reg_id,$value->qty)";
+		$query = "insert into medicine_used (medicine_id,reg_id,qty,morning,afternoon,night,days) values ($value->id,$reg_id,$value->qty,$value->morning,$value->afternoon,$value->night,$value->days)";
+		// print_r($query);
 		$msg= $DBcon->query($query);
 		$result += $msg;
-		// if($msg) 
-		// {
-		// 	$amt += amountController::get_medicine_amt($value->id)*$value->qty;
-			
-		// }
 		if(($result-1) == ($key)) $response->status = "Success";
-		else $response->status = "Failure";
-		
+		else $response->status = "Failure";	
 	}
-	// if($amt)
-	// {
-	// 	amountController::add_amt(5,$reg_id,$amt,0);
-	// }
 }
 
 if(isset($_POST['Repeat_transact']))

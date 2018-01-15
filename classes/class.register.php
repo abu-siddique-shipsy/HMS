@@ -122,5 +122,12 @@ class register{
 		$con->close();	
 		return true;
 	}
-	
+	function at_time($time)
+	{
+		$this->at_time = date('H:i:s',strtotime($time));
+		$query = "update registration set at_time = '$this->at_time' where patient_id = '$this->pat_id' and registration_id =  '$this->reg_id'";
+		// print_r($query);
+		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
+		$res = $con->query($query);		
+	}
 }

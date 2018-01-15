@@ -7,6 +7,7 @@ include Class_path.'class.staff.php';
 include Class_path.'class.register.php';
 include Class_path.'class.structure.php';
 include Class_path.'class.patient.php';
+include Class_path.'class.physician.php';
 $DBcon = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
 $response = new stdClass();
 if(isset($_POST['patient_id']))
@@ -49,6 +50,11 @@ if(isset($_POST['inp_pat']))
 		$room_id =  $data['room'];
 		$insurance =  $data['ins_num'];
 		$register_obj->register_ip($room_id,$insurance);
+	}
+	else
+	{
+		$register_obj->at_time(physician::get_time($data['schedule']));
+		physician::schedule_time($data['schedule'],$register_obj->reg_id);
 	}
 	$register_obj->send_mail();
 	$response->data = $register_obj;
@@ -200,6 +206,16 @@ if(isset($_POST['vitals']))
 	register::addVitals($data);
 	$patient = patient::get_patient_with_reg_id($data['reg_id']);
 	header('Location: '.domain.'/View/patient_reg.php?pat_id='.$patient['id']);
+}
+if(isset($_POST['sched_doc_id']))
+{
+	$data =  $_POST['sched_doc_id'];
+	$response->data = physician::get_schedule($data);	
+}
+if(isset($_POST['labRequest']))
+{
+	$data =  $_POST['labRequest'];
+	$response->data = patient::getLabRequests($data);	
 }
 
 echo json_encode($response);

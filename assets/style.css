@@ -4,6 +4,23 @@
   width: 100%;
   background-color: #E8EEF2;
 }
+.dataTables_scrollHeadInner{
+  width: 100% !important;
+}
+table.dataTable tbody th,
+table.dataTable tbody td {
+    white-space: nowrap;
+}
+
+#pres_table{
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+#reg_buttons{
+  max-height: 300px;
+  /*overflow-y: auto;*/
+  /*overflow-x: hidden;*/
+}
 .sample{
   max-height: 50%;
   overflow: auto;

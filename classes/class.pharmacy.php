@@ -80,12 +80,20 @@ class pharmacy{
 	{
 		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
 		$query = "select (total_available-$qty) as remaining from medicines where id = $id";
+		// print_r($query);
 		$result = $con->query($query);
 		$exe = $result->fetch_assoc();
-		
-
 		$con->close();
 		return $exe['remaining'];
+	}
+	function getUnitPrice($id)
+	{
+		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
+		$query = "select price from medicines where id = $id";
+		$result = $con->query($query);
+		$exe = $result->fetch_assoc();
+		$con->close();
+		return $exe['price'];
 	}
 
 }

@@ -196,10 +196,22 @@ $result = $DBcon->query($query);
 				
 			
 		</div>
-		<div class="row" id="max_val" style="display: none">
+		<div class="row" id="max_val_sample" style="display: none">
+        	<div class="col-md-12">
+        		<label>Enter Sample Value:</label>
+        		<input type="number" id="final_qty_of_sample" class="form-control">
+        	</div>
+        </div>
+        <div class="row" id="max_val" style="display: none">
         	<div class="col-md-12">
         		<label>Enter Max Value:</label>
-        		<input type="number" id="final_qty_of_sample" class="form-control">
+        		<input type="number" id="max_val_qty" class="form-control">
+        	</div>
+        </div>
+        <div class="row" id="min_val" style="display: none">
+        	<div class="col-md-12">
+        		<label>Enter Min Value:</label>
+        		<input type="number" id="min_val_qty" class="form-control">
         	</div>
         </div>
       	<div class="row" id="resulttt" style="display: none">
@@ -359,14 +371,15 @@ $(document).ready(function(){
 		console.log($(this).val());
 	});
 	
-	$('#max_val').on('change',function(){
-		$('#resulttt').css("display","block");
-	});
+	
 	$('#proc_type').on('change',function(){
 		pro_id = $(this).val();		
 		$('#reslt1').val("");
 		$('#alert').html("");
+		$('#resulttt').css("display","block");
+		$('#max_val_sample').css("display","block");
 		$('#max_val').css("display","block");
+		$('#min_val').css("display","block");
 
 		$.ajax({
 		  url: "gather_details.php",
@@ -378,8 +391,6 @@ $(document).ready(function(){
 			{
 				pro_name = response.data.procedure_name;
 				$('#res').html(response.data.procedure_name);
-				 max = response.data.min_value;
-				 min = response.data.max_value;
 			}
 		  	
 		  }
@@ -387,9 +398,6 @@ $(document).ready(function(){
 	});
 	$('#reslt1').on('keyup',function(){
 		value =parseInt( $(this).val());
-		console.log(value);
-		console.log(max);
-		console.log(min);
 		if(value >= max || value < min)
 		{
 			$('#alert').html('<p style="color:red;">Please Inform Doctor Immidiately</p>');
@@ -401,12 +409,20 @@ $(document).ready(function(){
 			result = "Normal";
 		}
 	});
+	$('#max_val_qty').on('keyup',function(){
+		max = parseInt($(this).val());
+	});
+	$('#min_val_qty').on('keyup',function(){
+		min = parseInt($(this).val());
+	});
 	$('#add_res').on('click',function(){
 		sample_final_qty = $('#final_qty_of_sample').val();
 		test_results = {
 			'test_id' : pro_id, 
 			'result' : result, 
 			'result_value' : value, 
+			'min_value' : min,
+			'max_value' : max,
 			'sample_used' : sample_log_id,
 			'sample_used_qty' : sample_final_qty,
 		};

@@ -110,11 +110,11 @@ $result = $DBcon->query($query);
 
   </div>
 </div>
-<div id="internal" class="modal fade" role="dialog">
-  <div class="modal-dialog">
+<div id="internal" class="modal fade" role="dialog" >
+  <div class="modal-dialog" style="width:100%;">
 
     <!-- Modal content-->
-    <div class="modal-content">
+    <div class="modal-content" >
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
         <h4 class="modal-title">Prescription</h4>
@@ -146,8 +146,16 @@ $result = $DBcon->query($query);
 			        <table class="table">
 			        	<thead>
 			        		<th>Name</th>
-			        		<th>Qty</th>
-			        		<th>Price</th>
+			        		<th>Morning</th>
+			        		<th>Afternoon</th>
+			        		<th>Night</th>
+			        		<th>Days</th>
+			        		<th>Estimated Qty</th>
+			        		<th>Requested Qty</th>	
+			        		<th>Expiry Date</th>
+			        		<th>Total Available</th>
+			        		<th>Total Price</th>
+
 			 
 			        	</thead>
 			        	<tbody class="med_pres">
@@ -235,6 +243,20 @@ $result = $DBcon->query($query);
 
   </div>
 </div>
+<div id="cash" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-body">
+      	<div class="pad center-block">
+      		<label>Collect amt <span class="collect"></span></label>
+      	</div>
+      </div> 
+    </div>
+
+  </div>
+</div>
 <!-- <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/r/bs-3.3.5/jq-2.1.4,dt-1.10.8/datatables.min.css"/>   -->
   <!-- <script type="text/javascript" src="https://cdn.datatables.net/r/bs-3.3.5/jqc-1.11.3,dt-1.10.8/datatables.min.js"></script>   -->
 <script type="text/javascript">
@@ -314,11 +336,11 @@ $(document).ready(function() {
 	 	$('.med').html(row+tot);
 	});
 	$('#save_pres').on('click',function(){
-		// console.log(medicines);
+		
 		save(0)
 	});
 	$('#save_pres1').on('click',function(){
-		// console.log(medicines);
+		medicines = addRequested(medicines);
 		save(1)
 	});
 	$('#pat_id').on('change',function(){
@@ -347,12 +369,12 @@ $(document).ready(function() {
 					  dataType : 'json',
 					  data: {'medicine_used_by' : reg_id },
 					  success: function(response) {
-						console.log(response);
-						medicines = response.data;				  
+						window.medicines = response.data;				  
+						console.log(medicines);
 					  	rowq = "";
 					  	for(var i = 0; i< response.data.length ; i++)
 					  	{
-							rowq += "<tr><td>"+response.data[i].medicine_name+"</td><td>"+response.data[i].qty+"</td><td>$"+response.data[i].price+"</td></tr>";
+							rowq += "<tr data-value='"+response.data[i].log_med_id+"'><td>"+response.data[i].medicine_name+"</td><td>"+response.data[i].morning+"</td><td>"+response.data[i].afternoon+"</td><td>"+response.data[i].night+"</td><td>"+response.data[i].days+"</td><td>"+response.data[i].qty+"</td><td><input type='number' class='req_med_qty form-control'></td><td>"+response.data[i].expiry_date+"</td><td>"+response.data[i].total_available+"</td><td>$"+(response.data[i].price)*(response.data[i].qty)+"</td></tr>";
 					  	}
 					  	$('.med_pres').html(rowq);
 					  	$('#tbls').css('display','block');
@@ -369,6 +391,23 @@ $(document).ready(function() {
 
 		
 	});
+	function addRequested(medicines)
+	{
+		medicines = window.medicines;
+		$('.req_med_qty').each(function(){
+			log_id = ($(this).parent().parent().data('value'));
+			total_requested = $(this).val();
+			for (var i = 0; i < medicines.length; i++) 
+			{
+				if(medicines[i].log_med_id == log_id)
+				{
+					medicines[i].tot_req = total_requested;	
+				}
+			}
+		});
+		window.medicines = medicines;
+		return medicines;
+	}
 	function save(inter)	
 	{
 		if(medicines.length){
@@ -378,15 +417,10 @@ $(document).ready(function() {
 		  dataType : 'json',
 		  data: {'medicines' : JSON.stringify(medicines) , 'internal' : inter ,'reg_id' : reg_id},
 		  success: function(response) {
-			
-		  	alert("Added Success");
+		  	// alert("Added Success");
 		  	$('#example').DataTable().ajax.reload();
-		  	// rowq = "";
-			  // 	for(var i = 0; i< response.data.length ; i++)
-			  // 	{
-					// rowq += "<tr><td>"+response.data[i].medicine_name+"</td><td>"+response.data[i].on_date+"</td></tr>";
-			  // 	}
-			  // 	$('.med_pres').html(rowq);
+			$('.collect').html(response.price);	  	
+			$('#cash').modal('show');
 		  }
 		 });
 		}

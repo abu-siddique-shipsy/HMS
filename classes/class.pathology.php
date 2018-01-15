@@ -19,8 +19,8 @@ class pathology{
 	{
 		// print_r($data);
 		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
-		$query = "UPDATE lab_requests set status = 1,result = '$data->result' ,result_value = '$data->result_value', sample_used = '$data->sample_used' , sample_used_qty = '$data->sample_used_qty' where reg_id = $reg_id and test_id = $data->test_id ";
-
+		$query = "UPDATE lab_requests set status = 1,result = '$data->result' ,result_value = '$data->result_value', sample_used = '$data->sample_used' , sample_used_qty = '$data->sample_used_qty',min_value = '$data->min_value',max_value = '$data->max_value' where reg_id = $reg_id and test_id = $data->test_id ";
+		// print_r($query);
 
 		$result = $con->query($query);
 		if($result)

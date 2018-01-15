@@ -26,21 +26,22 @@ if(isset($_POST['medicines']))
 	$res;
 	$int = $_POST['internal'];
 	foreach ($request as $key => $value) {
-		$res = pharmacy::check_quantity($value->qty,$value->id);
-
+		if ($value->tot_req == "" ) continue;
+		$res = pharmacy::check_quantity($value->tot_req,$value->id);
 		if($res >= 0)
 		{
-			$query = "insert into pharmacy_transaction (med_id,qty) values ($value->id,$value->qty)";
+			$query = "insert into pharmacy_transaction (med_id,qty) values ($value->id,$value->tot_req)";
 			$msg= $DBcon->query($query);
 			$result += $msg;
 			if($msg)
 			{
-				$res = pharmacy::deduct_inventory($value->qty,$value->id);
+				$amt += ($value->tot_req)*pharmacy::getUnitPrice($value->id);
+				$res = pharmacy::deduct_inventory($value->tot_req,$value->id);
 			}
 			if($int)
 			{
-				$query = "update medicine_used set status = 1 where medicine_id = '$value->id' and reg_id = '$reg_id'";
-				print_r($query);
+				($value->tot_req - $value->qty) == 0 ? $status =1 : $status =0;
+				$query = "update medicine_used set tot_req = $value->tot_req, status = $status where medicine_id = '$value->id' and reg_id = '$reg_id'";
 				$msg= $DBcon->query($query);
 			}
 		}
@@ -50,6 +51,7 @@ if(isset($_POST['medicines']))
 	
 	if($res) $response->status = "success"; 
 	else $response->status = "failed";
+	$response->price = $amt;
 }
 if(isset($_POST['ot_med_log_id']))
 {
@@ -94,7 +96,7 @@ if(isset($_POST['medicine_used_by']))
 	$amt = 0;
 	$res;
 	
-	$query = "select m.id,mu.qty,m.medicine_name,m.price from medicine_used mu join medicines m on m.id = mu.medicine_id where reg_id = '$reg_id' and mu.status = 0";
+	$query = "select * from medicine_used mu join medicines m on m.id = mu.medicine_id where reg_id = '$reg_id' and mu.status = 0";
 
 	$result = $DBcon->query($query);
 	$re = [];

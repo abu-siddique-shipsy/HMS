@@ -20,5 +20,19 @@ class patient{
 		}
 		return $result_array;
 	}
+	function getLabRequests($reg_id)
+	{
+		$DBcon = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
+		$id = $reg_id;
+		$query = "SELECT lr.req_id,lp.procedure_name,concat(stf.f_name,' ',stf.l_name) as name,lr.result,lr.result_value  FROM  lab_requests lr join lab_procedures lp on lp.procedure_id = lr.test_id join staff stf on stf.staff_id = lr.doc_id where reg_id = $id";
+		$result_array= [];
+		$result = $DBcon->query($query);
+		while ($exe = $result->fetch_object()) {
+			if($exe->result == null) $exe->status = "Pending";
+			else $exe->status = "Completed";
+			$result_array[] = $exe;
+		}
+		return $result_array;
+	}
 
 }

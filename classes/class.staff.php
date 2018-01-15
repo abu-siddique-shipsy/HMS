@@ -101,19 +101,23 @@ class staff{
 		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
 		$query = "insert into staff (l_name,staff_type,email,dept_id) values ('$staff->l_name','$staff->staff_type','$staff->email','$staff->dept_id')";
 		$result = $con->query($query);
-			
-		foreach ($staff as $key => $value) {
-			$query1 = "update staff set `$key` = '$value' where email = '$staff->email'";
-			// print_r($query1);
-			$result1 = $con->query($query1);
+		if($result){
+			foreach ($staff as $key => $value) {
+				$query1 = "update staff set `$key` = '$value' where email = '$staff->email'";
+				// print_r($query1);
+				$result1 = $con->query($query1);
+			}
+			$query = "select * from staff where email = '$staff->email'";
+			$result1 = $con->query($query);
+			$exe = $result1->fetch_array();		
+			$con->close();
+			return $exe['staff_id'];
 		}
-		$query = "select * from staff where email = '$staff->email'";
-		$result1 = $con->query($query);
-		$exe = $result1->fetch_array();		
+		return "Email Already Available";
+		
 			
 		
-		$con->close();
-		return $exe['staff_id'];
+		
 	}
 	function create_contact($staff)
 	{

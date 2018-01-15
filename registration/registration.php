@@ -390,12 +390,16 @@ body{
 				  		// console.log(response);
 				  		if(response.data)
 				  		{
+				  			$('#email').focus();
 
-				  			$('#Add_User').modal('hide');
 				  			$('.staff_id').html(response.data);
 				  			id = response.data;
 				  			get_screens(type);
-				  			$('#get_access_details').modal('show');
+				  			if (response.data != "Email Already Available") {
+								$('#Add_User').modal('hide');
+								$('#get_access_details').modal('show');
+				  			}
+				  			
 				  			// $('#add_staff_contact').modal('show');
 				  			
 				  		}
