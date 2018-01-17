@@ -26,6 +26,30 @@ td{
 	</div>
 	
 </div>
+<div id="gatherDetails" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">Gather Details</div>
+        </div>
+        
+      <div class="modal-body">
+        <form action="<?php echo patientDetails1 ?>" method="POST">
+          <input type="hidden" name="vitals" value="1">
+          <input type="hidden" name="reg_id" class="reg_id">
+          <input type="text" class="form-control" placeholder="height" name="height">
+          <input type="text"  placeholder="weight" class="form-control" name="weight">
+          <input type="text"  placeholder="BP" class="form-control" name="bp">
+          <button type="submit" class="btn btn-success center-block" >Submit</button>
+        </form>
+      </div>
+      <div class="modal-footer">
+        
+      </div>
+    </div>
+
+  </div>
+</div>
 <div id="medicine" class="modal fade" role="dialog">
   <div class="modal-dialog">
 
@@ -317,7 +341,7 @@ td{
 	        <li id="newTicketTab1"><a  href="#presTab" data-toggle="tab">Prescription</a></li>
 	        <li id="adviceTab1"><a href="#adviceTab" data-toggle="tab">Advice</a></li>
 	        <li id="labTab1"><a href="#labTab" data-toggle="tab">Lab Tests</a></li>
-	        <li id="vitTab1"><a  href="#newticket" data-toggle="tab">Vitals</a></li>
+	        <li id="vitTab1"><a  href="#vitTab" data-toggle="tab">Vitals</a></li>
 	        <li id="bilTab1"><a  href="#bilTab" data-toggle="tab">Billing</a></li>
     	</ul>
     	<div class="tab-content" >
@@ -337,6 +361,9 @@ td{
             	
             </div>
             <div id="labTab" class="tab-pane pad">
+          
+            </div>
+            <div id="vitTab" class="tab-pane pad">
           
             </div>
             <div id="bilTab" class="tab-pane pad">
@@ -707,16 +734,42 @@ function getAllDetails(value)
 		success: function(response) {
 			$('#navs').show();
 			window.reg_id = response.complaint.registration_id;
+			$('.reg_id').val(window.reg_id);
 			addComplaint(response.complaint.complaint);
 			addInvestigation(response.complaint.investigation);
 			addDiagnosis(response.complaint.diagnosis);
 			addPrescription();
 			addAdvice(response.complaint.advice,response.complaint.next_visit);
 			addLabTest(window.reg_id);
+			addVitals(response.vitals);
 			genBill(window.reg_id);
 			// addVitals(response.complaint.complaint);
 		}
 	});
+}
+function addVitals(vitals)
+{
+	console.log(vitals)
+	var text = '<table id="vitalsTable"></table>';
+	text += '<button class="btn btn-default" data-toggle="modal" data-target="#gatherDetails">Gather Vitals</button>';
+	$('#vitTab').html(text);
+	$('#vitalsTable').DataTable({
+	        "data": vitals,
+	        "destroy": true,
+	        "columns": [
+	        	{"title":"Height","data": "height", "orderable": false},
+	        	{"title":"Weight","data": "weight", "orderable": false},
+	        	{"title":"BP","data": "bp", "orderable": false},
+	        	
+	        ],
+	        language: {
+	            searchPlaceholder: "Search records"
+	        },
+	        order: [
+	            [0, 'desc']
+	        ],
+	        "searching": false
+	    	});
 }
 function addLabTest(reg_id)
 {

@@ -48,7 +48,14 @@ if (isset($_POST['complaint'])) {
 		$result = $DBcon->query($query1);
 		$exe = $result->fetch_object(); 
 		$response->complaint = $exe;
+		$query1 = "SELECT * FROM vitals where reg_id = '$id' ";
+		$result = $DBcon->query($query1);
 		
+		$vitals = [];
+		while ($exe = $result->fetch_object()) {
+			$vitals[] = $exe;
+		}
+		$response->vitals = $vitals;
 	}
 }
 if (isset($_POST['get_proc'])) {

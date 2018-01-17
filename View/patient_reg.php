@@ -352,7 +352,7 @@ include root.'/assets/bootstrap.php';
   <br>
   </div>
   </div>
-  <button type="button" class="btn btn-default" onclick='printDiv("printer");'>Print</button>
+  <button type="button" class="btn btn-default" id="print">Print</button>
   <button type="button" class="btn btn-default" onclick='javascript:window.location.href = "<?php echo domain ?>"'>Back To Home</button>
 </div>
 
@@ -381,6 +381,7 @@ $( document ).ready(function() {
         
       }
     });
+
   checkPT(pat_id);
   var pat_name = "";
   
@@ -559,16 +560,15 @@ $( document ).ready(function() {
   $('#op_doc').on('change',function(){
     getSchedule($(this).val());
   });
+  $('#print').on('click',function(){
+      window.open(
+      '<?php echo controller."/cont.report.php?reg_id="; ?>'+window.reg_id,
+      '_blank' 
+      );
 
+  });  
 }); 
-function printDiv(divName) {
 
-      var printContents = document.getElementById(divName).innerHTML;     
-   var originalContents = document.body.innerHTML;       
-   document.body.innerHTML = printContents;      
-   window.print();      
-   document.body.innerHTML = originalContents;
-   }
 
 function validateEmail(email) 
 {
@@ -621,6 +621,7 @@ function get_latest_registration(pt)
       data: {'get_last_reg': 1 ,'pat_id' : pt},
       success : function(response){
         console.log(response);
+        window.reg_id = response.data.registration_id;
         $('.reg_id').html(response.data.registration_id);
         $('.reg_id').val(response.data.registration_id);
         $('.con').html("Dr "+response.data.f_name+" "+response.data.l_name);

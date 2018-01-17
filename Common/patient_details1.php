@@ -204,8 +204,8 @@ if(isset($_POST['vitals']))
 {
 	$data =  $_POST;
 	register::addVitals($data);
-	$patient = patient::get_patient_with_reg_id($data['reg_id']);
-	header('Location: '.domain.'/View/patient_reg.php?pat_id='.$patient['id']);
+	// $patient = patient::get_patient_with_reg_id($data['reg_id']);
+	header('Location: '.$_SERVER[HTTP_REFERER]);
 }
 if(isset($_POST['sched_doc_id']))
 {

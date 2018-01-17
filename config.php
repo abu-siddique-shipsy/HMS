@@ -1,6 +1,7 @@
 <?php
 
 ini_set('display_errors', 0);
+
 define("DBHOST", "localhost:3306");
 define("DBUSER", "test1");
 define("DBPASS", "test1");
