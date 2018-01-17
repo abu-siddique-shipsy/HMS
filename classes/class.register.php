@@ -116,6 +116,7 @@ class register{
 		$result = $con->query($query);
 		$exe = $result->fetch_object();
 		foreach ($data as $key => $value) {
+			$value = mysqli_real_escape_string($con,$value);
 			$query = "UPDATE vitals set `$key` = '$value' where vit_id = '$exe->vit_id'"	;
 			$con->query($query);
 		}
