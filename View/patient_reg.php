@@ -180,43 +180,23 @@ include root.'/assets/bootstrap.php';
       <div class="modal-body">
       	<br>
         <div class="row">
-    		<div class="col-md-12">
-      			<form class="form-horizontal" role="form">
-        			<fieldset>
-          				<div class="form-group">
-            				<label class="col-md-2 control-label">Complaint</label>
-            				<div class="col-md-10">
-              				<input type="text" class="form-control" id="comp">
-            				</div>
-          				</div>
-
-				        <div class="form-group">
-				        	
-				            <div class="col-md-12">
-                      <select class="consul form-control" id="op_doc">
-				                <option>Doctor</option>
-                      </select>
-				            </div>
-				        </div>				   
-                <div class="form-group">
-                  
-                    <div class="col-md-12" id="doctor_schedule">
-                      
-                    </div>
-                </div>           
-
-				        <div class="form-group">
-				            <button type="button" class="btn btn-success center-block" id="final_sub_op">Submit</button>
-				        </div>
-					</fieldset>
-      			</form>
-    		</div>
-		</div>
-
+    		  <div class="col-md-6">
+        		<input type="text" class="form-control" id="comp" placeholder="Complaint"><br><br><br>
+            <select class="consul form-control" id="op_doc">
+              <option>Doctor</option>
+            </select>
+          </div>
+  	      <div class="col-md-6" id="doctor_schedule">  
+          </div>  
+        </div>
+        <div class="" id="doctor_schedule_time">
+          
+        </div>
       </div>
-      <!-- <div class="modal-footer">
-        <center><button type="button" class="btn btn-" data-dimdiss="modal">Close</button></center>
-      </div> -->
+      <div class="modal-footer">
+        <label id="error"></label>
+        <button type="button" class="btn btn-success center-block" id="final_sub_op">Submit</button>
+      </div>
     </div>
 
   </div>
@@ -496,7 +476,7 @@ $( document ).ready(function() {
       
   });
   $('#final_sub_op').click(function () {
-    $('.container').hide();
+    
     $('#op').modal('hide');
     doctors = $('#op .consul :selected').val();
     doctors_text = $('#op .consul :selected').text();
@@ -505,9 +485,10 @@ $( document ).ready(function() {
     $('.con').html(doctors_text);
     complaint = $('#comp').val();
     $('.com').html(complaint);
-    $('#pre_process').css('display','block');
-     if(doctors)
+     if(doctors && schedule != "")
      {
+        $('.container').hide();
+        $('#pre_process').css('display','block');
         var datum = {'pat_id' : pat_id , 'cons_id' : doctors , 'complaint' : complaint,'schedule' : schedule};
         $.ajax({
         url: "<?php echo patientDetails1; ?>",
@@ -523,6 +504,10 @@ $( document ).ready(function() {
         }
         
       });  
+     }
+     else
+     {
+        $('#error').html("Please Enter Details");
      } 
   });
   $('#final_sub_ip').click(function () {
@@ -566,6 +551,9 @@ $( document ).ready(function() {
       '_blank' 
       );
 
+  });  
+  $(document).on('click','.calender_button',function(){
+    getScheduleTime($(this).val());
   });  
 }); 
 
@@ -637,36 +625,64 @@ function get_latest_registration(pt)
         }
         else{
           data += "<tr><td>Patient Type</td><td>Out Patient</td></tr>";
-          data += "<tr><td>Scheduled At</td><td>"+response.data.at_time+"</td></tr>";
+          data += "<tr><td>Scheduled Time</td><td>"+response.data.at_time+"</td></tr>";
+          data += "<tr><td>Scheduled Date</td><td>"+response.data.at_date+"</td></tr>";
         }
         $('#regData').html(data);
 
       }
   });
 }
-function getSchedule($doc)
+function getSchedule(doc)
+{
+  window.doc_id = doc;
+  $.ajax({
+      url: '<?php echo patientDetails1; ?>',
+      method : 'post',
+      dataType : 'json',
+      data: {'sched_doc_id': doc },
+      success : function(response){
+        var rest = createDateSlot(response.data);
+        $('#doctor_schedule').html(rest);
+      }
+  });
+}
+function getScheduleTime(doc)
 {
   $.ajax({
       url: '<?php echo patientDetails1; ?>',
       method : 'post',
       dataType : 'json',
-      data: {'sched_doc_id': $doc },
+      data: {'schedule_date': doc , 'doc_id' : window.doc_id},
       success : function(response){
         var rest = createSlots(response.data);
-        $('#doctor_schedule').html(rest);
+        $('#doctor_schedule_time').html(rest);
       }
   });
 }
-function createSlots(data1)
+function createDateSlot(data1)
 {
-  data = '<div class="row">';
+  data = '<div class="row calender">';
   for(var i = 0 ; i < data1.length;i++)
-  {    
-    data += '<div class="radio-inline">';
-    data += '<label><input type="radio" name="optradio" value="'+data1[i].slot_id+'">'+'From '+data1[i].frm_time+' to '+data1[i].to_time;+'</label>';
-    data += '</div>';
+  { 
+    data += '<button type="button" class="calender_button" value="'+data1[i].date+'"><p>'+data1[i].day_text+'</p>'+data1[i].day+'</button>';
   }  
   data +='</div>';
+  return data; 
+}
+function createSlots(data1)
+{
+  data = '';
+  if(data1.length){
+    for(var i = 0 ; i < data1.length;i++)
+    {    
+      data += '<div class="radio-inline">';
+      data += '<label><input type="radio" name="optradio" value="'+data1[i].slot_id+'">'+'ON '+data1[i].frm_time+'</label>';
+      data += '</div>';
+    }
+  }
+  else  
+    data = "There are no Slots available for this doctor.";
   return data;
 }
 </script>

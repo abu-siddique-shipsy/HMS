@@ -37,9 +37,9 @@ td{
         <form action="<?php echo patientDetails1 ?>" method="POST">
           <input type="hidden" name="vitals" value="1">
           <input type="hidden" name="reg_id" class="reg_id">
-          <input type="text" class="form-control" placeholder="height" name="height">
-          <input type="text"  placeholder="weight" class="form-control" name="weight">
-          <input type="text"  placeholder="BP" class="form-control" name="bp">
+          <input type="text" class="form-control" placeholder="height" name="height" required>
+          <input type="text"  placeholder="weight" class="form-control" name="weight" required>
+          <input type="text"  placeholder="BP" class="form-control" name="bp" required>
           <button type="submit" class="btn btn-success center-block" >Submit</button>
         </form>
       </div>

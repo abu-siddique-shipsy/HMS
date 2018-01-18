@@ -51,7 +51,7 @@ $profile = $profile_result->fetch_object();
 	</div>
 	<div class="row">
 		<div class="col-md-offset-1 col-md-11">
-			<h4>Your appointment has been fixed on <?php echo date('Y-m-d') ?> at <?php echo $profile->at_time ?> for the complaint "<?php echo $profile->complaint ?>" with Dr. <?php echo $profile->l_name ?></h4><br>
+			<h4>Your appointment has been fixed on <?php echo $profile->at_date ?> at <?php echo $profile->at_time ?> for the complaint "<?php echo $profile->complaint ?>" with Dr. <?php echo $profile->l_name ?></h4><br>
 			<h4>If you are not able to make it up to the appointment please call us and reschedule it 24 hours before the appointment for more convienient time.</h4>
 			
 		</div>

@@ -1,3 +1,41 @@
+.calender{
+  margin-top: -10px;
+  /*padding: 10px;*/
+}
+.calender_button{
+  background: inherit;
+  border-style: solid;
+  border-width: 1px;
+  height: 90px;
+  padding: 0px !important;
+  width: 70px;
+  font-size: 25px;
+  margin: 7px 7px 7px 7px;
+  background-color: #c8cad2;
+  border-radius: 10px;
+
+}
+.calender_button:focus {
+  outline-width: 1px;
+  transform: scale(0.90);  
+  outline-color: #1ec083
+}
+
+.calender_button p{
+  width: inherit;
+  margin-top: -27px;
+  margin-left: -1px;
+  font-weight: 600;
+  padding: 5px;
+  font-size: 12px;
+  border-style:  solid;
+  border-width: 1px;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+  background-color: #1ec083;
+  color: #ffffff;
+}
+
 #pre_process{
   vertical-align: middle !important;
   text-align: center;
@@ -187,6 +225,9 @@ select{
   text-align: left;
   line-height: 0.9em;
 }
+.modal{
+  background: #efefef;
+}
 .modal-header{
     background-color: #6C9841;
 }
@@ -196,6 +237,7 @@ select{
     font-family: 'ariel';
 }
 .modal-body{
+
     color: #000;
 }
 .right-side{

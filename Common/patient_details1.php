@@ -212,6 +212,12 @@ if(isset($_POST['sched_doc_id']))
 	$data =  $_POST['sched_doc_id'];
 	$response->data = physician::get_schedule($data);	
 }
+if(isset($_POST['schedule_date']))
+{
+	$doc_id =  $_POST['doc_id'];
+	$date = $_POST['schedule_date'];
+	$response->data = physician::get_schedule_time($date,$doc_id);	
+}
 if(isset($_POST['labRequest']))
 {
 	$data =  $_POST['labRequest'];
