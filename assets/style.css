@@ -5,13 +5,13 @@
 .calender_button{
   background: inherit;
   border-style: solid;
-  border-width: 1px;
+  border-width: 1px !important;
   height: 90px;
   padding: 0px !important;
   width: 70px;
   font-size: 25px;
   margin: 7px 7px 7px 7px;
-  background-color: #c8cad2;
+  background-color: #c8cad2 !important; 
   border-radius: 10px;
 
 }

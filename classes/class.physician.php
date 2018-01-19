@@ -33,9 +33,13 @@ class physician{
 		foreach ($dates as $date) {
 			foreach ($this->total_slots as $key => $value) {
 				$to = $this->total_slots[$key+1];
-				if($to != "")
-					$query = "INSERT INTO doc_schedule (`phy_id`,`date`,`frm_time`,`to_time`) values ('$this->staff_id','$date','$value','$to')";
-				$con->query($query);
+				if($to != ""){
+					$date1 = date('H:i',strtotime('00:00:00'));
+					if ($date1 > $to && $date1 < $value) $date2 = date('d-m-Y',strtotime('+1 days',strtotime($date)));
+					else $date2 = $date;
+					$query = "INSERT INTO doc_schedule (`phy_id`,`date`,`frm_time`,`to_time`) values ('$this->staff_id','$date2','$value','$to')";
+					$con->query($query);
+				}
 			}
 		}
 		$con->close();
@@ -62,7 +66,8 @@ class physician{
 		// print_r($query);
 		$result = $con->query($query);
 		while ($exe = $result->fetch_object()) {
-			if(strtotime($exe->date . $frm_time) > strtotime(date('d-m-Y H:i:s')))
+
+			if(strtotime($exe->date . $exe->frm_time) > strtotime(date('d-m-Y H:i:s')))
 				$schedules[] = $exe;
 		}
 		$con->close();
