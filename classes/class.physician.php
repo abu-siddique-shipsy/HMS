@@ -50,10 +50,14 @@ class physician{
 		$schedules = [];
 		$query = "SELECT distinct(`date`) FROM doc_schedule where phy_id = $doc and reg_id is null";
 		$result = $con->query($query);
-		while ($exe = $result->fetch_object()) {
-			$exe->day_text = date('l',strtotime($exe->date));
-			$exe->day = date('d',strtotime($exe->date));
-			$schedules[] = $exe;
+		while ($exe = $result->fetch_object()) 
+		{
+			if($exe->date > date('d-m-Y'))
+			{
+				$exe->day_text = date('l',strtotime($exe->date));
+				$exe->day = date('d',strtotime($exe->date));
+				$schedules[] = $exe;
+			}
 		}
 		$con->close();
 		return $schedules;
@@ -62,11 +66,10 @@ class physician{
 	{
 		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);	
 		$schedules = [];
-		$query = "SELECT * FROM doc_schedule where phy_id = $doc and `date` = '$date' and reg_id is null";
+		$query = "SELECT * FROM doc_schedule where phy_id = $doc and `date` = '$date' and reg_id is null ";
 		// print_r($query);
 		$result = $con->query($query);
 		while ($exe = $result->fetch_object()) {
-
 			if(strtotime($exe->date . $exe->frm_time) > strtotime(date('d-m-Y H:i:s')))
 				$schedules[] = $exe;
 		}

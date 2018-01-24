@@ -286,11 +286,11 @@ td{
 		<div class="panel panel-default">
 		  	<div class="panel-body patient">
 		  		<div class="form-group">
-					<input type="text" class="form-control" name="name" placeholder="Registration ID" id="pat_id">
+					<input type="text" class="form-control" name="name" placeholder="ID" id="pat_id">
 					<label id="alert"></label>
 					<div class="row">
 						<div class="col-md-6">
-							<button type="button" class="form-control" onclick="get_details_with_register_number($('#pat_id').val())">Registration ID</button>
+							<button type="button" class="form-control" onclick="get_details_with_register_number($('#pat_id').val())">Visit ID</button>
 						</div>
 						<div class="col-md-6">
 							<button type="button" class="form-control" onclick="get_details_with_patient_id($('#pat_id').val())">Patient ID</button>
@@ -301,13 +301,13 @@ td{
 			</div>
 		</div>
 	</div>
-	<div class="col-sm-8">
+	<div class="col-sm-8" id="patient_details" style="display: none" >
 		<div class="panel panel-default">
 		  	<div class="panel-body">
 		  		<table class="table table-hover">
 				<thead>
 					<th>Name</th>
-					<th>DOB</th>
+					<th>Age</th>
 					<th>Sex</th>
 					<th>Complaint</th>
 				</thead>
@@ -343,7 +343,12 @@ td{
 	        <li id="labTab1"><a href="#labTab" data-toggle="tab">Lab Tests</a></li>
 	        <li id="vitTab1"><a  href="#vitTab" data-toggle="tab">Vitals</a></li>
 	        <li id="bilTab1"><a  href="#bilTab" data-toggle="tab">Billing</a></li>
+	        <ul class="nav nav-tabs navbar-right">
+    			<li><a id="save_all">Save</a></li>
+    		</ul>
+	        
     	</ul>
+    	
     	<div class="tab-content" >
             <div id="complaintTab" class="tab-pane pad">
             	
@@ -370,7 +375,7 @@ td{
           
             </div>
          </div>
-         <button type="button" class="btn btn-default pull-right" id="save_all">Save</button>
+         
 	</div>
 </div>
 
@@ -608,7 +613,10 @@ $(document).ready(function(){
 		  dataType : 'json',
 		  data: {'tests' : JSON.stringify(tests) , 'reg_id' : window.reg_id , 'doc_id': <?php echo $_SESSION['userId'];?>},
 		  success: function(response) {
+		  	row1 = ""; 
 			tests = [];
+			$('.tst').html("");
+			getAllDetails(window.reg_id);
 		  	alert("Added Success");
 		  	
 		  }
@@ -653,6 +661,7 @@ function get_details_with_patient_id(value)
 }
 function get_details_with_register_number(value)
 {
+	$('#patient_details').show();
 	$('#reg_buttons').show();
 	window.reg_id = value;
 	$.ajax({
@@ -661,7 +670,7 @@ function get_details_with_register_number(value)
 		  dataType : 'json',
 		  data: {'patient_id' : value, 'complaint' : 1},
 		  success: function(response) {
-		  	console.log(response);
+		  	
 		  	if(!response.data)
 		  	{
 		  		$('#alert').html("Patient Id not available");
@@ -677,8 +686,10 @@ function get_details_with_register_number(value)
 			  		for(var i = 0 ; i< 5 ; i++)
 			  		{
 			  			$('#alert').html("");
-			  			if(response.complaint[i])
+			  			if(response.complaint[i]){
+
 			  				options +='<button class="btn btn-default reg_button" value="'+response.complaint[i].registration_id+'">Visit No '+response.complaint[i].registration_id+'</button>'
+			  			}
 			  			
 			  			
 			  		}
@@ -697,6 +708,8 @@ function get_details_with_register_number(value)
 			  		// head += result + "</tbody></table>"
 			  		$('#reg_buttons').html(options);	
 			  		$('#pat_details').html(result);	
+			  		getAllDetails(window.reg_id);
+
 			  	}
 			  	else
 			  	{
@@ -723,6 +736,7 @@ function get_details_with_register_number(value)
 		  }		
 
 		});
+		
 }
 function getAllDetails(value)
 {
@@ -751,7 +765,7 @@ function addVitals(vitals)
 {
 	console.log(vitals)
 	var text = '<table id="vitalsTable"></table>';
-	text += '<button class="btn btn-default" data-toggle="modal" data-target="#gatherDetails">Gather Vitals</button>';
+	text += '<button class="btn btn-default full-btn" data-toggle="modal" data-target="#gatherDetails">Gather Vitals</button>';
 	$('#vitTab').html(text);
 	$('#vitalsTable').DataTable({
 	        "data": vitals,
@@ -774,7 +788,7 @@ function addVitals(vitals)
 function addLabTest(reg_id)
 {
 	var text = '<table id="labTables"></table>';
-	text += '<button class="btn btn-default" data-toggle="modal" data-target="#test">Assign Test</button>';
+	text += '<button class="btn btn-default full-btn" data-toggle="modal" data-target="#test" >Assign Test</button>';
 	$('#labTab').html(text);
 	$.ajax({
 		url: '<?php echo patientDetails1; ?>',

@@ -672,14 +672,16 @@ function createDateSlot(data1)
 }
 function createSlots(data1)
 {
-  data = '';
-  if(data1.length){
+  data = '<div class="row">';
+  if(data1.length)
+  {
     for(var i = 0 ; i < data1.length;i++)
     {    
-      data += '<div class="radio-inline">';
+      data += '<div class="col-md-2">';
       data += '<label><input type="radio" name="optradio" value="'+data1[i].slot_id+'">'+'ON '+data1[i].frm_time+'</label>';
       data += '</div>';
     }
+    data += '</div>';
   }
   else  
     data = "There are no Slots available for this doctor.";

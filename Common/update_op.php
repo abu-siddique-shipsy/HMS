@@ -74,7 +74,6 @@ if(isset($_POST['tests']))
 	$doc_id = $_POST['doc_id'];
 	$result = 0;
 	// $response = "";
-	print_r($request);
 	$amt = 0;
 	foreach ($request as $key => $value) {
 		$query = "insert into lab_requests (test_id,reg_id,doc_id) values ($value->id,$reg_id,$doc_id)";

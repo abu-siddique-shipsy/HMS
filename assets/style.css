@@ -1,6 +1,36 @@
+#save_all{
+  color: #ffffff;
+  font-weight: 600;
+  background-color: #2e3f84;
+}
+#save_all:hover{
+  cursor: pointer;
+}
+
+.full-btn{
+  width: 100%;
+}
+.requestForPurchase{
+  background: inherit !important;
+  border : none !important;
+  outline: none !important;
+}
+#sample_table{
+  width: 100% !important;
+}
+.accept{
+  background: inherit !important;
+  border : none !important;
+  outline: none !important;
+}
+.decline{
+  background: inherit !important;
+  border : none !important;
+  outline: none !important;
+}
+
 .calender{
   margin-top: -10px;
-  /*padding: 10px;*/
 }
 .calender_button{
   background: inherit;
@@ -60,8 +90,8 @@ table.dataTable tbody td {
   /*overflow-x: hidden;*/
 }
 .sample{
-  max-height: 50%;
-  overflow: auto;
+  /*max-height: 50%;*/
+  /*overflow: auto;*/
 }
 .pharm{
   padding: 20px;

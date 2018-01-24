@@ -74,7 +74,7 @@ $result = $DBcon->query($query);
 	<div class="row" >
 		<div class="col-md-12">
 
-		<div class="panel panel-body" id="patient_det" style="display: none">
+		<div class="panel panel-body" id="details_tab" style="display: none">
 			<table class="table table-hover" id="pat">
 			<thead id="head">
 				<th>Patient Id</th>
@@ -112,9 +112,8 @@ $result = $DBcon->query($query);
 
 <script type="text/javascript">
 $(document).ready(function(){
-	$('#pat tbody').on( 'click', 'tr', function (){
+	$(document).on( 'click', '#pat tbody tr', function (){
 		window.location.href = "/View/patient_reg.php?pat_id="+($(this).find('td').html());
-		
 	});
 	var type = 0;
 	$('.type').on('change',function(){
@@ -130,20 +129,9 @@ $(document).ready(function(){
 	}
 	
 	});
-	$('#sel1').on('change',function(){
-		var value = $(this).val(); 
-		// console.log(type);
-		switch(type){
-		case 1: patient(value);break;
-		case 2: consultant(value);break;
-		case 3: tarrif(value);break;
-		case 4: appointment(value);break;
-		case 5: inpatientEnq(value);break;
-		}
-		// patient(value);
-	});
 	function patient(value)
 	{
+		$('#details_tab').html('<table id="pat"></table>');
 		$.ajax({
 		  url: "<?php echo patientDetails; ?>",
 		  method : 'post',
@@ -151,89 +139,97 @@ $(document).ready(function(){
 		  success: function(response) {
 		  	if(response.status="success")
 			{
-				initializeDataTable(response.data);		
+				initializePatientDataTable(response.data);		
 			}
 		  	
 		  }
 		});
 		
-  		$('#patient_det').css('display','block');	
+  		$('#details_tab').css('display','block');	
     }	
 	
 	function consultant(value)
 	{
-		$('#cons2').DataTable({   
-    	"ajax"     :     {
-    	"url"	   :  	"<?php echo ConsultantDetails; ?>",  
-    	"contentType" : "application/json",
-    	"method"   :  		"post",
-    	"data"	   :  function(){
-    			return {'test':1};
-    			}
-
-    	  
-    	},
-    	"columns"     :     [  
-                {     "data"     :     "name"     },  
-                {     "data"     :     ""},  
-                {     "data"     :     ""},  
-                {     "data"     :     ""     },  
-                {     "data"     :     ""},  
-                {     "data"     :     ""}  
-           ],
-
-           
-    	});
-  		// $('#head').html(head);	
-  		$('#pat').css('display','block');	
-		// $.ajax({
-		//   url: '<?php //echo ConsultantDetails; ?>',
-		//   method : 'post',
-		//   dataType : 'json',
-		//   data: {'consultant_id' : value},
-		//   success: function(response) {
-		//   	console.log(response);
-		//   	if(response.status == "success")
-		//   	{
-		//   		var options = "";
-		//   		var result = "";
-		//   		var head = "";
-		//   		head += "<table class='table table-hover' id='pat'><thead><th>Name</th><th>Date Of Birth</th><th>Address</th><th>Number Of Visits</th><th>Last Visit</th></thead><tbody>";
-		//   		for(var i = 0 ; i< response.data.length ; i++)
-		//   		{
-		//   			options += "<option value='"+response.data[i].staff_id+"' >"+response.data[i].name+"</option>";
-		  			
-		//   			result += "<tr>";	
-		//   			result += "<td>"+response.data[i].name+"</td>";
-		// 			result += "<td>"+response.data[i].dob+"</td>";
-		// 			result += "<td>"+response.data[i].address+"</td>";
-		// 			result += "<td>"+response.data[i].num_vis+"</td>";
-		// 			result += "<td>"+response.data[i].last_visit+"</td>";
-		//   			result += "</tr>";	
-		//   		}
-		//   		head += result + "</tbody></table>"
-		//   		// $('#body').html(result);	
-		//   		$('#patient_det').html(head);	
-		//   		if(value == 0)
-		//   			$('#sel1').html(options);
-		//   	}
-
-		//   }		
-		// });	
+		$('#details_tab').html('<table id="cons"></table>');
+		$.ajax({
+		  url: "<?php echo ConsultantDetails; ?>",
+		  method : 'post',
+		  dataType: 'JSON',
+		  success: function(response) {
+		  	if(response.status="success")
+			{
+				initializeConsultantDataTable(response.data);		
+			}
+		  	
+		  }
+		});
+  		$('#details_tab').css('display','block');	
 	}
-	function initializeDataTable(data)
+	function appointment(value)
+	{
+		$('#details_tab').html('<table id="app"></table>');
+		$.ajax({
+		  url: "<?php echo controller.'cont.reception.php'; ?>",
+		  method : 'post',
+		  dataType: 'JSON',
+		  data: {'get_appointment' : 1},
+		  success: function(response) {
+		  	if(response.status="success")
+			{
+				initializeAppointmentDataTable(response.data);		
+			}
+		  	
+		  }
+		});
+  		$('#details_tab').css('display','block');	
+	}
+	function initializePatientDataTable(data)
 	{
 		$('#pat').DataTable({   
     	"data": data,
         "destroy": true,
     	"columns"     :     [  
-    			{     "data"     :     "id"     },  
-                {     "data"     :     "name"     },  
-                {     "data"     :     "dob"},  
-                {     "data"     :     "sex"},  
-                {     "data"     :     "phone_number"     },  
-                {     "data"     :     "num_vis"},  
-                {     "data"     :     "last_visit"}  
+    			{ "title": "ID",    "data"     :     "id"     },  
+                {"title": "Name",     "data"     :     "name"     },  
+                {"title": "Date Of Birth",     "data"     :     "dob"},  
+                {"title": "Gender",     "data"     :     "sex"},  
+                {"title": "Phone Number",     "data"     :     "phone_number"     },  
+                {"title": "Total Visit" ,     "data"     :     "num_vis"},  
+                {"title": "Last Visit Date",     "data"     :     "last_visit"}  
+           ],
+
+           
+    	});
+	}
+	function initializeConsultantDataTable(data)
+	{
+		$('#cons').DataTable({   
+    	"data": data,
+        "destroy": true,
+    	"columns"     :     [  
+    			{ "title": "ID",    "data"     :     "id"     },  
+                {"title": "Name",     "data"     :     "name"     },  
+                {"title": "Email",     "data"     :     "email"},  
+                {"title": "Qualification",     "data"     :     "qualification"},  
+                {"title": "Specialization",     "data"     :     "specialization"     },  
+                {"title": "Working Hours" ,     "data"     :     "working_hrs"},  
+                {"title": "Charge",     "data"     :     "fee"}  
+           ],
+
+           
+    	});
+	}
+	function initializeAppointmentDataTable(data)
+	{
+		$('#app').DataTable({   
+    	"data": data,
+        "destroy": true,
+    	"columns"     :     [  
+    			{ "title": "Doctor ",    "data"     :     "doc_name"     },  
+                {"title": "Patient ",     "data"     :     "pt_name"     },  
+                {"title": "Date",     "data"     :     "scheduled_date"},  
+                {"title": "Time",     "data"     :     "scheduled_time"},  
+                {"title": "For",     "data"     :     "complaint"     }
            ],
 
            

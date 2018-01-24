@@ -26,7 +26,7 @@ $result = $DBcon->query($query);
 				  		<table class="table table-hover">
 						<thead>
 							<th>Name</th>
-							<th>DOB</th>
+							<th>Age</th>
 							<th>Sex</th>
 						</thead>
 						<tbody id="det">
@@ -63,8 +63,8 @@ $result = $DBcon->query($query);
 				</div>
 			</div>
 		</div>
-	<div class="row" id="tests" style="display: none">
-		<div class="col-md-12">
+	<div class="row">
+		<div class="col-md-12" id="tests" style="display: none">
 				<div class="panel panel-default panel1">
 				  	<div class="panel-body patient sample">
 				  		<table class="table table-hover table-default" id="test_table">
@@ -82,9 +82,7 @@ $result = $DBcon->query($query);
 				  	</div>
 				</div>
 		</div>
-	</div>
-	<div class="row" id="sample_div" style="display: none">
-		<div class="col-md-12">
+		<div class="col-md-offset-2 col-md-8" id="sample_div" style="display: none">
 				<div class="panel panel-default panel1">
 				  	<div class="panel-body patient sample">
 				  		<table class="table table-hover table-default" id="sample_table">
@@ -105,6 +103,8 @@ $result = $DBcon->query($query);
 					</div>
 				</div>
 		</div>
+		
+		
 	</div>	
 	
 	
@@ -153,6 +153,8 @@ $result = $DBcon->query($query);
 	        	<thead>
 	        		<th>Procedure Name</th>
 	        		<th>Submitted On</th>
+	        		<th>Min Value</th>
+	        		<th>Max Value</th>
 	        		<th>Result</th>
 	        		<th>Value</th>
 	        	</thead>
@@ -285,7 +287,7 @@ $(document).ready(function(){
 			'reg_id': reg_id 
 		};
 		var res = add_sample_data(sample);
-		
+		get_samples(reg_id);
 	});
 	$('#id').on('change',function(){
 		reg_id = $(this).val();
@@ -508,24 +510,36 @@ function get_samples(reg_id)
 	  success: function(response) {
 	  	if(response.status="success")
 		{
-			var html = ""
-			if(!response.data.length)
-			{
-				html = "-----------No Sample Available-------------";	
-			}
+			// var html = ""
+			// if(!response.data.length)
+			// {
+			// 	html = "-----------No Sample Available-------------";	
+			// }
 			for(var i = 0;i < response.data.length ; i++)
 			{
-				html += '<tr>';
-				html += '<td>'+response.data[i].sample_name+'</td>'; 
-				html += '<td>'+response.data[i].collected_on+'</td>';
-				html += '<td>'+response.data[i].qty+" "+ response.data[i].units+'</td>';
-				html += '<td><button type="button" class="btn sample_id_use" data-toggle="modal" data-target="#submit" value="'+response.data[i].sample_log_id+'">Use Sample</button></td>';
-				html += '<td><button type="button" class="btn sample_id_del" value="'+response.data[i].sample_log_id+'">Remove Sample</button></td>';
-				html += '</tr>'; 
+				// html += '<tr>';
+				// html += '<td>'+response.data[i].sample_name+'</td>'; 
+				// html += '<td>'+response.data[i].collected_on+'</td>';
+				// html += '<td>'+response.data[i].qty+" "+ response.data[i].units+'</td>';
+				response.data[i].use = '<button type="button" class="btn sample_id_use" data-toggle="modal" data-target="#submit" value="'+response.data[i].sample_log_id+'">Use Sample</button>';
+				response.data[i].remove = '<button type="button" class="btn sample_id_del" value="'+response.data[i].sample_log_id+'">Remove Sample</button>';
+				// html += '</tr>'; 
 				
 			}
-			$('#sample_body').html(html);
-			$("#sample_table").DataTable();
+			// $('#sample_body').html(html);
+			$("#sample_table").DataTable({
+				"data": response.data,
+				"destroy": true,
+				"columns"     :     [  
+					{ "title": "Sample Name",    "data"     :     "sample_name"     },  
+		            {"title": "Collected On",     "data"     :     "collected_on"     },  
+		            {"title": "Quantity",     "data"     :     "qty"},  
+		            {     "data"     :     "use"},  
+		            {     "data"     :     "remove"     }
+
+		       ],
+		       "pageLength" : 3 
+			}).draw();
 		}		  	
 	  }
 	});
@@ -606,6 +620,8 @@ function get_reports(reg_id)
 					html += '<tr>';
 					html += '<td>'+response.data[i].procedure_name+'</td>'; 
 					html += '<td>'+response.data[i].updated_at+'</td>';
+					html += '<td>'+response.data[i].min_value+'</td>';
+					html += '<td>'+response.data[i].max_value+'</td>';
 					html += '<td>'+(response.data[i].result)+'</td>';
 					html += '<td>'+(response.data[i].result_value)+'</td>';
 					html += '</tr>'; 

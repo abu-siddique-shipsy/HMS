@@ -132,4 +132,21 @@ class register{
 		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
 		$res = $con->query($query);		
 	}
+	function getAppointment()
+	{
+		$query = 'select concat("Dr. " , stf.f_name, " " , stf.m_name , " " , stf.l_name) as doc_name,pt.name as pt_name,ds.date as scheduled_date,ds.frm_time as scheduled_time,rg.complaint from doc_schedule ds 
+			join registration_flow rg on rg.registration_id = ds.reg_id 
+			join patient pt on pt.id = rg.patient_id 
+			join staff stf on stf.staff_id = ds.phy_id  where ds.reg_id is not null';	
+		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
+		$res = $con->query($query);		
+
+		$re = [];
+		while ($exe = $res->fetch_object())
+		{
+			$re[] = $exe;
+		}		
+		$con->close();
+		return $re;
+	}
 }

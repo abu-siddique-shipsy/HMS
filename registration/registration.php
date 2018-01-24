@@ -580,7 +580,6 @@ body{
 					$('#screen_result').html('Addition Successful');
 					$('#get_access_details').modal('hide');
 				  	$('#add_staff_contact').modal('show');
-			  		
 			  	}
 			  	else
 			  		$('#screen_result').html('Addition Failed');

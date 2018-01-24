@@ -4,15 +4,7 @@ include __DIR__.'/../config.php';
 // include root.'/assets/bootstrap.php';
 // include root.'/assets/style.php';
 $DBcon = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
-$id = $_POST['consultant_id'];
-// echo $id;
-if($id != 0)
-{
-	
-	$query = "select * from staff where staff_type = 10 and staff_id = $id";
-}
-else
-{$query = "select * from staff where staff_type = 10";}
+$query = 'select id,concat("Dr. " , f_name, " " , m_name , " " , l_name) as name, email as email ,qualification , speciality as specialization , concat(consulting_hrs_frm , " to " ,consulting_hrs_to) as working_hrs, fee from staff stf join physician phy on phy.id = stf.staff_id where staff_type = 10';
 $result_array= [];
 $response = new stdClass();
 $result = $DBcon->query($query);

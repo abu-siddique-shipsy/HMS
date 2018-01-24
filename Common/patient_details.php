@@ -23,7 +23,7 @@ $response = new stdClass();
 $result = $DBcon->query($query);
 while ($exe = $result->fetch_assoc()) {
 	$patient_id = $exe['id'];
-
+	$exe['dob'] = (date('Y') - date('Y',strtotime($exe['dob'])));
 	$result_array[] = $exe;
 	$response->is_inp = $exe['is_inp'];
 	$response->data = $result_array;

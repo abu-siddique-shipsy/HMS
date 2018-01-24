@@ -1,0 +1,22 @@
+1. Change registration id to Visit id across all frontend
+2. While booking appointment, selecting date and time.. previous dates are coming.  it should be today + 5 days
+3. In OPD, while adding prescription, it is not allowing to enter 0.5 tablet for morning/afternoon/night
+4. Need an option to enter After food or before food in prescription
+5. In OPD, once you enter Patient Id, Visit No client, complain click has to be removed.  As soon as you click on patient id, latest visit has to open with complain.
+6. In OPD, Top section of name, DOB, Sec, Complain…. please release DOB to Age.  Example it should show 38 Yrs
+7. After adding Advice in OPD and selecting a date, save is throwing an error.
+8. Lab tests - once we assign tests, selected tests to list on the screen.
+9. Billing is still empty.
+10. Print option required for complain, diagnosis, advice, prescription, lab test.  Consolidated print.
+11. Left side Visit No. 48 button to have the date of visit in the button.
+12. Patients in Waiting hall still not listing.  I have added two patients.
+13. Added prescription to list on the screen.  Currently new button total prescribed has to be clicked.
+14. In Complain, investigation, diagnosis, where ever text box is there, please put is big.  Currently it is very small
+15. Pharmacy has no option to search the patient with patient id.
+16. When i open the patient prescription in pharmacy, prescribed estimated qty is wrong.  Please refer to registration id:  48
+17. Collection of amount in pharmacy is not working
+18. In Pathology, no option to search patient with patient id.
+19. On clicking on collect sample and adding sample data, data is not listing in same page.  once we go out of page and come back, it is listing
+20. Show report is not listing the min and max values of tests
+21. Once you goto print pathology report, there is no option to navigate backwards.
+22. In pathology top section, name, dob and sex is present.  replace dob with Age
