@@ -11,11 +11,21 @@ $result = $DBcon->query($query);
 <div class="container">
 	<div class="row">
 		<div class="col-md-12">
-			<div class="col-md-4">
-				<div class="panel panel-default panel1">
+			<div class="col-sm-4  ">
+				<div class="panel panel-default">
 				  	<div class="panel-body patient">
 				  		<div class="form-group">
-							<input type="text" class="form-control" name="name" placeholder="Registration Id" id="id">
+							<input type="text" class="form-control" name="name" placeholder="ID" id="pat_id">
+							<label id="alert"></label>
+							<div class="row">
+								<div class="col-md-6">
+									<button type="button" class="form-control" onclick="get_details_with_register_number($('#pat_id').val())">Visit ID</button>
+								</div>
+								<div class="col-md-6">
+									<button type="button" class="form-control" onclick="get_details_with_patient_id($('#pat_id').val())">Patient ID</button>
+								</div>
+								
+							</div>
 						</div>
 					</div>
 				</div>
@@ -166,8 +176,7 @@ $result = $DBcon->query($query);
     </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" id="upt_res_db">Save</button>
-        <button type="button" class="btn btn-default" onclick='printDiv("tet");'>Print</button>
+        <button type="button" class="btn btn-default" onclick='printDiv();'>Print</button>
       </div>
     </div>
 
@@ -277,86 +286,23 @@ $(document).ready(function(){
 		get_sample_types();
 	});
 	$('#show_reports').on('click',function(){
-		get_reports(reg_id);
+		get_reports(window.reg_id);
 	});
 	
 	$('#sub_sample_mod').on('click',function(){
 		var sample = {
 			'id' : $('#sample_select_box').val(),
 			'qty' : $('#sample_qty').val(),
-			'reg_id': reg_id 
+			'reg_id': window.reg_id 
 		};
 		var res = add_sample_data(sample);
-		get_samples(reg_id);
+		get_samples(window.reg_id);
 	});
-	$('#id').on('change',function(){
-		reg_id = $(this).val();
-		get_samples(reg_id);
-		get_tests(reg_id);
-
-		$.ajax({
-		  url: '<?php echo patientDetails; ?>',
-		  method : 'post',
-		  dataType : 'json',
-		  data: {'patient_id' : reg_id},
-		  success: function(response) {
-		  	console.log(response);
-		  	if(!response.data)
-		  	{
-		  		$('#alert').html("Patient Id not available");
-		  	}
-		  	if(response.status == "success")
-		  	{
-		  		$('#sample_div').css('display','block');
-		  		$('.pat_det_pan').css('display','block');
-		  		$('#buttons_div').css('display','block');
-		  		$('#tests').css('display','block');
-		  		
-			  		var options = "";
-			  		var result = "";
-			  		if(response.data)
-			  		{
-				  		for(var i = 0 ; i< response.data.length ; i++)
-				  		{
-				  			result += '<tr>'
-				  			result += "<td>"+response.data[i].name+"</td>";
-							result += "<td>"+response.data[i].dob+"</td>";
-							result += "<td>"+response.data[i].sex+"</td>";
-							result += '</tr>'
-				  		}
-				  		$('#det').html(result);	
-				  		$.ajax({
-							  url: '<?php echo patientDetails; ?>',
-							  method : 'post',
-							  dataType : 'json',
-							  data: {'get_proc':1,'reg_id' : reg_id},
-							  success: function(response) {
-							  	var options = "<option>Select Procedure</option>";
-							  	for(var i = 0 ; i< response.data.length ; i++)
-						  		{
-						  			options += "<option value='"+response.data[i].procedure_id+"'>"+response.data[i].procedure_name+"</option>";
-						  			
-						  		}
-							  	$('#proc_type').html(options);
-							}
-						});
-				  	}
-				  	else
-				  	{
-				  		$('#det').html("<td>Registration ID not available</td>");		
-				  	}
-			  	
-		  	}
-		  }		
-
-		});
-
-		
-	});	
+	
 	$('#upload_image').on('change',function(){
 		var formData = new FormData();
 		formData.append('file', $('#upload_image')[0].files[0]);
-		formData.append('reg_id', reg_id);
+		formData.append('reg_id', window.reg_id);
 		formData.append('from', 'pathalogy');
 		console.log(formData);
 		$.ajax({
@@ -446,11 +392,11 @@ $(document).ready(function(){
 		  url: "<?php echo patientDetails; ?>",
 		  method : 'post',
 		  dataType: 'JSON',
-		  data: {'test_results' : JSON.stringify(test_results) , 'reg_id' : reg_id},
+		  data: {'test_results' : JSON.stringify(test_results) , 'reg_id' : window.reg_id},
 		  success: function(response) {
 		  	if(response.status="success")
 			{
-				get_samples(reg_id);
+				get_samples(window.reg_id);
 			}
 		  	
 		  }
@@ -462,7 +408,7 @@ $(document).ready(function(){
 		  url: "<?php echo controller."cont.lab.php"; ?>",
 		  method : 'post',
 		  dataType: 'JSON',
-		  data: {'get_all_path_reports' : 1 , 'reg_id' : reg_id, 'from_rec' : 'pathalogy'},
+		  data: {'get_all_path_reports' : 1 , 'reg_id' : window.reg_id, 'from_rec' : 'pathalogy'},
 		  success: function(response) {
 		  	if(response.status="success")
 			{
@@ -492,13 +438,12 @@ $(document).ready(function(){
 	
 });
 
-function printDiv(divName) 
+function printDiv() 
 {
-    var printContents = document.getElementById(divName).innerHTML;     
-	var originalContents = document.body.innerHTML;       
-	document.body.innerHTML = printContents;      
-	window.print();      
-	document.body.innerHTML = originalContents;
+    window.open(
+      '<?php echo controller."/cont.reportLab.php?reg_id="; ?>'+window.reg_id,
+      '_blank' 
+      );
 }
 function get_samples(reg_id)
 {
@@ -506,7 +451,7 @@ function get_samples(reg_id)
 	  url: "<?php echo controller."cont.lab.php" ?>",
 	  method : 'post',
 	  dataType: 'JSON',
-	  data: {'get_samples' : reg_id},
+	  data: {'get_samples' : window.reg_id},
 	  success: function(response) {
 	  	if(response.status="success")
 		{
@@ -640,10 +585,136 @@ function add_sample_data(sample)
 	  dataType: 'JSON',
 	  data: {'add_samples' : JSON.stringify(sample)},
 	  success: function(response) {
-	  	get_samples(reg_id);
+	  	get_samples(window.reg_id);
 	  }
 	});
 
 }
+function get_details_with_patient_id(value)
+{
+	$.ajax({
+      url: '<?php echo patientDetails1; ?>',
+      method : 'post',
+      dataType : 'json',
+      data: {'get_last_reg': 1 ,'pat_id' : value},
+      success : function(response){
+      	window.reg_id = response.data.registration_id;
+      	get_details_with_register_number(window.reg_id);
 
+      }
+  });
+		
+}
+function get_details_with_register_number(value)
+{
+	window.reg_id = value;
+	$.ajax({
+		  url: '<?php echo patientDetails; ?>',
+		  method : 'post',
+		  dataType : 'json',
+		  data: {'patient_id' : value, 'complaint' : 1},
+		  success: function(response) {
+		  	
+		  	if(!response.data)
+		  	{
+		  		alert("Patient Id not available");
+		  	}
+		  	else
+		  	{
+		  	 	getAllDetails(window.reg_id);
+		  	}
+
+		  }		
+
+		});
+		
+}
+function getAllDetails(value)
+{
+	$.ajax({
+		url: '<?php echo patientDetails; ?>',
+		method : 'post',
+		dataType : 'json',
+		data: {'patient_id' : value, 'complaint' : 1,'single' :1},
+		success: function(response) {
+			$('#navs').show();
+			window.reg_id = response.complaint.registration_id;
+			$('.reg_id').val(window.reg_id);
+			getDetails(window.reg_id);
+			// addComplaint(response.complaint.complaint,window.reg_id);
+			// addInvestigation(response.complaint.investigation,window.reg_id);
+			// addDiagnosis(response.complaint.diagnosis,window.reg_id);
+			// addPrescription(window.reg_id);
+			// addAdvice(response.complaint.advice,response.complaint.next_visit,window.reg_id);
+			// addLabTest(window.reg_id);
+			// addVitals(response.vitals,window.reg_id);
+			// genBill(window.reg_id);
+			// addVitals(response.complaint.complaint);
+		}
+	});
+}
+function getDetails(reg_id)
+{
+		// reg_id = $(this).val();
+	get_samples(reg_id);
+	get_tests(reg_id);
+
+	$.ajax({
+	  url: '<?php echo patientDetails; ?>',
+	  method : 'post',
+	  dataType : 'json',
+	  data: {'patient_id' : reg_id},
+	  success: function(response) {
+	  	console.log(response);
+	  	if(!response.data)
+	  	{
+	  		$('#alert').html("Patient Id not available");
+	  	}
+	  	if(response.status == "success")
+	  	{
+	  		$('#sample_div').css('display','block');
+	  		$('.pat_det_pan').css('display','block');
+	  		$('#buttons_div').css('display','block');
+	  		$('#tests').css('display','block');
+	  		
+		  		var options = "";
+		  		var result = "";
+		  		if(response.data)
+		  		{
+			  		for(var i = 0 ; i< response.data.length ; i++)
+			  		{
+			  			result += '<tr>'
+			  			result += "<td>"+response.data[i].name+"</td>";
+						result += "<td>"+response.data[i].dob+"</td>";
+						result += "<td>"+response.data[i].sex+"</td>";
+						result += '</tr>'
+			  		}
+			  		$('#det').html(result);	
+			  		$.ajax({
+						  url: '<?php echo patientDetails; ?>',
+						  method : 'post',
+						  dataType : 'json',
+						  data: {'get_proc':1,'reg_id' : reg_id},
+						  success: function(response) {
+						  	var options = "<option>Select Procedure</option>";
+						  	for(var i = 0 ; i< response.data.length ; i++)
+					  		{
+					  			options += "<option value='"+response.data[i].procedure_id+"'>"+response.data[i].procedure_name+"</option>";
+					  			
+					  		}
+						  	$('#proc_type').html(options);
+						}
+					});
+			  	}
+			  	else
+			  	{
+			  		$('#det').html("<td>Registration ID not available</td>");		
+			  	}
+		  	
+	  	}
+	  }		
+
+	});
+
+}
 </script>

@@ -123,10 +123,19 @@ $result = $DBcon->query($query);
         <div class="row">
 			<div class="col-sm-6  ">
 				<div class="panel panel-default">
-				  	<div class="panel-body" style="margin-top: 10px;">
-				  		<div class="form-group ">
-							<input type="text" class="form-control select_box" name="name" placeholder="Registration ID" id="pat_id">
+				  	<div class="panel-body patient">
+				  		<div class="form-group">
+							<input type="text" class="form-control" name="name" placeholder="ID" id="pat_id">
 							<label id="alert"></label>
+							<div class="row">
+								<div class="col-md-6">
+									<button type="button" class="form-control" onclick="get_details_with_register_number($('#pat_id').val())">Visit ID</button>
+								</div>
+								<div class="col-md-6">
+									<button type="button" class="form-control" onclick="get_details_with_patient_id($('#pat_id').val())">Patient ID</button>
+								</div>
+								
+							</div>
 						</div>
 					</div>
 				</div>
@@ -520,4 +529,113 @@ $(document).ready(function() {
 		});
     }
 } );
+function get_details_with_patient_id(value)
+{
+	$.ajax({
+      url: '<?php echo patientDetails1; ?>',
+      method : 'post',
+      dataType : 'json',
+      data: {'get_last_reg': 1 ,'pat_id' : value},
+      success : function(response){
+      	window.reg_id = response.data.registration_id;
+      	get_details_with_register_number(window.reg_id);
+
+      }
+  });
+		
+}
+function get_details_with_register_number(value)
+{
+	window.reg_id = value;
+	$.ajax({
+		  url: '<?php echo patientDetails; ?>',
+		  method : 'post',
+		  dataType : 'json',
+		  data: {'patient_id' : value, 'complaint' : 1},
+		  success: function(response) {
+		  	
+		  	if(!response.data)
+		  	{
+		  		alert("Patient Id not available");
+		  	}
+		  	else
+		  	{
+		  	 	getAllDetails(window.reg_id);
+		  	}
+
+		  }		
+
+		});
+		
+}
+function getAllDetails(value)
+{
+	$.ajax({
+		url: '<?php echo patientDetails; ?>',
+		method : 'post',
+		dataType : 'json',
+		data: {'patient_id' : value, 'complaint' : 1,'single' :1},
+		success: function(response) {
+			window.reg_id = response.complaint.registration_id;
+			$('.reg_id').val(window.reg_id);
+			getDetails(window.reg_id);
+			// addComplaint(response.complaint.complaint,window.reg_id);
+			// addInvestigation(response.complaint.investigation,window.reg_id);
+			// addDiagnosis(response.complaint.diagnosis,window.reg_id);
+			// addPrescription(window.reg_id);
+			// addAdvice(response.complaint.advice,response.complaint.next_visit,window.reg_id);
+			// addLabTest(window.reg_id);
+			// addVitals(response.vitals,window.reg_id);
+			// genBill(window.reg_id);
+			// addVitals(response.complaint.complaint);
+		}
+	});
+}
+function getDetails(value)
+{
+	$.ajax({
+		  url: '<?php echo patientDetails; ?>',
+		  method : 'post',
+		  dataType : 'json',
+		  data: {'patient_id' : value, 'complaint' : 1},
+		  success: function(response) {
+		  	// console.log(response);
+		  	if(!response.data)
+		  	{
+		  		$('#alert').html("Patient Id not available");
+		  	}
+		  	if(response.status == "success")
+		  	{
+		  		reg_id = response.data[0].reg_id;
+	  			$('#name1').html(response.data[0].name);
+	  			$('#dob1').html(response.data[0].dob);
+	  			$('#reg1').html(response.data[0].reg_id);
+		  		$('#det').css('display','block');
+		  		$.ajax({
+					  url: '<?php echo pharmacy; ?>',
+					  method : 'post',
+					  dataType : 'json',
+					  data: {'medicine_used_by' : reg_id },
+					  success: function(response) {
+						window.medicines = response.data;				  
+						console.log(medicines);
+					  	rowq = "";
+					  	for(var i = 0; i< response.data.length ; i++)
+					  	{
+							rowq += "<tr data-value='"+response.data[i].log_med_id+"'><td>"+response.data[i].medicine_name+"</td><td>"+response.data[i].morning+"</td><td>"+response.data[i].afternoon+"</td><td>"+response.data[i].night+"</td><td>"+response.data[i].days+"</td><td>"+response.data[i].qty+"</td><td><input type='number' class='req_med_qty form-control'></td><td>"+response.data[i].expiry_date+"</td><td>"+response.data[i].total_available+"</td><td>$"+(response.data[i].price)*(response.data[i].qty)+"</td></tr>";
+					  	}
+					  	$('.med_pres').html(rowq);
+					  	$('#tbls').css('display','block');
+					  }
+					
+				});
+			  	
+		  	}
+		  	
+			
+		  }		
+
+		});
+
+}
 </script>

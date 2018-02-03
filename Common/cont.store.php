@@ -3,9 +3,27 @@ include __DIR__.'/../config.php';
 include Class_path.'class.store.php';
 
 $response = new stdClass();
+
+if(isset($_POST['createRequest']))
+{
+	$req = $_POST['createRequest'];
+	$data = store::createRequest($req);
+	$response->data = $data;
+}
+if(isset($_POST['updateMrn']))
+{
+	$mrn = $_POST['updateMrn'];
+	$data = store::updateMrn($mrn);
+	$response->data = $data;
+}
 if(isset($_POST['getInventory']))
 {
 	$data = store::getInventory();
+	$response->data = $data;
+}
+if(isset($_POST['getOrderDetails']))
+{
+	$data = store::getOrderDetails($_POST['getOrderDetails']);
 	$response->data = $data;
 }
 if(isset($_POST['getRequest']))

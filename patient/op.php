@@ -51,7 +51,7 @@ td{
   </div>
 </div>
 <div id="medicine" class="modal fade" role="dialog">
-  <div class="modal-dialog">
+  <div class="modal-dialog" style="width : 80%">
 
     <!-- Modal content-->
     <div class="modal-content">
@@ -64,6 +64,7 @@ td{
         			<th>Afternoon</th>
         			<th>Night</th>
         			<th>Total Days</th>
+        			<th>When</th>
         			<th></th>
         		</thead>
         		<tbody>
@@ -80,14 +81,23 @@ td{
         	
         	
         		
-        			<td><input type="number" class="form-control" id="mor" placeholder="qty"></td>
+        			<td><input type="number" class="form-control" id="mor"></td>
         		
         		
-        			<td><input type="number" class="form-control" id="aft" placeholder="qty"></td>
+        			<td><input type="number" class="form-control" id="aft"></td>
         		
         		
-        			<td><input type="number" class="form-control" id="nig" placeholder="qty"></td>
-        			<td><input type="number" class="form-control" id="day" placeholder="Days"></td>
+        			<td><input type="number" class="form-control" id="nig"></td>
+        			<td><input type="number" class="form-control" id="day"><br>
+        				<div class="radio-inline pull-right">
+						  <label><input type="radio" name="optradio" class="bef_aft" value="1">Before Food</label>
+						
+						  <label><input type="radio" name="optradio" class="bef_aft" value="0">After Food</label>
+						</div>
+        			</td>
+        			
+        				
+        			
         			<td><button class="btn btn-default" id="add_med">Add</button></td>
         		</tr>
         		</tbody>
@@ -327,15 +337,11 @@ td{
 </div>
 <div class="row">
 	<div class="col-md-1" id="reg_buttons">
-		<button class="btn btn-default">test</button>
-		<button class="btn btn-default">test</button>
-		<button class="btn btn-default">test</button>
-		<button class="btn btn-default">test</button>
-		<button class="btn btn-default">test</button>
+		
 	</div>
 	<div class="col-md-11" id="navs">
 		<ul class="nav nav-tabs">
-	        <li id="complaintTab1"><a  href="#complaintTab" data-toggle="tab">Complain</a></li>
+	        <li id="complaintTab1" ><a  href="#complaintTab" data-toggle="tab">Complain</a></li>
 	        <li id="investTab1"><a href="#investTab" data-toggle="tab">Investigation</a></li>
 	        <li id="diagTab1"><a href="#diagTab" data-toggle="tab">Diagnosis</a></li>
 	        <li id="newTicketTab1"><a  href="#presTab" data-toggle="tab">Prescription</a></li>
@@ -344,7 +350,9 @@ td{
 	        <li id="vitTab1"><a  href="#vitTab" data-toggle="tab">Vitals</a></li>
 	        <li id="bilTab1"><a  href="#bilTab" data-toggle="tab">Billing</a></li>
 	        <ul class="nav nav-tabs navbar-right">
-    			<li><a id="save_all">Save</a></li>
+	        	<li><a id="save_all">Save</a></li>
+	        	<li><a id="print_all">Print</a></li>
+    			
     		</ul>
 	        
     	</ul>
@@ -455,6 +463,7 @@ td{
 $(document).ready(function(){
 	$('#reg_buttons').hide();
 	$('#navs').hide();
+	
 	var currentReg = 0;
 	var amt = 0;
 	var type = 0;
@@ -492,6 +501,8 @@ $(document).ready(function(){
 		var aft = $('#aft').val();
 		var nig = $('#nig').val();
 		var days = $('#day').val();
+		var bef_aft = $('.bef_aft:checked').val();
+		var bef_aft_text  = bef_aft == "1" ? "Before Food" : "After Food";
 
 		
 
@@ -499,9 +510,9 @@ $(document).ready(function(){
 		var name = $('#med_nam').find("option:selected").text();
 		if(days != "" && name != ""){
 			qty = (parseInt(morn)+parseInt(aft)+parseInt(nig))*days;
-		  	medicines.push({'id' : $('#med_nam').val(), 'morning' : morn , 'afternoon' : aft,'night' : nig,'days':days , 'qty' : qty});
+		  	medicines.push({'id' : $('#med_nam').val(), 'morning' : morn , 'afternoon' : aft,'night' : nig,'days':days , 'qty' : qty,'bef_aft': bef_aft });
 			total += parseInt(qty)*parseInt(price);
-			 row += "<tr><td>"+name+"</td><td>"+morn+"</td><td>"+aft+"</td><td>"+nig+"</td><td>"+days+"</td></tr>";
+			 row += "<tr><td>"+name+"</td><td>"+morn+"</td><td>"+aft+"</td><td>"+nig+"</td><td>"+days+"</td><td>"+ bef_aft_text +"</td></tr>";
 			 var tot = "<tr><td>Total Amt:</td><td>"+total+"</td>";
 		}
 	 	$('.med').html(row+tot);
@@ -522,12 +533,22 @@ $(document).ready(function(){
 					rowq += "<tr><td>"+response.data[i].medicine_name+"</td><td>"+response.data[i].morning+"</td><td>"+response.data[i].afternoon+"</td><td>"+response.data[i].night+"</td><td>"+response.data[i].days+"</td><td>"+response.data[i].on_date+"</td></tr>";
 			  	}
 			  	$('.med_pres').html(rowq);
+			  	getAllDetails(window.reg_id);
 		  }
 		 });
+
 		}
 		else{alert("Please Add Medicines");}
 	});
+	$('#print_all').on('click',function(){
+      window.open(
+      '<?php echo controller."/cont.reportDiagnosis.php?reg_id="; ?>'+window.reg_id,
+      '_blank' 
+      );
+
+  });  
 	$('#save_all').on('click',function(){
+		reg_id = window.reg_id;
 		var diag = $('#diag_text').val();
 		var inv = $('#investigation_text').val();
 		var advice = $('#advice_text').val();
@@ -663,6 +684,7 @@ function get_details_with_register_number(value)
 {
 	$('#patient_details').show();
 	$('#reg_buttons').show();
+
 	window.reg_id = value;
 	$.ajax({
 		  url: '<?php echo patientDetails; ?>',
@@ -688,7 +710,7 @@ function get_details_with_register_number(value)
 			  			$('#alert').html("");
 			  			if(response.complaint[i]){
 
-			  				options +='<button class="btn btn-default reg_button" value="'+response.complaint[i].registration_id+'">Visit No '+response.complaint[i].registration_id+'</button>'
+			  				options +='<button class="btn btn-default reg_button" value="'+response.complaint[i].registration_id+'">Visit No '+response.complaint[i].registration_id+'<br>'+response.complaint[i].on_date.substr(0, 10);+'</button>'
 			  			}
 			  			
 			  			
@@ -716,23 +738,7 @@ function get_details_with_register_number(value)
 			  		$('#out_pat').modal('show');	
 			  	}
 		  	}
-		  	$.ajax({
-			  url: '<?php echo update_op; ?>',
-			  method : 'post',
-			  dataType : 'json',
-			  data: {'reg_id': reg_id},
-			  success: function(response) {
-			  	rowq = "";
-			  	if(response.data)
-			  	{
-				  	for(var i = 0; i< response.data.length ; i++)
-				  	{
-						rowq += "<tr><td>"+response.data[i].medicine_name+"</td><td>"+response.data[i].morning+"</td><td>"+response.data[i].afternoon+"</td><td>"+response.data[i].night+"</td><td>"+response.data[i].days+"</td><td>"+response.data[i].on_date+"</td></tr>";
-				  	}
-				  	$('.med_pres').html(rowq);
-				}
-			  }
-			 });
+		  	
 		  }		
 
 		});
@@ -749,23 +755,23 @@ function getAllDetails(value)
 			$('#navs').show();
 			window.reg_id = response.complaint.registration_id;
 			$('.reg_id').val(window.reg_id);
-			addComplaint(response.complaint.complaint);
-			addInvestigation(response.complaint.investigation);
-			addDiagnosis(response.complaint.diagnosis);
-			addPrescription();
-			addAdvice(response.complaint.advice,response.complaint.next_visit);
+			addComplaint(response.complaint.complaint,window.reg_id);
+			addInvestigation(response.complaint.investigation,window.reg_id);
+			addDiagnosis(response.complaint.diagnosis,window.reg_id);
+			addPrescription(window.reg_id);
+			addAdvice(response.complaint.advice,response.complaint.next_visit,window.reg_id);
 			addLabTest(window.reg_id);
-			addVitals(response.vitals);
+			addVitals(response.vitals,window.reg_id);
 			genBill(window.reg_id);
 			// addVitals(response.complaint.complaint);
 		}
 	});
 }
-function addVitals(vitals)
+function addVitals(vitals,reg_id)
 {
 	console.log(vitals)
 	var text = '<table id="vitalsTable"></table>';
-	text += '<button class="btn btn-default full-btn" data-toggle="modal" data-target="#gatherDetails">Gather Vitals</button>';
+	text += '<button class="btn btn-default full-btn '+reg_id+'" data-toggle="modal" data-target="#gatherDetails">Gather Vitals</button>';
 	$('#vitTab').html(text);
 	$('#vitalsTable').DataTable({
 	        "data": vitals,
@@ -788,7 +794,7 @@ function addVitals(vitals)
 function addLabTest(reg_id)
 {
 	var text = '<table id="labTables"></table>';
-	text += '<button class="btn btn-default full-btn" data-toggle="modal" data-target="#test" >Assign Test</button>';
+	text += '<button class="btn btn-default full-btn '+reg_id+'" data-toggle="modal" data-target="#test" >Assign Test</button>';
 	$('#labTab').html(text);
 	$.ajax({
 		url: '<?php echo patientDetails1; ?>',
@@ -821,30 +827,60 @@ function addLabTest(reg_id)
 	});
 
 }
-function addPrescription()
+function addPrescription(reg_id)
 {
-	var text = '<div class="row"><div class="col-sm-4" style="text-align: center;">'
-	text = '<button class="btn btn-default" data-toggle="modal" data-target="#medicine">CLICK TO ADD PRESCRIPTION</button></div><div class="col-sm-2"><button type="button" class="btn btn-default" data-toggle="modal" data-target="#pres">Total Prescribed</button></div></div>';
+	var text = '<table class="table table-hover" id="medTab"></table>';
+	text += '<div class="row"><div class="col-sm-12" style="text-align: center;">'
+	text += '<button class="btn btn-default full-btn '+reg_id+'" data-toggle="modal" data-target="#medicine">CLICK TO ADD PRESCRIPTION</button></div></div></div>';
 	$('#presTab').html(text);
+	$.ajax({
+	  url: '<?php echo update_op; ?>',
+	  method : 'post',
+	  dataType : 'json',
+	  data: {'reg_id': reg_id},
+	  success: function(response) {
+	 	$('#medTab').DataTable({
+	        "data": response.data,
+	        "destroy": true,
+	        "columns": [
+	        	{"title":"Name","data": "medicine_name", "orderable": false},
+	        	{"title":"Morning", "data": "morning", "orderable": false },
+	        	{"title":"Afternoon", "data": "afternoon", "orderable": true },
+	        	{"title":"Night", "data": "night", "orderable": false },
+	        	{"title":"Total Days", "data": "days", "orderable": false },
+	        	{"title":"Prescribed On", "data": "on_date", "orderable": false },
+	        ],
+	        language: {
+	            searchPlaceholder: "Search records"
+	        },
+	        order: [
+	            [0, 'desc']
+	        ],
+	        "searching": false
+	    	}); 	
+			  	
+			  }
+	});
+	
 }
-function addComplaint(data)
+function addComplaint(data,reg_id)
 {
-	var text = '<textarea id="complaint_text" value="">'+data+'</textarea>';
+	var text = '<textarea class="'+reg_id+'" id="complaint_text" rows="8" cols="100">'+data+'</textarea>';
 	$('#complaintTab').html(text);
 }
-function addInvestigation(data)
+function addInvestigation(data,reg_id)
 {
-	var text = '<textarea id="investigation_text" value="">'+data+'</textarea>';
+	var text = '<textarea class="'+reg_id+'" id="investigation_text" rows="8" cols="100">'+data+'</textarea>';
 	$('#investTab').html(text);	
 }
-function addDiagnosis(data)
+function addDiagnosis(data,reg_id)
 {
-	var text = '<textarea id="diag_text" value="">'+data+'</textarea>';
+	var text = '<textarea class="'+reg_id+'" id="diag_text" rows="8" cols="100">'+data+'</textarea>';
 	$('#diagTab').html(text);
 }
-function addAdvice(data,nxt_vist)
+function addAdvice(data,nxt_vist,reg_id)
 {
-	var text = '<textarea id="advice_text" value="">'+data+'</textarea><input class="form-control" type="date" id="nxt_vist" value="'+nxt_vist+'">';
+	var text = '<textarea class="'+reg_id+'"  id="advice_text" rows="8" cols="100">'+data+'</textarea><input class="form-control" type="date" id="nxt_vist" value="'+nxt_vist+'">';
 	$('#adviceTab').html(text);
 }
 function genBill(reg_id)
@@ -889,6 +925,7 @@ function genBill(reg_id)
         
       }
     });
+    $('#complaintTab1').trigger('click');
 }
 </script>
 <!-- "The Amount of $amt for Registration Id $rid is already Charged. Do you want to charge Again?"; -->

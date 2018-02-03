@@ -1,14 +1,30 @@
+.orderDetails{
+  padding: 10px;
+}
+
 #save_all{
   color: #ffffff;
   font-weight: 600;
   background-color: #2e3f84;
 }
-#save_all:hover{
-  cursor: pointer;
+#print_all{
+  color: #ffffff;
+  font-weight: 600;
+  background-color: green;
+}
+#print_all:hover,
+#save_all:hover
+{
+  cursor: pointer!important;
+}
+
+.bef_aft{
+  font-size: 8px !important;
 }
 
 .full-btn{
-  width: 100%;
+  /*color : #E9E9E9 !important;*/
+  width: 100%; 
 }
 .requestForPurchase{
   background: inherit !important;

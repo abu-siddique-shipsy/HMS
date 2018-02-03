@@ -23,11 +23,11 @@ class pathology{
 		// print_r($query);
 
 		$result = $con->query($query);
-		if($result)
-		{
-			$res = new amountController();
-			$res->add_lab_cost($reg_id,$data->test_id);
-		}
+		// if($result)
+		// {
+		// 	$res = new amountController();
+		// 	$res->add_lab_cost($reg_id,$data->test_id);
+		// }
 		
 		return $res;	
 	}

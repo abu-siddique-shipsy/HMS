@@ -3,7 +3,11 @@ include __DIR__.'/../config.php';
 include root.'/assets/bootstrap.php';
 
 $con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
-$id = $_GET['reg_id'];
+$id = $_GET['reg_id'];?>
+<script type="text/javascript">
+	window.reg_id = <?php echo $id; ?>;
+</script>
+<?php
 $hospital_query = "SELECT * from hosp_details limit 1";
 $hospital_result = $con->query($hospital_query);
 $hospital = $hospital_result->fetch_object();

@@ -39,7 +39,7 @@ if(isset($_POST['medicines']))
 	$response = "";
 	$amt = 0;
 	foreach ($request as $key => $value) {
-		$query = "insert into medicine_used (medicine_id,reg_id,qty,morning,afternoon,night,days) values ($value->id,$reg_id,$value->qty,$value->morning,$value->afternoon,$value->night,$value->days)";
+		$query = "insert into medicine_used (medicine_id,reg_id,qty,morning,afternoon,night,days,bef_aft) values ('$value->id','$reg_id','$value->qty','$value->morning','$value->afternoon','$value->night','$value->days','$value->bef_aft')";
 		// print_r($query);
 		$msg= $DBcon->query($query);
 		$result += $msg;
@@ -80,12 +80,12 @@ if(isset($_POST['tests']))
 
 		$msg= $DBcon->query($query);
 		// $result += $msg;
-		// if($msg) 
-		// {
-		// 	$amt += amountController::get_medicine_amt($value->id)*$value->qty;
-			
-		// }
-		 $response->status = "Success";
+		if($msg) 
+		{
+			$res = new amountController();
+			$res->add_lab_cost($reg_id,$value->id);
+		}
+		$response->status = "Success";
 		$response->data = "Sucessfully Inserted";
 	}
 	// if($amt)

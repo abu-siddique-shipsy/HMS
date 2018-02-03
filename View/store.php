@@ -42,15 +42,19 @@ include root.'/Common/header.php';
       			<input type="text" placeholder="Enter Order ID" class="form-control" id="orderId">
       		</div>
       		<div class="col-md-4">
-      			<input type="text" placeholder="Enter MRN ID" class="form-control" disabled>
+      			<input type="text" placeholder="Enter MRN ID" class="form-control" disabled id="mrnId">
       		</div>
-      		<div class="col-md-4">
-      			<button type="button" class="btn">Add</button>	
-      		</div>
+        	
+        </div>
+        <div class="row">
+        	<div class="orderDetails">
+        		
+        	</div>
         	
         </div>
       </div>
       <div class="modal-footer">
+      	<button type="button" class="btn btn-default" id="save_mrn">Save</button>
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
       </div>
     </div>
@@ -76,6 +80,27 @@ include root.'/Common/header.php';
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+<div id="price" class="modal fade" role="dialog">
+  <div class="modal-dialog" >
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Add Item</h4>
+      </div>
+      <div class="modal-body">
+      	<div class="row">
+        	<input type="number" id="price_amt" class="form-control">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" id="save_price">Save</button>
       </div>
     </div>
 
@@ -154,6 +179,22 @@ include root.'/Common/header.php';
 $(document).ready(function() {
 	getInventory();
 });
+$('#orderId').on('keyup',function(){
+	getOrderDetails($(this).val());
+});
+
+$('#save_price').on('click',function(){
+	saveMeterialRecipt($('#mrnId').val(),$('#orderId').val(),$('#price_amt').val());
+});
+$('#save_mrn').on('click',function(){
+	if($('#mrnId').val() == ""){
+		$('#mrnId').attr('placeholder',"Enter MRN Number");
+		$('#mrnId').focus();return;
+	} 
+	saveMeterialRecipt($('#mrnId').val(),$('#orderId').val());
+});
+
+
 $(document).on('click','.accept',function(){
 	acceptRequisition($(this).val());
 });
@@ -244,7 +285,7 @@ function sendPo(po)
 	  data : {'sendPo': po},
 	  success: function(response) 
 	  {
-	  		$('#createPurchaseOrder').modal('submit');
+	  	$('#createPurchaseOrder').modal('hide');
 	  }
 	});		
 }
@@ -370,12 +411,14 @@ function getRequest()
 	  data : {'getRequest': 1},
 	  success: function(response) 
 	  {
+
 	  	if(response.status="success")
 		{
 			for(var i = 0 ; i < response.data.length ; i++)
 			{
-				if(response.data[i].total_available > response.data[i].qty)
+				if(parseInt(response.data[i].total_available) > parseInt(response.data[i].qty))
 				{
+
 					response.data[i].accept = '<button class"btn btn-default" class="accept" value="'+response.data[i].request_id+'"><span class="glyphicon glyphicon-ok"></button>';
 					response.data[i].decline = '<button class"btn btn-default" value="'+response.data[i].request_id+'" class="decline"><span class="glyphicon glyphicon-remove"></button>';
 				}
@@ -403,6 +446,7 @@ function acceptRequisition(request_id)
 	  	if(response.status="success")
 		{
 			getRequest();		
+			getInventory();
 		}
 	  }
 	});		
@@ -438,6 +482,79 @@ function getInventory()
 		}
 	  }
 	});		
+}
+function getOrderDetails(orderID)
+{	
+	
+	$.ajax({
+	  url: "<?php echo controller.'cont.store.php'; ?>",
+	  method : 'POST',
+	  dataType: 'JSON',
+	  data : {'getOrderDetails': orderID},
+	  success: function(response) 
+	  {
+	  	if(response.data.length){
+	  		showOrderDetails(response.data);
+	  		$('#mrnId').removeAttr("disabled");
+	  	}
+	  	else{
+	  		$('#mrnId').attr('disabled','disabled');
+	  		$('.orderDetails').html("Order for ID "+orderID+" Not Available");
+	  	}
+
+	  }
+	});		
+	
+}
+function saveMeterialRecipt(mrn,oid)
+{
+	$.ajax({
+	  url: "<?php echo controller.'cont.store.php'; ?>",
+	  method : 'POST',
+	  dataType: 'JSON',
+	  data : {'updateMrn': {'mrn':mrn,'oid':oid} },
+	  success: function(response) 
+	  {
+	  	if (response.data != "Price Not Available") {
+	  		alert(response.data);
+	  		getInventory();
+	  	}
+	  	else
+	  	{
+	  		$('#price').modal('show');
+	  	}
+	  }
+	});		
+}
+function saveMeterialRecipt(mrn,oid,price)
+{
+	$.ajax({
+	  url: "<?php echo controller.'cont.store.php'; ?>",
+	  method : 'POST',
+	  dataType: 'JSON',
+	  data : {'updateMrn': {'mrn':mrn,'oid':oid,'price':price} },
+	  success: function(response) 
+	  {
+	  	if (response.data != "Price Not Available") {
+	  		alert(response.data);
+	  		getInventory();
+	  	}
+	  	else
+	  	{
+	  		$('#price').modal('show');
+	  	}
+	  }
+	});		
+}
+function showOrderDetails(order)
+{	
+	order = order[0];
+	data = "<label>Order ID : <span>"+order.order_id+"</span></label><br>";
+	data += "<label>Created at : <span>"+order.created_at+"</span></label><br>";
+	data += "<label>Supplier Name : <span>"+order.supplier_name+"</span></label><br>";
+	data += "<label>Quantity : <span>"+order.quantity+"</span></label><br>";
+	// data += "<label>Order ID : <span>"+order.order_id+"</span></label><br>";
+	$('.orderDetails').html(data);
 }
 function initializeDataTable(data)
 {
