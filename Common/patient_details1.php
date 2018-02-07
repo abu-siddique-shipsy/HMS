@@ -53,8 +53,8 @@ if(isset($_POST['inp_pat']))
 	}
 	else
 	{
-		$register_obj->at_time(physician::get_time($data['schedule']));
-		physician::schedule_time($data['schedule'],$register_obj->reg_id);
+		$register_obj->at_time($data['schedule']);
+		physician::schedule_time($data['schedule'],$register_obj);
 	}
 	$register_obj->send_mail();
 	$response->data = $register_obj;

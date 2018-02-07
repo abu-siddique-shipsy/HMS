@@ -12,6 +12,7 @@ class register{
 	}
 	function register_op($consultant_id,$inp_pat)
 	{
+		$this->cons_id = $consultant_id;
 		$query = "insert into registration (patient_id,consultant_id,is_inp) values ('$this->pat_id','$consultant_id',$inp_pat)";
 		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
 		$con->query($query);
@@ -125,8 +126,8 @@ class register{
 	}
 	function at_time($time)
 	{
-		$this->at_time = date('H:i:s',strtotime($time->frm_time));
-		$this->at_date = date('d-m-Y',strtotime($time->date));
+		$this->at_time = date('H:i:s',strtotime($time));
+		$this->at_date = date('d-m-Y',strtotime($time));
 		$query = "update registration set at_date = '$this->at_date',at_time = '$this->at_time' where patient_id = '$this->pat_id' and registration_id =  '$this->reg_id'";
 		// print_r($query);
 		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);

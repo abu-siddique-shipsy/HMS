@@ -181,12 +181,15 @@ include root.'/assets/bootstrap.php';
       	<br>
         <div class="row">
     		  <div class="col-md-6">
-        		<input type="text" class="form-control" id="comp" placeholder="Complaint"><br><br><br>
+        		<input type="text" class="form-control" id="comp" placeholder="Complaint">
             <select class="consul form-control" id="op_doc">
               <option>Doctor</option>
             </select>
           </div>
   	      <div class="col-md-6" id="doctor_schedule">  
+            <input type="date" id="doc_sche_date" class="form-control" min="<?php echo date('Y-m-d'); ?>"  
+            max="<?php echo date('Y-m-d',strtotime('+3 months', strtotime(date('Y-m-d')))); ?>" style="display: none">
+            <input type="time" id="doc_sch_time_cnf" class="form-control" style="display: none">
           </div>  
         </div>
         <div class="" id="doctor_schedule_time">
@@ -482,6 +485,9 @@ $( document ).ready(function() {
     doctors_text = $('#op .consul :selected').text();
     schedule = $('input[name="optradio"]:checked').val()
     console.log(pat_id);
+    sch_time = $('#doc_sch_time_cnf').val();
+    sch_date = $('#doc_sche_date').val();
+    schedule = sch_date + " " + sch_time;
     $('.con').html(doctors_text);
     complaint = $('#comp').val();
     $('.com').html(complaint);
@@ -543,6 +549,9 @@ $( document ).ready(function() {
      } 
   });
   $('#op_doc').on('change',function(){
+    $('#doc_sche_date').show();
+    $('#doc_sch_time_cnf').show();
+
     getSchedule($(this).val());
   });
   $('#print').on('click',function(){
@@ -551,7 +560,12 @@ $( document ).ready(function() {
       '_blank' 
       );
 
-  });  
+  });
+  $('#doc_sche_date').on('change',function(){
+    getScheduleTime($(this).val());
+  });
+   
+
   $(document).on('click','.calender_button',function(){
     getScheduleTime($(this).val());
   });  
@@ -642,18 +656,24 @@ function getSchedule(doc)
       dataType : 'json',
       data: {'sched_doc_id': doc },
       success : function(response){
-        var rest = createDateSlot(response.data);
-        $('#doctor_schedule').html(rest);
+        window.doc_max_time = response.data[0].consulting_hrs_to;
+        window.doc_min_time = response.data[0].consulting_hrs_frm;
+        $('#doc_sch_time_cnf').attr({
+            'min': response.data[0].consulting_hrs_frm,
+            'max': response.data[0].consulting_hrs_to
+          });
+        // var rest = createDateSlot(response.data);
+        // $('#doctor_schedule').html(rest);
       }
   });
 }
-function getScheduleTime(doc)
+function getScheduleTime(date)
 {
   $.ajax({
       url: '<?php echo patientDetails1; ?>',
       method : 'post',
       dataType : 'json',
-      data: {'schedule_date': doc , 'doc_id' : window.doc_id},
+      data: {'schedule_date': date , 'doc_id' : window.doc_id},
       success : function(response){
         var rest = createSlots(response.data);
         $('#doctor_schedule_time').html(rest);
@@ -684,7 +704,7 @@ function createSlots(data1)
     data += '</div>';
   }
   else  
-    data = "There are no Slots available for this doctor.";
+    data = "There are no Slots Booked for this doctor.";
   return data;
 }
 </script>

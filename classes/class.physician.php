@@ -48,16 +48,16 @@ class physician{
 	{
 		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);	
 		$schedules = [];
-		$query = "SELECT distinct(`date`) FROM doc_schedule where phy_id = $doc and reg_id is null";
+		$query = "SELECT consulting_hrs_frm,consulting_hrs_to from physician where id = '$doc'";
 		$result = $con->query($query);
 		while ($exe = $result->fetch_object()) 
 		{
-			if($exe->date > date('d-m-Y'))
-			{
-				$exe->day_text = date('l',strtotime($exe->date));
-				$exe->day = date('d',strtotime($exe->date));
-				$schedules[] = $exe;
-			}
+			// if($exe->date > date('d-m-Y'))
+			// {
+			// 	$exe->day_text = date('l',strtotime($exe->date));
+			// 	$exe->day = date('d',strtotime($exe->date));
+			$schedules[] = $exe;
+			// }
 		}
 		$con->close();
 		return $schedules;
@@ -76,11 +76,12 @@ class physician{
 		$con->close();
 		return $schedules;
 	}
-	static function schedule_time($slot,$reg_id)
+	static function schedule_time($time,$reg_obj)
 	{
+		$time = date('H:i:s',strtotime($time));
+		$date = date('d-m-Y',strtotime($time));
 		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
-		$query = "UPDATE doc_schedule set reg_id = $reg_id where slot_id = $slot and reg_id is null";
-		// print_r($query);
+		$query = "INSERT INTO doc_schedule (`phy_id`,`date`,`frm_time`,`reg_id`) VALUES ('$reg_obj->cons_id','$date','$time','$reg_obj->reg_id') ";
 		$con->query($query);
 		$con->close();
 	}
