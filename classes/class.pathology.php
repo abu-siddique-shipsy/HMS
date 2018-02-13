@@ -1,6 +1,6 @@
 <?php
 require __DIR__.'/../config.php';
-include Class_path.'class.amount.php';
+// include Class_path.'class.amount.php';
 class pathology{
 	function get_procedures($reg_id)
 	{
@@ -38,6 +38,16 @@ class pathology{
 		$query = "UPDATE sample_inventory set qty = qty - $sample_used_qty where sample_log_id = $sample_log_id";
 		$result = $con->query($query);
 		return $res;	
+	}
+	function createNewProcedure($procedure)
+	{
+		$procedure = json_decode($procedure);
+		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
+		$query = "INSERT INTO lab_procedures (procedure_name,procedure_cost) values ('$procedure->name','$procedure->cost')";
+		$result = $con->query($query);
+		$query2 = "SELECT * FROM lab_procedures where procedure_name like '$procedure->name'";
+		$result = $con->query($query2);
+		return $result->fetch_object()->procedure_id;
 	}
 
 

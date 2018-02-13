@@ -157,19 +157,19 @@ td{
       <div class="modal-body">
         <div class="row">
         	<div class="col-sm-4">
-        		<select class="form-control" id="test_nam">
-        			<option selected disabled>Test Name</option>
-        			<?php while ($exe1 = $result1->fetch_assoc()) {
-        				echo "<option value=".$exe1['procedure_id'].">".$exe1['procedure_name']."</option>";
-        			}
-        			?>
-        		</select>
+        		<input type="text" id="test_nam" class="form-control" placeholder="Test Name" list="testName" >
+      			<datalist id="testName">
+      				
+      			</datalist>
         		<p id="price"></p>
         	</div>
         	<div class="col-sm-4">
         		<button class="btn btn-default" id="add_test"> Add</button>
-        			
         		
+        		
+        	</div>
+        	<div class="col-sm-4">
+        		<input type="number" class="btn btn-default" id="cost" style="display: none">
         	</div>
         </div>
         <div class="row">
@@ -515,6 +515,12 @@ $(document).ready(function(){
 			 row += "<tr><td>"+name+"</td><td>"+morn+"</td><td>"+aft+"</td><td>"+nig+"</td><td>"+days+"</td><td>"+ bef_aft_text +"</td></tr>";
 			 var tot = "<tr><td>Total Amt:</td><td>"+total+"</td>";
 		}
+		$('#mor').empty();
+		$('#aft').empty();
+		$('#nig').empty();
+		$('#day').empty();
+		$('#med_name').empty();
+
 	 	$('.med').html(row+tot);
 	});
 	$('#save_pres').on('click',function(){
@@ -525,7 +531,7 @@ $(document).ready(function(){
 		  dataType : 'json',
 		  data: {'medicines' : JSON.stringify(medicines) , 'reg_id' : window.reg_id},
 		  success: function(response) {
-			
+			medicines = [];
 		  	alert("Added Success");
 		  	rowq = "";
 			  	for(var i = 0; i< response.data.length ; i++)
@@ -533,6 +539,9 @@ $(document).ready(function(){
 					rowq += "<tr><td>"+response.data[i].medicine_name+"</td><td>"+response.data[i].morning+"</td><td>"+response.data[i].afternoon+"</td><td>"+response.data[i].night+"</td><td>"+response.data[i].days+"</td><td>"+response.data[i].on_date+"</td></tr>";
 			  	}
 			  	$('.med_pres').html(rowq);
+			  	$('.med').html("");
+			  	row = "";tot = "";
+			  	total = 0;
 			  	getAllDetails(window.reg_id);
 		  }
 		 });
@@ -611,18 +620,23 @@ $(document).ready(function(){
 	  	$('#response').modal('show');
 	}
 	$('#add_test').on('click',function(){
-		// var qty = $('#qty').val();
-		// $('#qty').val("");
-
-		// console.log(total);
-
-		var test_name = $('#test_nam').find("option:selected").text();
-		if(test_name != "Test Name"){
-		  	tests.push({'id' : $('#test_nam').val()});
-			 row1 += "<tr><td>"+test_name+"</td></tr>";
-			 // var tot = "<tr><td>Total Amt:</td><td>"+total+"</td>";
-			 $('.tst').html(row1);
+		var test_name = $('#test_nam').val();
+		var med_id = $('#testName [value="' + test_name + '"]').attr('label1');
+		cost = $('#cost').val();
+		if(!med_id)
+		{
+			if(!cost)
+			{
+				$('#cost').show(); 
+				return;
+			}
+			else
+				newTestObj = {'name' : test_name , 'cost' : cost};		
 		}
+		 
+		med_id  ? tests.push({'id' : med_id}) : tests.push({'id' : JSON.stringify(newTestObj)}) ;	 
+		row1 += "<tr><td>"+test_name+"</td></tr>";
+		$('.tst').html(row1);
 	 	
 	});
 	$('#save_test').on('click',function(){
@@ -649,6 +663,13 @@ $(document).ready(function(){
 		currentReg = $(this).val();
 		getAllDetails(currentReg);
 	});
+	$(document).on('click','.pres_del_btn',function(){
+		deleteMedicine($(this).val());
+	});
+	$(document).on('keyup','#test_nam',function(){
+		getLabProcedures($(this).val());
+	});
+	
 
 });
 function get_waiting_list(reg_id)
@@ -839,8 +860,9 @@ function addPrescription(reg_id)
 	  dataType : 'json',
 	  data: {'reg_id': reg_id},
 	  success: function(response) {
+	  	var newData = addDeleteButton(response.data);
 	 	$('#medTab').DataTable({
-	        "data": response.data,
+	        "data": newData,
 	        "destroy": true,
 	        "columns": [
 	        	{"title":"Name","data": "medicine_name", "orderable": false},
@@ -849,6 +871,7 @@ function addPrescription(reg_id)
 	        	{"title":"Night", "data": "night", "orderable": false },
 	        	{"title":"Total Days", "data": "days", "orderable": false },
 	        	{"title":"Prescribed On", "data": "on_date", "orderable": false },
+	        	{"title":"", "data": "deleteButton", "orderable": false },
 	        ],
 	        language: {
 	            searchPlaceholder: "Search records"
@@ -880,7 +903,10 @@ function addDiagnosis(data,reg_id)
 }
 function addAdvice(data,nxt_vist,reg_id)
 {
-	var text = '<textarea class="'+reg_id+'"  id="advice_text" rows="8" cols="100">'+data+'</textarea><input class="form-control" type="date" id="nxt_vist" value="'+nxt_vist+'">';
+	if(nxt_vist)
+		var text = '<textarea class="'+reg_id+'"  id="advice_text" rows="8" cols="100">'+data+'</textarea><input class="form-control" type="date" id="nxt_vist" value="'+nxt_vist+'" >';
+	else
+		var text = '<textarea class="'+reg_id+'"  id="advice_text" rows="8" cols="100">'+data+'</textarea><input class="form-control" type="text" id="nxt_vist" onfocus="(this.type=\'date\')" placeholder="Next Visit Date" >';
 	$('#adviceTab').html(text);
 }
 function genBill(reg_id)
@@ -926,6 +952,44 @@ function genBill(reg_id)
       }
     });
     $('#complaintTab1').trigger('click');
+}
+function addDeleteButton(data)
+{
+	for (var i = 0; i < data.length; i++) {
+		data[i].deleteButton = '<button class="pres_del_btn" value="'+data[i].log_med_id+'"><span class="glyphicon glyphicon-trash"></span></button>'
+	}
+	return data;
+}
+function deleteMedicine(log_id)
+{
+	$.ajax({
+	  url: '<?php echo update_op; ?>',
+	  method : 'post',
+	  dataType : 'json',
+	  data: {'deleteReq': log_id},
+	  success: function(response) {
+	  	if(response.status == "Success") getAllDetails(window.reg_id);
+	  }
+	});
+}
+function getLabProcedures(partialLab)
+{
+	$.ajax({
+	  url: '<?php echo update_op; ?>',
+	  method : 'post',
+	  dataType : 'json',
+	  data: {'getLabProcedure': partialLab},
+	  success: function(response) {
+	  	if(response.status == "Success") {
+	  		var data = "";
+	  		for (var i = 0; i < response.data.length; i++) {
+	  			data += '<option value="'+response.data[i].value+'" label1 = "'+response.data[i].id+'"></option>';
+	  		}
+	  		$('#testName').html(data);
+	  	}
+
+	  }
+	});	
 }
 </script>
 <!-- "The Amount of $amt for Registration Id $rid is already Charged. Do you want to charge Again?"; -->
