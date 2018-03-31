@@ -42,6 +42,15 @@ if(isset($_POST['inp_pat']))
 {
 	$inp_pat = $_POST['inp_pat'];
 	$data =  $_POST['data'];
+	if(isset($data['schedule']))
+	{
+		if(strtotime(date('Y-m-d H:i')) > strtotime($data['schedule']))
+		{
+			$response->status = "Failed";
+			$response->text = "Please Select Date More Than Current Date";
+			echo json_encode($response);die;
+		}
+	}
 	$register_obj = new register($data['pat_id']);
 	$register_obj->register_op($data['cons_id'],$inp_pat);
 	$register_obj->register_compliant($data['complaint']);
@@ -202,10 +211,10 @@ if(isset($_POST['get_last_reg']))
 }
 if(isset($_POST['vitals']))
 {
-	$data =  $_POST;
-	register::addVitals($data);
+	$data =  $_POST['forms'];
+	$reg_id = $_POST['vitals'];
+	register::addVitals($data,$reg_id);
 	// $patient = patient::get_patient_with_reg_id($data['reg_id']);
-	header('Location: '.$_SERVER[HTTP_REFERER]);
 }
 if(isset($_POST['sched_doc_id']))
 {
@@ -222,6 +231,31 @@ if(isset($_POST['labRequest']))
 {
 	$data =  $_POST['labRequest'];
 	$response->data = patient::getLabRequests($data);	
+}
+if (isset($_POST['complaint'])) {
+	$regId = $_POST['reg_id'];
+	$query = "SELECT rg.room_id,rg.is_inp,rg.registration_id as reg_id,id,sex,name,address,phone_number,dob,(SELECT COUNT(*) from registration rg where rg.patient_id = pt.id) as num_vis,(SELECT MAX(rg.in_at) from registration rg where rg.patient_id = pt.id) as last_visit from patient pt join registration rg on rg.patient_id = pt.id where rg.registration_id = $regId group by pt.id";
+	$result = $DBcon->query($query);
+	while ($exe = $result->fetch_assoc()) {
+		$patient_id = $exe['id'];
+		$exe['dob'] = (date('Y') - date('Y',strtotime($exe['dob'])));
+		$response->is_inp = $exe['is_inp'];
+		$response->data =  array($exe);
+		$response->status =  "success";
+	}
+
+	$query = "SELECT rf.registration_id as registration_id, complaint,concat(rg.at_date , ' ' , rg.at_time ) as on_date,concat('Dr ', stf.f_name , ' ' , stf.l_name ) as doctor,concat('Dr ', stf1.f_name , ' ' , stf1.l_name ) as doctorAssigned FROM registration_flow rf left join staff stf on stf.staff_id = rf.attented_by join registration rg on rg.registration_id = rf.registration_id left join staff stf1 on stf1.staff_id = rg.consultant_id where rf.patient_id= '$patient_id' order by rf.registration_id DESC ";
+	// print_r($query);
+	$query1 = "SELECT * FROM registration_flow where registration_id = '$regId'";
+	$result1 = $DBcon->query($query1);
+	$exe1 = $result1->fetch_array();
+	$response->now_complaint = $exe1['complaint'];
+	// print_r($query);
+	$result = $DBcon->query($query);
+	while ($exe = $result->fetch_assoc()) {
+		$result_array1[] = $exe;
+		$response->complaint = $result_array1;
+	}
 }
 
 echo json_encode($response);

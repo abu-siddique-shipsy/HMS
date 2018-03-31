@@ -14,13 +14,18 @@ class register{
 	{
 		$this->cons_id = $consultant_id;
 		$query = "insert into registration (patient_id,consultant_id,is_inp) values ('$this->pat_id','$consultant_id',$inp_pat)";
+		$charge = amountController::get_consultation_amt($consultant_id);
+
 		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
+
 		$con->query($query);
 		$query = "SELECT * from registration where patient_id = '$this->pat_id' order by in_at DESC";
 		$result = $con->query($query);
 		$exe = $result->fetch_array();
 		$con->close();
+
 		$this->reg_id = $exe['registration_id'];
+		amountController::add_amt(3,$this->reg_id,$charge,1);		
 	}
 	function getLatestReg($pat)
 	{
@@ -107,12 +112,12 @@ class register{
 		$con->close();
 		return $re;
 	}
-	function addVitals($data)
+	function addVitals($data,$reg_id)
 	{
-		$query = "insert into vitals (reg_id) values ($data[reg_id])";
+		$query = "insert into vitals (reg_id) values ($reg_id)";
 		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
 		$con->query($query);
-		$query = "SELECT * FROM vitals Where reg_id = $data[reg_id] order by created_at DESC";
+		$query = "SELECT * FROM vitals Where reg_id = $reg_id order by created_at DESC";
 		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
 		$result = $con->query($query);
 		$exe = $result->fetch_object();

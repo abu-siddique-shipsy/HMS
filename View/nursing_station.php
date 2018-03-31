@@ -11,18 +11,35 @@ include root.'/Common/header.php';
       <!-- Modal content-->
       <div class="modal-content">
         <div class="modal-body">
+          <label>Adding Task For ID <span class="reg_id"></span></label>
             <div class="row">
               <div class="col-md-6">
                 <input type="text" class="form-control" id="task_desc" placeholder="Describe Task">
               </div>
-              <div class="col-md-3">
-                <select class="form-control" id="task_type">
-                  <option value="Once">One Time</option>
-                  <option value="Recursive">Recursive</option>
+              <div class="col-md-6">
+                <select id="taskType" class="form-control">
+                  <option value="0"></option>
+                  <option value="1">Every</option>
+                  <option value="2">On</option>
+                  <option value="3">Prescirbe</option>
                 </select>
               </div>
-              <div class="col-md-3">
-                <input type="time" class="form-control" id="task_time" placeholder="Time">
+            </div>
+            <div class="row">
+              <div class="col-md-4">
+                <input type="date" class="form-control" id="task_date" placeholder="Date" style="display: none;">
+              </div>
+              <div class="col-md-4" id="time2" style="display: none">
+                <input type="text" class="time" id="task_time_hr" placeholder="hr" >
+                <input type="text" class="time" id="task_time_min" placeholder="min">
+                <select id="task_time_m" class="time">
+                  <option></option>
+                  <option>AM</option>
+                  <option>PM</option>
+                </select>
+              </div>
+              <div class="col-md-4" >
+                <input type="number" class="form-control" id="task_days" placeholder="Total Days" style="display: none">
               </div>
           </div>
         </div>
@@ -51,7 +68,8 @@ include root.'/Common/header.php';
           </select>
         </div>
         <div class="col-md-6 add_task">
-          <button class="btn btn-success" data-toggle="modal" data-target="#add_task" id="add_task">ADD TASK</button>
+          <table id="patient_details"></table>
+          <!-- <button class="btn btn-success" data-toggle="modal" data-target="#add_task" id="add_task">ADD TASK</button> -->
         </div>
       </div>
     </div>
@@ -67,6 +85,26 @@ include root.'/Common/header.php';
   </div>
 </div>
 <script type="text/javascript">
+$(document).on( 'click', '#patient_details tbody tr', function (){
+  // window.location.href = "/View/patient_reg.php?pat_id="+($(this).find('td').html());
+  console.log($(this).find('td').html());
+  window.reg_id = $(this).find('td').html();
+  $('.reg_id').html($(this).find('td').html());
+  $('#add_task').modal('show');
+});
+$(document).on('change','#taskType',function(){
+  $('#time2').hide();
+  $('#task_date').hide();
+  $('#task_days').hide();
+  if ($(this).val() == 1) {
+    $('#time2').show();
+    $('#task_days').show();
+  }
+  if ($(this).val() == 2) {
+    $('#time2').show();
+    $('#task_date').show();
+  }
+});
 $(document).ready(function(){
   window.ward_id = 0;
   $('.add_task').hide();
@@ -80,25 +118,35 @@ $(document).ready(function(){
     window.ward_id = $(this).val();
     getTasks($(this).val());
     $('.add_task').show();
+    patient(window.ward_id);
   });
   $('#add_task_into_db').on('click',function(){
     var task_desc = $('#task_desc').val();
-    var task_type = $('#task_type').val();
-    var task_time = $('#task_time').val();
+    var task_time = $('#task_time_hr').val() != "" ? $('#task_time_hr').val() : "00";
+    task_time += $('#task_time_min').val() != "" ? ":" + $('#task_time_min').val() + " " : ":00";
+    task_time += $('#task_time_m').val() ;
+    var task_days = $('#task_days').val();
+    var task_type = $('#taskType').val();
+    var task_date = $('#task_date').val();
+    
     var task = {
+      'reg_id': window.reg_id,
       'ward' : window.ward_id,
       'desc' : task_desc,
-      'type' : task_type,
       'time' : task_time,
+      'days' : task_days,
+      'type' : task_type,
+      'date' : task_date
     };
+    console.log(task);
     addTask(task);
     getTasks(window.ward_id);
   });
   
 });
-setInterval(function() {
-    getTasks(window.ward_id);
-}, 5000);
+// setInterval(function() {
+//     getTasks(window.ward_id);
+// }, 5000);
 function getBlocks()
 {
   $.ajax({
@@ -133,7 +181,7 @@ function addTask(task)
         success: function(response) {
           
         }
-       }); 
+  }); 
 }
 function getTasks(ward_id)
 {
@@ -160,7 +208,7 @@ function IntializeTaskTable(data)
   "data": data,
   "destroy": true,
   "columns"     :     [  
-            {"title": "Task Description",    "data"     :     "task_description"     },  
+            {"title": "Task Description",    "data"     :     "task_desc"     },  
             {"title": "Scheduled At",     "data"     :     "scheduled_at"     },  
             {"title": "Status",     "data"     :     "status"},  
             {"title": "Task Type",     "data"     :     "task_type"}
@@ -185,4 +233,44 @@ function createOption(data,id)
   }
   $('#'+id).html(option);
 }
+function initializePatientDataTable(data)
+{
+  $('#patient_details').DataTable({   
+    "data": data,
+      "destroy": true,
+    "columns"     :     [  
+              {"title": "Visit ID",     "data"     :     "reg_id"     },  
+              {"title": "Name",     "data"     :     "name"     },  
+         ],
+      "pageLength": 1,
+      "searching" : true,
+      "lengthChange": false,
+      "info":false,
+      "paging":false,
+      "language": { 
+          "search": "",
+          searchPlaceholder: "Search Patient By ID or Name" 
+      },
+
+         
+    });
+}
+function patient(ward_id)
+{
+  $.ajax({
+    url: "<?php echo patientDetails; ?>",
+    method : 'post',
+    dataType: 'JSON',
+    data : {'ward_id' : ward_id },
+    success: function(response) {
+      if(response.status="success")
+    {
+      initializePatientDataTable(response.data);    
+    }
+      
+    }
+  });
+  
+ 
+} 
 </script>

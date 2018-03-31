@@ -16,7 +16,6 @@ $result = $DBcon->query($query);
 				  	<div class="panel-body patient">
 				  		<div class="form-group">
 							<input type="text" class="form-control" name="name" placeholder="ID" id="pat_id">
-							<label id="alert"></label>
 							<div class="row">
 								<div class="col-md-6">
 									<button type="button" class="form-control" onclick="get_details_with_register_number($('#pat_id').val())">Visit ID</button>
@@ -235,6 +234,14 @@ $result = $DBcon->query($query);
 				
 			</div>
 		</div>
+		<div class="row" id="resultDescDiv" style="display: none">
+        	<div class="col-md-12">
+		  		<div class="form-group">
+		  			<textarea id="resultDesc"></textarea>
+				</div>
+				
+			</div>
+		</div>
 		<div style="text-align: center;">
 	        <button type="button" class="btn btn-default" data-dismiss="modal" id="add_res">Add</button>
 	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -344,6 +351,9 @@ $(document).ready(function(){
 		  }
 		});
 	});
+	$('#reslt1').on('change',function(){
+		$('#resultDescDiv').show();
+	});
 	$('#reslt1').on('keyup',function(){
 		value =parseInt( $(this).val());
 		if(value >= max || value < min)
@@ -364,6 +374,7 @@ $(document).ready(function(){
 		min = parseInt($(this).val());
 	});
 	$('#add_res').on('click',function(){
+		result_desc = $('#resultDesc').val();
 		sample_final_qty = $('#final_qty_of_sample').val();
 		test_results = {
 			'test_id' : pro_id, 
@@ -371,6 +382,7 @@ $(document).ready(function(){
 			'result_value' : value, 
 			'min_value' : min,
 			'max_value' : max,
+			'result_desc' : result_desc,
 			'sample_used' : sample_log_id,
 			'sample_used_qty' : sample_final_qty,
 		};

@@ -18,8 +18,7 @@ if(isset($_POST['addTask']))
 }
 if(isset($_POST['getTasks']))
 {
-	$tasks = nursingStation::getAllTasks($_POST['getTasks']);
-	$response->data = nursingStation::createSchedule($tasks);
+	$response->data = nursingStation::getAllTasks($_POST['getTasks']);
 }
 echo json_encode($response);
 

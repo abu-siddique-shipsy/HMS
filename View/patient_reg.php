@@ -193,11 +193,11 @@ include root.'/assets/bootstrap.php';
           </div>  
         </div>
         <div class="" id="doctor_schedule_time">
-          
+          <table id="current_schedule"></table>
         </div>
       </div>
       <div class="modal-footer">
-        <label id="error"></label>
+        <label class="error"></label>
         <button type="button" class="btn btn-success center-block" id="final_sub_op">Submit</button>
       </div>
     </div>
@@ -247,15 +247,11 @@ include root.'/assets/bootstrap.php';
         <div class="modal-title">Gather Details</div>
         </div>
         
-      <div class="modal-body">
-        <form action="<?php echo patientDetails1 ?>" method="POST">
-          <input type="hidden" name="vitals" value="1">
-          <input type="hidden" name="reg_id" class="reg_id">
-          <input type="text" class="form-control" placeholder="height" name="height">
-          <input type="text"  placeholder="weight" class="form-control" name="weight">
-          <input type="text"  placeholder="BP" class="form-control" name="bp">
-          <button type="submit" class="btn btn-success center-block" >Submit</button>
-        </form>
+      <div class="modal-body" id="vital_details">
+          <input type="text" id="height"  class="form-control" placeholder="height" name="height">
+          <input type="text" id="weight" placeholder="weight" class="form-control" name="weight">
+          <input type="text" id="bp" placeholder="BP" class="form-control" name="bp">
+          <button type="button" class="btn btn-success center-block" onclick="submitVitalsDetails()" >Submit</button>
       </div>
       <div class="modal-footer">
         
@@ -307,7 +303,7 @@ include root.'/assets/bootstrap.php';
   <div class="panel">
   <link rel="stylesheet" type="text/css" href="../assets/style.css">
   <div class="row">
-    <div class="col-md-6 pad">
+    <div class="col-md-5 pad">
       <table class="table table-default" id="patientData">
         <tr><td>Patient ID</td><td><span class="pat_id"></span></td></tr>
         <tr><td>Name</td><td><span class="pat_name"></span></td></tr>
@@ -318,17 +314,18 @@ include root.'/assets/bootstrap.php';
       </table>
       <button type="button" class="btn btn-default" data-toggle="modal" data-target="#patientid">Change Id</button>    
     </div>
-    <div class="col-md-6 pad">
-      <table class="table table-default" >
-        <tr><td>Registration ID</td><td><span class="reg_id"></span></td></tr>
+    <div class="col-md-7 pad">
+      <table class="table table-default" id="registration_table">
+        <!-- <tr><td>Registration ID</td><td><span class="reg_id"></span></td></tr>
         <tr><td>Complaint</td><td><span class="com"></span></td></tr>
         <tr><td>Consultant</td><td><span class="con"></span></td></tr>
         <tbody id="regData">
           
-        </tbody>
+        </tbody> -->
       </table>
-      <button type="button" class="btn btn-default" data-toggle="modal" data-target="#confirm_pat">Change Id</button>    
+      <button type="button" class="btn btn-default" data-toggle="modal" data-target="#confirm_pat">Create New</button>    
       <button type="button" class="btn btn-default" data-toggle="modal" data-target="#gatherDetails">Gather Vaitals</button>    
+      <button type="button" class="btn btn-default" id="collectBill">Collect Bill</button>    
     </div>
   </div>
   <br>
@@ -344,6 +341,7 @@ include root.'/assets/bootstrap.php';
 $( document ).ready(function() {
 <?php if($_GET['pat_id']){ ?>
       var pat_id = <?php echo $_GET['pat_id']; ?>;
+      getAllDetails(pat_id);
 <?php }else{ ?>
       var pat_id = 0; 
 <?php } ?>
@@ -377,10 +375,14 @@ $( document ).ready(function() {
   var reg_id = 0;
   if (!pat_id) 
     $('#myModal').modal('show');
-
+  $('#collectBill').on('click',function(){
+    var location = "<?php echo domain ?>/billing/opdbilling.php?regId="+window.reg_id;
+    window.location = location;
+  });
 	$('#checkPt_id').click(function () {
 		checkPT($('#pid').val());
     pat_id = $('#pid').val();
+    getAllDetails(pat_id);
 	});
    $('#pat_det_sub').click(function () {
   //   // $('#patientdet').modal('hide');
@@ -479,14 +481,14 @@ $( document ).ready(function() {
       
   });
   $('#final_sub_op').click(function () {
-    
-    $('#op').modal('hide');
     doctors = $('#op .consul :selected').val();
     doctors_text = $('#op .consul :selected').text();
     schedule = $('input[name="optradio"]:checked').val()
-    console.log(pat_id);
     sch_time = $('#doc_sch_time_cnf').val();
     sch_date = $('#doc_sche_date').val();
+    if(sch_time == "" || sch_date == "") {
+      return;
+    }
     schedule = sch_date + " " + sch_time;
     $('.con').html(doctors_text);
     complaint = $('#comp').val();
@@ -502,11 +504,18 @@ $( document ).ready(function() {
         dataType: 'JSON',
         data: {'inp_pat' : 0, 'data' : datum},
         success: function(response) {
-            $('#pre_process').hide();
-            reg_id = response.data.reg_id; 
-            $('.reg_id').html(reg_id);
-            $('.container').show();
-            get_latest_registration(pat_id);
+            if(response.status == 'success') {
+              $('#op').modal('hide');
+              $('#pre_process').hide();
+              reg_id = response.data.reg_id; 
+              $('.reg_id').html(reg_id);
+              $('.container').show();
+              get_latest_registration(pat_id);
+            }
+            else
+            {
+              $('.error').html(response.text);
+            }
         }
         
       });  
@@ -676,7 +685,6 @@ function getScheduleTime(date)
       data: {'schedule_date': date , 'doc_id' : window.doc_id},
       success : function(response){
         var rest = createSlots(response.data);
-        $('#doctor_schedule_time').html(rest);
       }
   });
 }
@@ -692,19 +700,73 @@ function createDateSlot(data1)
 }
 function createSlots(data1)
 {
-  data = '<div class="row">';
-  if(data1.length)
-  {
-    for(var i = 0 ; i < data1.length;i++)
-    {    
-      data += '<div class="col-md-2">';
-      data += '<label><input type="radio" name="optradio" value="'+data1[i].slot_id+'">'+'ON '+data1[i].frm_time+'</label>';
-      data += '</div>';
+  $('#current_schedule').DataTable({   
+      "data": data1,
+        "destroy": true,
+      "columns"     :     [  
+            { "title": "Visit ID",    "data"     :     "reg_id"     },  
+            {"title": "On Time",     "data"     :     "frm_time"     },  
+            {"title": "Scheduled At",     "data"     :     "scheduled_at"},  
+       ],
+      "pageLength": 3,
+      "searching" : false,
+      "lengthChange": false,
+      "info":false
+           
+      });
+}
+function submitVitalsDetails()
+{ 
+    var obj = {};
+    $('#vital_details').find('input').each(function(){
+          var k = $(this).attr('name');
+          obj[k] = $(this).val() ;
+      });
+    submitVitals(obj);
+}
+function submitVitals(forms)
+{
+  $.ajax({
+      url: '<?php echo patientDetails1; ?>',
+      method : 'post',
+      dataType : 'json',
+      data: {'vitals': window.reg_id , 'forms' : forms},
+      success : function(response){
+        $('#gatherDetails').modal('hide');
+      }
+  }); 
+}
+function getAllDetails(value)
+{
+  $.ajax({
+    url: '<?php echo patientDetails; ?>',
+    method : 'post',
+    dataType : 'json',
+    data: {'patient_id' : value, 'complaint' : 1},
+    success: function(response) {
+      window.reg_id = response.complaint.registration_id;
+      registration_table(response.complaint);
     }
-    data += '</div>';
-  }
-  else  
-    data = "There are no Slots Booked for this doctor.";
-  return data;
+  });
+}
+function registration_table(complaint)
+{
+  $('#registration_table').DataTable({   
+      "data": complaint,
+        "destroy": true,
+      "columns"     :     [  
+            { "title": "Visit ID",    "data"     :     "registration_id"     },  
+            {"title": "Complaint",     "data"     :     "complaint"     },  
+            {"title": "On Date",     "data"     :     "on_date"},  
+            {"title": "Assigned To",     "data"     :     "doctorAssigned"},  
+            {"title": "Attended By",     "data"     :     "doctor"},  
+       ],
+      "pageLength": 3,
+      "order" : [[2,'desc']],
+      "searching" : false,
+      "lengthChange": false,
+      "info":false,
+           
+      });
 }
 </script>

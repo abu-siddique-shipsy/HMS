@@ -1,7 +1,16 @@
+#patient_details_filter{
+  width: 100% !important
+}
 .orderDetails{
   padding: 10px;
 }
 
+.time{
+  width: 30px;
+  height: 30px;
+  margin: 2px 2px 2px 2px;
+  border-radius: 5px;
+}
 #save_all{
   color: #ffffff;
   font-weight: 600;

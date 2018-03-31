@@ -170,6 +170,12 @@ include root.'/Common/header.php';
 
 <script type="text/javascript">
 $(document).ready(function(){
+<?php if($_GET['regId']){ ?>
+      window.reg_id = <?php echo $_GET['regId']; ?>;
+      getAllDetails(reg_id);
+<?php }else{ ?>
+      window.reg_id = 0; 
+<?php } ?>
     var amt = 0;
     var type = 0;
     var price = 0;
@@ -177,47 +183,9 @@ $(document).ready(function(){
     var total = 0;
     var row = "";
     var medicines = [];
-    var reg_id = 0;
     $('#id').on('change',function(){
         value = $(this).val();
-        $.ajax({
-          url: '<?php echo patientDetails; ?>',
-          method : 'post',
-          dataType : 'json',
-          data: {'patient_id' : value, 'complaint' : 1},
-          success: function(response) {
-            console.log(response);
-            if(response.status == "success")
-            {
-                var options = "";
-                var result = "";
-                reg_id = value;
-                for(var i = 0 ; i< response.complaint.length ; i++)
-                {
-                    options += "<tr>"
-                    options += "<td>"+response.complaint[i].complaint+"</td>"
-                    options += "<td>"+response.complaint[i].on_date+"</td>"
-                    options += "</tr>"
-                }
-                for(var i = 0 ; i< response.data.length ; i++)
-                {
-                    
-                    
-                    // result += "<tr>";    
-                    result += "<td>"+response.data[i].name+"</td>";
-                    result += "<td>"+response.data[i].dob+"</td>";
-                    result += "<td>"+response.data[i].sex+"</td>";
-                    result += "<td>"+response.now_complaint+"</td>";
-                    // result += "<td>"+response.data[i].last_visit+"</td>";
-                    // result += "</tr>";   
-                }
-                // head += result + "</tbody></table>"
-                $('#history').html(options);    
-                $('#det').html(result); 
-            }
-          }
-            
-        });
+        getAllDetails(value);
         
     }); 
     $('#gen_bil').on('click',function(){
@@ -228,7 +196,7 @@ $(document).ready(function(){
           url: '<?php echo biller ?>',
           method : 'post',
           dataType : 'json',
-          data: {'pay_bil' : 1 , 'details' : payments ,'reg_id' : reg_id},
+          data: {'pay_bil' : 1 , 'details' : payments ,'reg_id' : window.reg_id},
 
           success: function(response) {
             console.log(response);
@@ -261,7 +229,7 @@ $(document).ready(function(){
           url: '<?php echo biller ?>',
           method : 'post',
           dataType : 'json',
-          data: {'gen_bil' : 1 , 'reg_num' : reg_id},
+          data: {'gen_bil' : 1 , 'reg_num' : window.reg_id},
 
           success: function(response) {
             var data = "";
@@ -273,14 +241,14 @@ $(document).ready(function(){
                 {
                     data1 = "<tr class='item'><td>Total</td><td>"+response.data[i].total+"</td>";
                 }    
-                else
+                else if(response.data[i][1])
                 {
-                
+                    
                     data += "<tr class='item'>"
                     data +="<td>"+response.data[i][1]+"</td>"
                     data +="<td>"+response.data[i][2]+"</td>"
                     data +="<td>"+response.data[i][3]+"</td>"
-                    data +="<td>"+(response.data[i][4] == "1"?"Paid":"Not Paid")+"</td>"
+                    data +="<td>"+(response.data[i][4] == "1"?"Paid":"Not Paid</td><td><button class='btn btn-default collectPayment' value='"+response.data[i][0]+"'>Collect</button>")+"</td>";
                     // data +="<td>"+response.data[i][4]+"</td>"
                     data += "</tr>"; 
                 }
@@ -294,5 +262,65 @@ $(document).ready(function(){
           }
         });
     }
+});
+function updatePayment(id)
+{
+    $.ajax({
+      url: '<?php echo update_op; ?>',
+      method : 'post',
+      dataType : 'json',
+      data: {'paymentId': id},
+      success: function(response) {
+        if(response.status == "Success")
+            gen_bill();
+      }
+    });     
+}
+function getAllDetails(value)
+{
+    window.reg_id = value;
+    $.ajax({
+          url: '<?php echo patientDetails; ?>',
+          method : 'post',
+          dataType : 'json',
+          data: {'patient_id' : value, 'complaint' : 1},
+          success: function(response) {
+            console.log(response);
+            if(response.status == "success")
+            {
+                var options = "";
+                var result = "";
+                reg_id = value;
+                if(response.complaint) {
+                    for(var i = 0 ; i< response.complaint.length ; i++)
+                    {
+                        options += "<tr>"
+                        options += "<td>"+response.complaint[i].complaint+"</td>"
+                        options += "<td>"+response.complaint[i].on_date+"</td>"
+                        options += "</tr>"
+                    }
+                }
+                for(var i = 0 ; i< response.data.length ; i++)
+                {
+                    
+                    
+                    // result += "<tr>";    
+                    result += "<td>"+response.data[i].name+"</td>";
+                    result += "<td>"+response.data[i].dob+"</td>";
+                    result += "<td>"+response.data[i].sex+"</td>";
+                    result += "<td>"+response.now_complaint+"</td>";
+                    // result += "<td>"+response.data[i].last_visit+"</td>";
+                    // result += "</tr>";   
+                }
+                // head += result + "</tbody></table>"
+                $('#history').html(options);    
+                $('#det').html(result); 
+            }
+          }
+            
+        });
+}
+$(document).on('click','.collectPayment',function(){
+    updatePayment($(this).val());
 });
 </script>

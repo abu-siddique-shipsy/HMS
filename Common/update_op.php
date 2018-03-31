@@ -8,6 +8,14 @@ include Class_path.'class.pathology.php';
 $DBcon = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
 $response = new stdClass();
 
+if(isset($_POST['paymentId']))
+{
+	$paymentId = $_POST['paymentId'];	
+	if(amountController::updatePayment($paymentId))
+		$response->status = "Success";
+	else
+		$response->status = "Failure";
+}
 if(isset($_POST['getLabProcedure']))
 {
 	$parial = $_POST['getLabProcedure'];	
@@ -35,25 +43,17 @@ if(isset($_POST['data']))
 	$data = json_decode($_POST['data']);
 	$reges_id = $_POST['reges_id'];
 	$amt_add_res = "";
-	$result = -1;
+	
 	foreach ($data as $key => $value) {
+		$result = 0;
 		$query = "update registration_flow set `$key` = '$value' where registration_id = '$reges_id'";
-		if($key == "attented_by")
-		{
-			$consultation_charge = amountController::get_consultation_amt($value);	
-			if($consultation_charge)
-			{
-				$amt_add_res = amountController::add_amt(3,$reges_id,$consultation_charge,0);
-			}
-		}
-		$result += $DBcon->query($query);
-		
+		$result = $DBcon->query($query);
 	}
 	if($result) $response->status = "Success";
 	else $response->status = "Failed";
 	$keys = (implode(",",$keys));
 	$values = (implode(",",$values));
-	$response->add_amt = $amt_add_res;
+	// $response->add_amt = $amt_add_res;
 }
 if(isset($_POST['medicines']))
 {

@@ -22,7 +22,7 @@ td{
 	<h4>Patients in Waiting Hall</h4>
 	<br><br>
 	<div class="waiting">
-		
+		<button>Refresh</button>
 	</div>
 	
 </div>
@@ -497,10 +497,10 @@ $(document).ready(function(){
 		
 	});
 	$('#add_med').on('click',function(){
-		var morn = $('#mor').val();
-		var aft = $('#aft').val();
-		var nig = $('#nig').val();
-		var days = $('#day').val();
+		var morn = $('#mor').val() != "" ? $('#mor').val() : 0;
+		var aft = $('#aft').val() != "" ? $('#aft').val() : 0;
+		var nig = $('#nig').val() != "" ? $('#nig').val() : 0;
+		var days = $('#day').val() != "" ? $('#day').val() : 0;
 		var bef_aft = $('.bef_aft:checked').val();
 		var bef_aft_text  = bef_aft == "1" ? "Before Food" : "After Food";
 
@@ -542,7 +542,7 @@ $(document).ready(function(){
 			  	$('.med').html("");
 			  	row = "";tot = "";
 			  	total = 0;
-			  	getAllDetails(window.reg_id);
+			  	// getAllDetails(window.reg_id);
 		  }
 		 });
 
@@ -593,27 +593,13 @@ $(document).ready(function(){
 	{
 		var response_text = "";
 	  	var buttons = "";
-	  	amt = response.add_amt.amt;
-	  	if(response.add_amt.result == 1)
+	  	if(response.status == "Success")
 	  	{
-	  		response_text="<lable>The Amount of "+response.add_amt.amt+" for Registration Id "+response.add_amt.registration_id+" is already Charged. Do you want to charge Again?</label>";
-	  		$('#yes').css('display','inline');
-	  		
-	  	}
-	  	else if(response.add_amt.result == 2)
-	  	{
-	  		response_text="<lable>The Amount of "+response.add_amt.amt+" for Registration Id "+response.add_amt.registration_id+"Successfully Charged </label>";
-	  		
-	  	}
-	  	else if(response.add_amt.result == 3)
-	  	{
-	  		response_text="<lable>The Amount of "+response.add_amt.amt+" for Registration Id "+response.add_amt.registration_id+" is Not Charged. Try Again or contact admin.</label>";
-	  		
+	  		response_text="<lable>All Details Saved</label>";
 	  	}
 	  	else
 	  	{
-	  		response_text="<lable>ERROR Contact </label>";
-	  		
+	  		response_text="<lable>Save Failed</label>";
 	  	}
 	  	$('.response_msg').html(response_text);
 	  	// $('.response_button').html(buttons);
@@ -651,7 +637,7 @@ $(document).ready(function(){
 		  	row1 = ""; 
 			tests = [];
 			$('.tst').html("");
-			getAllDetails(window.reg_id);
+			// getAllDetails(window.reg_id);
 		  	alert("Added Success");
 		  	
 		  }
@@ -701,17 +687,17 @@ function get_details_with_patient_id(value)
   });
 		
 }
-function get_details_with_register_number(value)
+function get_details_with_register_number(reg_id)
 {
 	$('#patient_details').show();
 	$('#reg_buttons').show();
 
-	window.reg_id = value;
+	window.reg_id = reg_id;
 	$.ajax({
-		  url: '<?php echo patientDetails; ?>',
+		  url: '<?php echo patientDetails1; ?>',
 		  method : 'post',
 		  dataType : 'json',
-		  data: {'patient_id' : value, 'complaint' : 1},
+		  data: { 'complaint' : 1,'reg_id' : reg_id},
 		  success: function(response) {
 		  	
 		  	if(!response.data)
@@ -784,7 +770,9 @@ function getAllDetails(value)
 			addLabTest(window.reg_id);
 			addVitals(response.vitals,window.reg_id);
 			genBill(window.reg_id);
-			// addVitals(response.complaint.complaint);
+			// $('#complaintTab1').trigger('click');
+			$('#complaintTab1').find('a').trigger('click');
+			
 		}
 	});
 }
@@ -938,7 +926,7 @@ function genBill(reg_id)
 	                data +="<td>"+response.data[i][1]+"</td>";
 	                data +="<td>"+response.data[i][2]+"</td>";
 	                data +="<td>"+response.data[i][3]+"</td>";
-	                data +="<td>"+(response.data[i][4] == "1"?"Paid":"Not Paid")+"</td>";
+	                data +="<td>"+(response.data[i][4] == "1"?"Paid":"Not Paid</td><td><button class='btn btn-default collectPayment' value='"+response.data[i][0]+"'>Collect</button>")+"</td>";
 	                data += "</tr>"; 
 	            }
             }
@@ -951,7 +939,7 @@ function genBill(reg_id)
         
       }
     });
-    $('#complaintTab1').trigger('click');
+    
 }
 function addDeleteButton(data)
 {
@@ -991,6 +979,22 @@ function getLabProcedures(partialLab)
 	  }
 	});	
 }
+function updatePayment(id)
+{
+	$.ajax({
+	  url: '<?php echo update_op; ?>',
+	  method : 'post',
+	  dataType : 'json',
+	  data: {'paymentId': id},
+	  success: function(response) {
+	  	if(response.status == "Success")
+	  		genBill(window.reg_id);
+	  }
+	});		
+}
+$(document).on('click','.collectPayment',function(){
+	updatePayment($(this).val());
+});
 </script>
 <!-- "The Amount of $amt for Registration Id $rid is already Charged. Do you want to charge Again?"; -->
 <!-- "The Amount of $amt for Registration Id $rid is Successfully Charged"; -->

@@ -1,5 +1,5 @@
 <?php
-
+date_default_timezone_set('Asia/Kolkata');
 ini_set('display_errors', 0);
 
 define("DBHOST", "localhost:3306");
@@ -15,7 +15,7 @@ define('GB', 1073741824);
 define('TB', 1099511627776);
 
 
-define("domain","http://hospital.localhost:8080"); 
+define("domain","http://192.168.64.2"); 
 define("controller",domain."/Common/");
 define("patientDetails",domain."/Common/patient_details.php");
 define("patientDetails1",domain."/Common/patient_details1.php");

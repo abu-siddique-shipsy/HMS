@@ -66,12 +66,11 @@ class physician{
 	{
 		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);	
 		$schedules = [];
-		$query = "SELECT * FROM doc_schedule where phy_id = $doc and `date` = '$date' and reg_id is null ";
-		// print_r($query);
+		$date = date('d-m-Y',strtotime($date));
+ 		$query = "SELECT * FROM doc_schedule where phy_id = $doc and `date` = '$date'";
 		$result = $con->query($query);
 		while ($exe = $result->fetch_object()) {
-			if(strtotime($exe->date . $exe->frm_time) > strtotime(date('d-m-Y H:i:s')))
-				$schedules[] = $exe;
+			$schedules[] = $exe;
 		}
 		$con->close();
 		return $schedules;

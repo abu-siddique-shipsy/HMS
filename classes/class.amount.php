@@ -79,5 +79,39 @@ class amountController{
 		$con->close();
 		return $this->add_amt(6,$rid,$exe['procedure_cost'],1);		
 	}
+	function getChargeDetail($chargeId,$chargeTable="patient_charges")
+	{
+		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
+		$resul = $con->query("SELECT * FROM $chargeTable where charge_id = $chargeId");
+		$exe = $resul->fetch_array();
+		
+		$con->close();
+		return $exe;		
+	}
+	function markPaid($chargeId,$chargeTable,$inOrOut,$amt)
+	{
+		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
+		$query = "INSERT into transactions (transaction_type,transaction_type_tid,transaction_in,amount) values 
+		 	('$chargeTable',$chargeId,$inOrOut,$amt)";
+		$resul = $con->query($query);
+		$con->close();
+		return $resul;
+		
+	}
+
+	function updatePayment($pid)
+	{
+		$chargeDetails = self::getChargeDetail($pid,"patient_charges");
+		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
+		$query = "UPDATE patient_charges set status = 1 where charge_id = $pid";
+
+		$resul = $con->query($query);
+		if ($resul) {
+			self::markPaid($pid,"patient_charges",1,$chargeDetails['amt']);
+		}
+		$con->close();
+		return $resul;
+	}
+
 }
 ?>
