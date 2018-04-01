@@ -16,13 +16,15 @@ class nursingStation
 	}
 	function getAllTasks($ward_id)
 	{
-		$query = "SELECT task_desc,concat(on_date, ' ', on_time) as scheduled_at , status,parent_type as task_type FROM ward_task_log where ward_id = '$ward_id' and status != 1";
+		$query = "SELECT wtl.task_id as wtlTaskId,rg.registration_id as reg,rg.room_id as room ,task_desc,concat(on_date, ' ', on_time) as scheduled_at , wtl.status,parent_type as task_type FROM ward_task_log wtl join ward_task wt on wt.task_id = wtl.parent_id join registration rg on rg.registration_id = wt.reg_id where wtl.ward_id = '$ward_id' and wtl.status = 0";
+		// print_r($query);
 		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
 		$con->query($query);
 		$result = $con->query($query);
 		while ($exe = $result->fetch_object()) 
 		{
 			$exe->status = ($exe->status == 0 ? 'Open' : 'Closed');
+			$exe = self::getSevierity($exe);
 			$response[] = $exe; 
 		}
 		$con->close();
@@ -30,7 +32,6 @@ class nursingStation
 	}
 	function createSchedule($tasks)
 	{
-
 		foreach ($tasks as $key => $value) 
 		{
 			if ($value->task_type == 1) 
@@ -50,6 +51,7 @@ class nursingStation
 				$task->desc = $value->task_description;
 				$task->taskId = $value->task_id;
 				$task->wardId = $value->ward_id;
+
 				self::scheduleEveryTask($task);
 				// print_r($task);
 			}	 
@@ -78,8 +80,9 @@ class nursingStation
 	function scheduleEveryTask($task)
 	{
 		// print_r($task);
-		$currDateAndTime = date('Y-m-d H:i:s',strtotime(date('Y-m-d H:i:s')));
-		$currDate = date('Y-m-d',strtotime($task->hr.':'.$task->min));
+		$currDateAndTime = date('Y-m-d H:i:s');
+		$requestedTime = date('H:i',strtotime($task->hr.':'.$task->min));
+		$currDate = date('Y-m-d');
 		$endDate = date('Y-m-d H:i:s', strtotime($currDateAndTime. '+'.$task->total_days.' days'));
 		$taskIds = [];
 		
@@ -94,13 +97,15 @@ class nursingStation
 		}
 		else
 		{
-			if ($currDate < date('Y-m-d H:i:s')) 
+			if (strtotime($currDate." ".$requestedTime) < strtotime(date('Y-m-d H:i'))) 
 			{
+				print_r("reached");
 				$currDate = date('Y-m-d', strtotime($currDate. '+1 days'));
 			}
 			while ($task->total_days--) 
 			{
-				$currDate = $currDate." ".$task->hr.":".$task->min;
+				print_r("reached2");
+				$currDate = $currDate." ".$requestedTime;
 				$taskIds[] = self::addToLog($task,$currDate);
 				$currDate = date('Y-m-d', strtotime($currDate. '+1 days'));
 			}
@@ -129,35 +134,48 @@ class nursingStation
 		$con->close();
 		return $id;
 	}
-	function scheduleOneTimeTask($task)
+	function getSevierity($task)
 	{
 
-		$time = $task->time;
-		// if(date('H:i') < $time)
-		// {
-			$now = date('Y-m-d H:i:s');
-			$schedule = date('Y-m-d H:i:s',strtotime($time));
-			$alarm_warn = date('Y-m-d H:i:s',strtotime('-20 minutes',strtotime($schedule)));
-			$alarm_danger = date('Y-m-d H:i:s',strtotime('-10 minutes',strtotime($schedule)));
-			// print_r($alarm_warn);echo "\r\n";
-			// print_r($alarm_danger);echo "\r\n";
-			if($now > $alarm_danger)
-			{
-				$task->background = "red";
-			}	
-			else if($now > $alarm_warn && $now < $schedule)
-			{
-				$task->background = "yellow";
-			}
-			else
-			{
-				$task->background = "white";	
-			}
-			$result = self::updateSchedule($task->task_id,$schedule);
-			$task->scheduled_at = $schedule;
-			
-		// }
+		$now = date('Y-m-d H:i:s');
+		$schedule = date('Y-m-d H:i:s',strtotime($task->scheduled_at));
+		$alarm_warn = date('Y-m-d H:i:s',strtotime('-20 minutes',strtotime($schedule)));
+		$alarm_allow = date('Y-m-d H:i:s',strtotime('-1 minutes',strtotime($schedule)));
+		if($now > $schedule)
+		{
+			$task->background = "red";
+		}
+		else if($now > $alarm_allow)
+		{
+			$task->background = "green";
+		}	
+		else if($now > $alarm_warn)
+		{
+			$task->background = "yellow";
+		}
+		else
+		{
+			$task->background = "white";	
+		}
+		$task->scheduled_at = $schedule;
 		return $task;
+	}
+	function completeTask($taskId)
+	{
+		$query = "UPDATE ward_task_log set status = 1 where task_id = '$taskId'";
+		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
+		$con->query($query);
+		$result = $con->query($query);
+		return $result;	
+	}
+	function failTask($taskId,$text)
+	{
+		$query = "UPDATE ward_task_log set status = 7 , result = '$text' where task_id = '$taskId'";
+		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
+		// print_r($query);
+		$con->query($query);
+		$result = $con->query($query);
+		return $result;	
 	}
 	function updateSchedule($task_id,$schedule)
 	{

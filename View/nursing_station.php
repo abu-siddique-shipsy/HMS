@@ -53,6 +53,28 @@ include root.'/Common/header.php';
     </div>
   </div>
 </div>
+<div id="gatherFailureReason" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-body">
+          <textarea id="gatherFailureReasonText" rows="8" cols="50" placeholder="Reason For Decline">
+            
+          </textarea>
+          <div class="checkbox">
+            <label><input type="checkbox" id="closeParentTask">Close All Respective Task</label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" id="gatherFailureReasonSubmit">Submit</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
 <div class="container">
   <div class="row">
     <div class="panel panel-default">
@@ -85,6 +107,9 @@ include root.'/Common/header.php';
   </div>
 </div>
 <script type="text/javascript">
+$(document).ready(function(){
+  var failedWtlTaskId ='';
+});
 $(document).on( 'click', '#patient_details tbody tr', function (){
   // window.location.href = "/View/patient_reg.php?pat_id="+($(this).find('td').html());
   console.log($(this).find('td').html());
@@ -104,6 +129,18 @@ $(document).on('change','#taskType',function(){
     $('#time2').show();
     $('#task_date').show();
   }
+});
+$(document).on('click','.marktaskcompleted',function(){
+  markTaskCompleted($(this).val());
+});
+$(document).on('click','.marktaskfailed',function(){
+  $('#gatherFailureReasonText').empty();
+  failedWtlTaskId = $(this).val();
+  $('#gatherFailureReason').modal('show');
+});
+$('#gatherFailureReasonSubmit').on('click',function(){
+  var failingText = $('#gatherFailureReasonText').val();
+  failTask(failedWtlTaskId,failingText);
 });
 $(document).ready(function(){
   window.ward_id = 0;
@@ -147,10 +184,35 @@ $(document).ready(function(){
 // setInterval(function() {
 //     getTasks(window.ward_id);
 // }, 5000);
+function markTaskCompleted(taskId)
+{
+  $.ajax({
+        url: '<?php echo controller."cont.nursingStation.php"; ?>',
+        method : 'post',
+        dataType : 'json',
+        data : {'completeTask' : taskId},
+        success: function(response) {
+              getTasks(window.ward_id);
+      }
+  }); 
+}
+function failTask(failedWtlTaskId,failingText)
+{
+  $.ajax({
+        url: '<?php echo controller."cont.nursingStation.php"; ?>',
+        method : 'post',
+        dataType : 'json',
+        data : {'failTask' : failedWtlTaskId,'failText' : failingText},
+        success: function(response) {
+            $('#gatherFailureReason').modal('hide');
+              getTasks(window.ward_id);
+      }
+  });   
+}
 function getBlocks()
 {
   $.ajax({
-        url: '<?php echo controller."/cont.nursingStation.php"; ?>',
+        url: '<?php echo controller."cont.nursingStation.php"; ?>',
         method : 'post',
         dataType : 'json',
         data : {'getBlocks' : 1},
@@ -162,7 +224,7 @@ function getBlocks()
 function getWard(block_id)
 {
   $.ajax({
-        url: '<?php echo controller."/cont.nursingStation.php"; ?>',
+        url: '<?php echo controller."cont.nursingStation.php"; ?>',
         method : 'post',
         dataType : 'json',
         data : {'getWard' : block_id},
@@ -174,7 +236,7 @@ function getWard(block_id)
 function addTask(task)
 {
   $.ajax({
-        url: '<?php echo controller."/cont.nursingStation.php"; ?>',
+        url: '<?php echo controller."cont.nursingStation.php"; ?>',
         method : 'post',
         dataType : 'json',
         data : {'addTask' : task},
@@ -186,18 +248,24 @@ function addTask(task)
 function getTasks(ward_id)
 {
   $.ajax({
-        url: '<?php echo controller."/cont.nursingStation.php"; ?>',
+        url: '<?php echo controller."cont.nursingStation.php"; ?>',
         method : 'post',
         dataType : 'json',
         data : {'getTasks' : ward_id},
         success: function(response) {
-          // for(var i = 0 ; i < response.data.length ; i++)
-          // {
-          
-          //     // response.data[i].accept = '<button class"btn btn-default" class="accept" value="'+response.data[i].request_id+'"><span class="glyphicon glyphicon-ok"></button>';
-          //     // response.data[i].decline = '<button class"btn btn-default" value="'+response.data[i].request_id+'" class="decline"><span class="glyphicon glyphicon-remove"></button>';
-
-          // }
+          for(var i = 0 ; i < response.data.length ; i++)
+          {
+            if (response.data[i].background == 'green' || response.data[i].background == 'red') 
+            {
+              response.data[i].accept = '<button class="marktaskcompleted" value="'+response.data[i].wtlTaskId+'"><span class="glyphicon glyphicon-ok"></button>';
+              response.data[i].decline = '<button class="marktaskfailed" value="'+response.data[i].wtlTaskId+'" ><span class="glyphicon glyphicon-remove"></button>';
+            }
+            else
+            {
+              response.data[i].accept = '<button class="marktaskcompleted" disabled value="'+response.data[i].wtlTaskId+'"><span class="glyphicon glyphicon-ok"></button>';
+              response.data[i].decline = '<button class="marktaskfailed" disabled value="'+response.data[i].wtlTaskId+'" ><span class="glyphicon glyphicon-remove"></button>';
+            }
+          }
           IntializeTaskTable(response.data);
         }
        }); 
@@ -208,14 +276,16 @@ function IntializeTaskTable(data)
   "data": data,
   "destroy": true,
   "columns"     :     [  
+            {"title": "Visit Id",    "data"     :     "reg"     },  
             {"title": "Task Description",    "data"     :     "task_desc"     },  
             {"title": "Scheduled At",     "data"     :     "scheduled_at"     },  
             {"title": "Status",     "data"     :     "status"},  
-            {"title": "Task Type",     "data"     :     "task_type"}
-            // {     "data"     :     "accept"},
-            // {     "data"     :     "decline"}    
+            {"title": "Task Type",     "data"     :     "task_type"},
+            {"title": "Room",     "data"     :     "room"},
+            {     "data"     :     "accept"},
+            {     "data"     :     "decline"}    
        ],
-  "order": [[ 1, "asc" ]],
+  "order": [[ 2, "asc" ]],
   "createdRow": function( row, data, dataIndex){
                 $(row).css('background-color',data.background);
             }

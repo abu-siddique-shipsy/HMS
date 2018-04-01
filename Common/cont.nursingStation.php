@@ -20,6 +20,15 @@ if(isset($_POST['getTasks']))
 {
 	$response->data = nursingStation::getAllTasks($_POST['getTasks']);
 }
+if(isset($_POST['completeTask']))
+{
+	$response->data = nursingStation::completeTask($_POST['completeTask']);
+}
+if(isset($_POST['failTask']))
+{
+	$response->data = nursingStation::failTask($_POST['failTask'],$_POST['failText']);
+}
+
 echo json_encode($response);
 
 ?>
