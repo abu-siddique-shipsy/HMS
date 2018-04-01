@@ -90,6 +90,7 @@ include root.'/Common/header.php';
           </select>
         </div>
         <div class="col-md-6 add_task">
+
           <table id="patient_details"></table>
           <!-- <button class="btn btn-success" data-toggle="modal" data-target="#add_task" id="add_task">ADD TASK</button> -->
         </div>
@@ -100,6 +101,7 @@ include root.'/Common/header.php';
     <div class="panel panel-default">
       <div class="panel-body">
         <div class="">
+          <button class="btn btn-default" id="refreshTaskTable">Refresh</button>
           <table id="taskTable"></table>
         </div>
       </div>
@@ -109,6 +111,9 @@ include root.'/Common/header.php';
 <script type="text/javascript">
 $(document).ready(function(){
   var failedWtlTaskId ='';
+});
+$('#refreshTaskTable').on('click',function(){
+  getTasks(window.ward_id);
 });
 $(document).on( 'click', '#patient_details tbody tr', function (){
   // window.location.href = "/View/patient_reg.php?pat_id="+($(this).find('td').html());
