@@ -7,8 +7,11 @@ class biller{
 	function generate_bill($reg_num)
 	{
 		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
+		
 		$query = "SELECT charge_id,charged_by,amt,charged_at,status from patient_charges  where registration_id = '$reg_num'";
-		// print_r($query);
+		if ($this->req) {
+			$query = "SELECT charge_id,charged_by,amt,charged_at,status from patient_charges  where registration_id = '$reg_num' and charged_by = '$this->req'";	
+		}
 		$result = $con->query($query);
 		$re = [];
 		while ($exe = $result->fetch_assoc()) {

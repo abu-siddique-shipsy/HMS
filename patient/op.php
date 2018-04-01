@@ -542,7 +542,7 @@ $(document).ready(function(){
 			  	$('.med').html("");
 			  	row = "";tot = "";
 			  	total = 0;
-			  	// getAllDetails(window.reg_id);
+			  	addPrescription(window.reg_id);
 		  }
 		 });
 
@@ -637,8 +637,9 @@ $(document).ready(function(){
 		  	row1 = ""; 
 			tests = [];
 			$('.tst').html("");
-			// getAllDetails(window.reg_id);
+			addLabTest(window.reg_id);
 		  	alert("Added Success");
+
 		  	
 		  }
 		 });
@@ -956,7 +957,7 @@ function deleteMedicine(log_id)
 	  dataType : 'json',
 	  data: {'deleteReq': log_id},
 	  success: function(response) {
-	  	if(response.status == "Success") getAllDetails(window.reg_id);
+	  	if(response.status == "Success") addPrescription(window.reg_id);
 	  }
 	});
 }

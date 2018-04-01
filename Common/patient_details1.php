@@ -166,7 +166,7 @@ else if(isset($_POST['get_surg']))
 else if(isset($_POST['get_operations']))
 {
 	$reg_id = $_POST['get_operations'];	
-	$query = "select * from surgery srg join surgery_log sl on srg.surg_id = sl.surg_id where sl.reg_id = $reg_id and sl.status = '0'";
+	$query = "select * from surgery srg join surgery_log sl on srg.surg_id = sl.surg_id where sl.reg_id = $reg_id";
 	$result = $DBcon->query($query);
 	// print_r($query);
 	$doc_array = [];

@@ -220,7 +220,7 @@ $result1 = $DBcon->query($query1);
           </div>        
           <hr>
           <div style="text-align: center;">
-            <button class="btn btn-success" id="save">Save</button>
+            <button class="btn btn-success" id="save_visit" data-dismiss="modal">Save</button>
           </div>
         </div>
       </div>
@@ -267,8 +267,17 @@ $result1 = $DBcon->query($query1);
     <div class="panel panel-default">
       <div class="panel-body">
         <div class="col-md-3">
-            <input type="text" name="" class="form-control" placeholder="Registration ID" id="reg_id">
-          
+            <input type="text" class="form-control" name="name" placeholder="ID" id="pat_id">
+            <label id="alert"></label>
+            <div class="row">
+              <div class="col-md-6">
+                <button type="button" class="form-control" onclick="get_details_with_register_number($('#pat_id').val())">Visit ID</button>
+              </div>
+              <div class="col-md-6">
+                <button type="button" class="form-control" onclick="get_details_with_patient_id($('#pat_id').val())">Patient ID</button>
+              </div>
+              
+            </div>
         </div>
         <div class="col-md-9" style="margin-top: 5px;">
         <div class="col-md-4">
@@ -444,7 +453,7 @@ $(document).ready(function() {
     
   });    
   $('#change_room_confirm_yes').on('click',function(){
-    data = {'room_id' : $('#room').val() , 'reg_id' :reg_id };
+    data = {'room_id' : $('#room').val() , 'reg_id' :window.reg_id };
     $.ajax({
       url: "<?php echo inpatient; ?>",
       method : 'post',
@@ -474,7 +483,7 @@ $(document).ready(function() {
     $('#updates').css('display','block');
     $('#question').css('display','none');
   });
-  $('#save').on('click',function(){
+  $('#save_visit').on('click',function(){
     comments = $('#comments').val();
     doc_id = $('#doc').val();
     $.ajax({
@@ -511,7 +520,101 @@ $(document).ready(function() {
   $('#ward').on('change',function(){
     update_room($(this).val());
   });
-  function get_details(value)
+  
+  var tests = [];
+  $('#add_test').on('click',function(){
+    // var qty = $('#qty').val();
+    // $('#qty').val("");
+
+    // console.log(total);
+    var test_name = $('#test_nam').find("option:selected").text();
+    if(test_name != "Test Name"){
+        tests.push({'id' : $('#test_nam').val()});
+       row += "<tr><td>"+test_name+"</td></tr>";
+       // var tot = "<tr><td>Total Amt:</td><td>"+total+"</td>";
+       $('.tst').html(row);
+    }
+    
+  });
+  $('#save_test').on('click',function(){
+    // console.log(medicines);
+    if(tests.length && reg_id){
+    $.ajax({
+      url: '<?php echo update_op; ?>',
+      method : 'post',
+      dataType : 'json',
+      data: {'tests' : JSON.stringify(tests) , 'reg_id' :reg_id , 'doc_id': <?php echo $_SESSION['userId'];?>},
+      success: function(response) {
+      
+        alert("Added Success");
+        
+      }
+     });
+    }
+    else{alert("Please Add tests");}
+  });
+  
+  var total = 0;
+  $('#add_med').on('click',function(){
+    var qty = $('#qty').val();
+    $('#qty').val("");
+
+    console.log(total);
+    var name = $('#med_nam').find("option:selected").text();
+    if(qty != "" && name != ""){
+        medicines.push({'id' : $('#med_nam').val(), 'qty' : qty});
+      total += parseInt(qty)*parseInt(price);
+       row += "<tr><td>"+name+"</td><td>"+qty+"</td></tr>";
+       var tot = "<tr><td>Total Amt:</td><td>"+total+"</td>";
+    }
+    $('.med').html(row);
+  });
+  $('#save_pres').on('click',function(){
+    // console.log(medicines);
+    if(medicines.length && reg_id){
+    $.ajax({
+      url: '<?php echo update_op; ?>',
+      method : 'post',
+      dataType : 'json',
+      data: {'medicines' : JSON.stringify(medicines) , 'reg_id' :reg_id},
+      success: function(response) {
+      
+        alert("Added Success");
+        rowq = "";
+          for(var i = 0; i< response.data.length ; i++)
+          {
+          rowq += "<tr><td>"+response.data[i].medicine_name+"</td><td>"+response.data[i].on_date+"</td></tr>";
+          }
+          $('.med_pres').html(rowq);
+      }
+     });
+    }
+    else{alert("Please Add Medicines");}
+  });
+  
+});
+function medicine(reg_id)
+  {
+    $.ajax({
+        url: '<?php echo update_op; ?>',
+        method : 'post',
+        dataType : 'json',
+        data: {'reg_id': reg_id},
+        success: function(response) {
+          rowq = "";
+          if(response.data)
+          {
+            console.log(response.data);
+            for(var i = 0; i< response.data.length ; i++)
+            {
+            rowq += "<tr><td>"+response.data[i].medicine_name+"</td><td>"+response.data[i].qty+"</td><td>"+response.data[i].on_date+"</td><td>"+(response.data[i].status == "0"? "Pending" : "Delivered" )+"</td></tr>";
+            }
+            $('#med_pres').html(rowq);
+        }
+        }
+       });
+  } 
+function get_details(value)
   {
     $.ajax({
       url: '<?php echo patientDetails; ?>',
@@ -663,39 +766,114 @@ $(document).ready(function() {
         }
       }); 
   }
-  var tests = [];
-  $('#add_test').on('click',function(){
-    // var qty = $('#qty').val();
-    // $('#qty').val("");
-
-    // console.log(total);
-    var test_name = $('#test_nam').find("option:selected").text();
-    if(test_name != "Test Name"){
-        tests.push({'id' : $('#test_nam').val()});
-       row += "<tr><td>"+test_name+"</td></tr>";
-       // var tot = "<tr><td>Total Amt:</td><td>"+total+"</td>";
-       $('.tst').html(row);
-    }
-    
-  });
-  $('#save_test').on('click',function(){
-    // console.log(medicines);
-    if(tests.length && reg_id){
-    $.ajax({
-      url: '<?php echo update_op; ?>',
+function get_details_with_patient_id(value)
+{
+  $.ajax({
+      url: '<?php echo patientDetails1; ?>',
       method : 'post',
       dataType : 'json',
-      data: {'tests' : JSON.stringify(tests) , 'reg_id' :reg_id , 'doc_id': <?php echo $_SESSION['userId'];?>},
-      success: function(response) {
-      
-        alert("Added Success");
-        
+      data: {'get_last_reg': 1 ,'pat_id' : value},
+      success : function(response){
+        reg_id = response.data.registration_id;
+        get_details_with_register_number(reg_id);
+
       }
-     });
-    }
-    else{alert("Please Add tests");}
   });
-  function get_lab_details(reg_id)
+    
+}
+function get_details_with_register_number(reg_id)
+{
+  $('#ot').val(reg_id);
+  window.reg_id = reg_id;
+  getAllDetails(window.reg_id);
+  $.ajax({
+      url: '<?php echo patientDetails1; ?>',
+      method : 'post',
+      dataType : 'json',
+      data: { 'complaint' : 1,'reg_id' : window.reg_id},
+      success: function(response) {
+        
+        if(!response.data)
+        {
+          $('#alert').html("Patient Id not available");
+        }
+        if(response.status == "success")
+        {
+          if(response.is_inp == "0")
+          {
+
+            var options = "";
+            var result = "";
+            
+            for(var i = 0 ; i< 5 ; i++)
+            {
+              $('#alert').html("");
+              if(response.complaint[i]){
+
+                options +='<button class="btn btn-default reg_button" value="'+response.complaint[i].registration_id+'">Visit No '+response.complaint[i].registration_id+'<br>'+response.complaint[i].on_date.substr(0, 10);+'</button>'
+              }
+              
+              
+            }
+            for(var i = 0 ; i< response.data.length ; i++)
+            {
+              
+              
+              // result += "<tr>";  
+              result += "<td>"+response.data[i].name+"</td>";
+            result += "<td>"+response.data[i].dob+"</td>";
+            result += "<td>"+response.data[i].sex+"</td>";
+            result += "<td>"+response.now_complaint+"</td>";
+            // result += "<td>"+response.data[i].last_visit+"</td>";
+              // result += "</tr>"; 
+            }
+            // head += result + "</tbody></table>"
+            $('#reg_buttons').html(options);  
+            $('#pat_details').html(result); 
+            
+
+          }
+          else
+          {
+            $('#out_pat').modal('show');  
+          }
+        }
+        
+      }   
+
+    });
+    
+}
+function getAllDetails(value)
+{
+  $.ajax({
+    url: '<?php echo patientDetails; ?>',
+    method : 'post',
+    dataType : 'json',
+    data: {'patient_id' : value, 'complaint' : 1,'single' :1},
+    success: function(response) {
+      $('#navs').show();
+      window.reg_id = response.complaint.registration_id;
+      $('.reg_id').val(window.reg_id);
+      get_details(window.reg_id);
+      get_lab_details(window.reg_id);   
+      medicine(window.reg_id);
+      $('#wrd').css("display","block");
+      // addComplaint(response.complaint.complaint,window.reg_id);
+      // addInvestigation(response.complaint.investigation,window.reg_id);
+      // addDiagnosis(response.complaint.diagnosis,window.reg_id);
+      // addPrescription(window.reg_id);
+      // addAdvice(response.complaint.advice,response.complaint.next_visit,window.reg_id);
+      // addLabTest(window.reg_id);
+      // addVitals(response.vitals,window.reg_id);
+      // genBill(window.reg_id);
+      // // $('#complaintTab1').trigger('click');
+      // $('#complaintTab1').find('a').trigger('click');
+      
+    }
+  });
+}
+function get_lab_details(reg_id)
   {
 
     $.ajax({
@@ -725,63 +903,4 @@ $(document).ready(function() {
         }
       }); 
   }
-  var total = 0;
-  $('#add_med').on('click',function(){
-    var qty = $('#qty').val();
-    $('#qty').val("");
-
-    console.log(total);
-    var name = $('#med_nam').find("option:selected").text();
-    if(qty != "" && name != ""){
-        medicines.push({'id' : $('#med_nam').val(), 'qty' : qty});
-      total += parseInt(qty)*parseInt(price);
-       row += "<tr><td>"+name+"</td><td>"+qty+"</td></tr>";
-       var tot = "<tr><td>Total Amt:</td><td>"+total+"</td>";
-    }
-    $('.med').html(row);
-  });
-  $('#save_pres').on('click',function(){
-    // console.log(medicines);
-    if(medicines.length && reg_id){
-    $.ajax({
-      url: '<?php echo update_op; ?>',
-      method : 'post',
-      dataType : 'json',
-      data: {'medicines' : JSON.stringify(medicines) , 'reg_id' :reg_id},
-      success: function(response) {
-      
-        alert("Added Success");
-        rowq = "";
-          for(var i = 0; i< response.data.length ; i++)
-          {
-          rowq += "<tr><td>"+response.data[i].medicine_name+"</td><td>"+response.data[i].on_date+"</td></tr>";
-          }
-          $('.med_pres').html(rowq);
-      }
-     });
-    }
-    else{alert("Please Add Medicines");}
-  });
-  function medicine(reg_id)
-  {
-    $.ajax({
-        url: '<?php echo update_op; ?>',
-        method : 'post',
-        dataType : 'json',
-        data: {'reg_id': reg_id},
-        success: function(response) {
-          rowq = "";
-          if(response.data)
-          {
-            console.log(response.data);
-            for(var i = 0; i< response.data.length ; i++)
-            {
-            rowq += "<tr><td>"+response.data[i].medicine_name+"</td><td>"+response.data[i].qty+"</td><td>"+response.data[i].on_date+"</td><td>"+(response.data[i].status == "0"? "Pending" : "Delivered" )+"</td></tr>";
-            }
-            $('#med_pres').html(rowq);
-        }
-        }
-       });
-  }
-}); 
 </script>

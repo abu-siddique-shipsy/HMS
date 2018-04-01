@@ -8,6 +8,9 @@ if(isset($_POST['gen_bil']))
 {
 	$reg_num = $_POST['reg_num'];
 	$obj =  new biller($reg_num);
+	if ($_POST['req']) {
+		$obj->req = $_POST['req'];
+	}
 	$response->data = $obj->generate_bill($reg_num);
 }
 if(isset($_POST['pay_bil']))

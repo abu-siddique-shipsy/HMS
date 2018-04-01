@@ -6,6 +6,7 @@ include __DIR__.'/../config.php';
 include Class_path.'class.patient.php';
 include Class_path.'class.pharmacy.php';
 include Class_path.'class.structure.php';
+include Class_path.'class.amount.php';
 
 $DBcon = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
 $response = new stdClass();
@@ -37,6 +38,7 @@ if(isset($_POST['medicines']))
 			{
 				$amt += ($value->tot_req)*pharmacy::getUnitPrice($value->id);
 				$res = pharmacy::deduct_inventory($value->tot_req,$value->id);
+				
 			}
 			if($int)
 			{
@@ -47,7 +49,7 @@ if(isset($_POST['medicines']))
 		}
 
 	}
-	
+	amountController::add_amt(5,$reg_id,$amt,0);
 	
 	if($res) $response->status = "success"; 
 	else $response->status = "failed";

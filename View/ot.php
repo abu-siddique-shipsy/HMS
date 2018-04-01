@@ -35,17 +35,27 @@ include root.'/Common/header.php';
     </div>
   </div>
   <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-3">
       <div class="panel panel-default">
         <div class="panel-body">
-          <h3>Scheduled Operations</h3>
+          <h3>Scheduled Procedures</h3>
           <div class="pending">
             
           </div>
         </div>
       </div>
     </div>
-    <div class="col-md-8">
+    <div class="col-md-3">
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <h3>Completed Procedures</h3>
+          <div class="completed">
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
     <div class="panel panel-default">
       
       <div class="panel-body">
@@ -231,12 +241,20 @@ include root.'/Common/header.php';
       success: function(response) {
         if(response.status="success")
         {
-          $('.pending').html("No Pending test");
+          $('.pending').html("No Pending Procedures");
+          $('.completed').html("No Completed Procedures");
           var res = "";
+          var res1 = "";
           for(var i = 0 ; i<response.data.length;i++)
           { 
-            res += '<a href="otwork.php?log_id='+response.data[i].log_id+'">'+response.data[i].surg_name+'</a><br>';
+            if (response.data[i].status == 1) {
+              res1 += '<a href="otwork.php?log_id='+response.data[i].log_id+'">'+response.data[i].surg_name+'</a><br>';  
+            }
+            else {
+              res += '<a href="otwork.php?log_id='+response.data[i].log_id+'">'+response.data[i].surg_name+'</a><br>';
+            }
             $('.pending').html(res);  
+            $('.completed').html(res1);  
           }
           
         }

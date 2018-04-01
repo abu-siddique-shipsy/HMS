@@ -140,13 +140,18 @@ $result = $DBcon->query($query);
 					</div>
 				</div>
 			</div>
-			<div class="col-sm-6">
+			<div class="col-sm-2">
 			  <div class="col-sm-12 patient" style="display: none" id="det">
 				<label>Name: <span id="name1"></span></label><br>
 				<label>DOB: <span id="dob1"></span></label><br>
 				<label>Regid: <span id="reg1"></span></label><br>
 			  </div>	
 			</div>
+			<div class="col-md-4">
+				<div id="bilTab" class="tab-pane pad">
+	          
+	            </div>
+            </div>
 		</div>	
 		<div class="row" id="tbls" style="display: none">
         	<div class="col-sm-12">
@@ -368,6 +373,7 @@ $(document).ready(function() {
 		  	if(response.status == "success")
 		  	{
 		  		reg_id = response.data[0].reg_id;
+		  		window.reg_id = reg_id;
 	  			$('#name1').html(response.data[0].name);
 	  			$('#dob1').html(response.data[0].dob);
 	  			$('#reg1').html(response.data[0].reg_id);
@@ -424,12 +430,11 @@ $(document).ready(function() {
 		  url: '<?php echo pharmacy; ?>',
 		  method : 'post',
 		  dataType : 'json',
-		  data: {'medicines' : JSON.stringify(medicines) , 'internal' : inter ,'reg_id' : reg_id},
+		  data: {'medicines' : JSON.stringify(medicines) , 'internal' : inter ,'reg_id' : window.reg_id},
 		  success: function(response) {
 		  	// alert("Added Success");
-		  	$('#example').DataTable().ajax.reload();
-			$('.collect').html(response.price);	  	
-			$('#cash').modal('show');
+		  	// $('#example').DataTable().ajax.reload();
+			location.reload();
 		  }
 		 });
 		}
@@ -481,7 +486,7 @@ $(document).ready(function() {
 				
 			}
 		});
-    },5000);
+    },60 * 1000);
     function construct_medicine_request_list(label,response)
     {
       var data = "";
@@ -568,6 +573,50 @@ function get_details_with_register_number(value)
 		});
 		
 }
+function genBill(reg_id)
+{
+	var text = '<table class="table table-hover" id="amt1"></table>';
+	$('#bilTab').html(text);
+    $('.item').html("");
+    $.ajax({
+      url: '<?php echo biller ?>',
+      method : 'post',
+      dataType : 'json',
+      data: {'gen_bil' : 1 , 'reg_num' : reg_id , 'req' : 5},
+
+      success: function(response) {
+        var data = "<tbody>";
+        var data1 = "";
+        payments = response.data;
+        for(var i = 0; i < response.data.length ; i++)
+        {
+            if(response.data[i].total)
+            {
+                data1 = "<tr><td>Total</td><td>"+response.data[i].total+"</td>";
+            }    
+            else
+            {
+            	if(response.data[i][1])
+            	{
+	                data += "<tr>";
+	                data +="<td>"+response.data[i][1]+"</td>";
+	                data +="<td>"+response.data[i][2]+"</td>";
+	                data +="<td>"+response.data[i][3]+"</td>";
+	                data +="<td>"+(response.data[i][4] == "1"?"Paid":"Not Paid</td><td><button class=' collectPayment' value='"+response.data[i][0]+"'>Collect</button>")+"</td>";
+	                data += "</tr>"; 
+	            }
+            }
+            
+
+        }   
+        data1 += "</tbody>";    
+        $('#amt1').append(data+data1); 
+        
+        
+      }
+    });
+    
+}
 function getAllDetails(value)
 {
 	$.ajax({
@@ -579,6 +628,7 @@ function getAllDetails(value)
 			window.reg_id = response.complaint.registration_id;
 			$('.reg_id').val(window.reg_id);
 			getDetails(window.reg_id);
+			genBill(window.reg_id);
 			// addComplaint(response.complaint.complaint,window.reg_id);
 			// addInvestigation(response.complaint.investigation,window.reg_id);
 			// addDiagnosis(response.complaint.diagnosis,window.reg_id);
@@ -638,4 +688,20 @@ function getDetails(value)
 		});
 
 }
+function updatePayment(id)
+{
+	$.ajax({
+	  url: '<?php echo update_op; ?>',
+	  method : 'post',
+	  dataType : 'json',
+	  data: {'paymentId': id},
+	  success: function(response) {
+	  	if(response.status == "Success")
+	  		genBill(window.reg_id);
+	  }
+	});		
+}
+$(document).on('click','.collectPayment',function(){
+	updatePayment($(this).val());
+});
 </script>

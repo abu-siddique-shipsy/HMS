@@ -1,6 +1,7 @@
 <?php
 date_default_timezone_set('Asia/Kolkata');
 ini_set('display_errors', 0);
+error_reporting(E_ERROR);
 
 define("DBHOST", "localhost:3306");
 define("DBUSER", "test1");

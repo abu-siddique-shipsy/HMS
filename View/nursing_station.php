@@ -115,6 +115,11 @@ $(document).ready(function(){
 $('#refreshTaskTable').on('click',function(){
   getTasks(window.ward_id);
 });
+setInterval(function() {
+    if (window.ward_id) {
+      getTasks(window.ward_id);   
+    }
+}, 60 * 1000);
 $(document).on( 'click', '#patient_details tbody tr', function (){
   // window.location.href = "/View/patient_reg.php?pat_id="+($(this).find('td').html());
   console.log($(this).find('td').html());

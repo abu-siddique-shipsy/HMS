@@ -4,6 +4,11 @@
 .orderDetails{
   padding: 10px;
 }
+.collectPayment{
+  height: 35px;
+  background: #fff0;
+  border-radius: 10px;
+}
 
 .time{
   width: 30px;
