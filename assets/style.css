@@ -411,7 +411,7 @@ th{
 body,html{
   /*background-image: url(imgs/hosp.jpg);*/
   background-color: #ffffff;
-   font-family: Tahoma;
+   font-family: Helvetica;
    font-size: 14px;
     height: 100%;
     background-repeat: none;
@@ -582,11 +582,11 @@ td{
   vertical-align: middle !important;
   color: #000;
 	font-size: 15px;
-	font-family: 'montreal';
+	/*font-family: 'montreal';*/
 	font-weight: 400;
 }
 .panel{
-  background : linear-gradient(50deg, #63b36f 10%, #63b36f 10%, #49a3c5 30%);
+  background : linear-gradient(50deg, #4f87d1 50%, #63b36f 40%, #49a3c5 10%);
 	margin-top: 10px;
 }
 .dLogin {
