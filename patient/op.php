@@ -113,7 +113,7 @@ td{
 	        	<div>
 	        		<div class="row">
 			        	<div class="col-md-5 head">
-			        		<label>HMS SOLUTIONS</label>
+			        		<label>XHMS SOLUTIONS</label>
 			        	</div>
 			        	<div class="col-md-5 col-md-offset-2">
 			        		<label>Report #<span>125</span></label><br>

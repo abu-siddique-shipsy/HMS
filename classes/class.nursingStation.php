@@ -12,7 +12,20 @@ class nursingStation
 		$con->query($query);
 		$id = $con->insert_id;
 		$con->close();
+		self::createTaskLog($id);	
 		return $id;
+	}
+	function createTaskLog($id)
+	{
+		$query = "SELECT * from ward_task where task_id = '$id' and status = 0";
+		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
+		$result = $con->query($query);
+		$response=[];
+		while ($exe = $result->fetch_object()) 
+		{
+			$response[] = $exe; 
+		}
+		self::createSchedule($response);
 	}
 	function getAllTasks($ward_id)
 	{
@@ -168,14 +181,33 @@ class nursingStation
 		$result = $con->query($query);
 		return $result;	
 	}
-	function failTask($taskId,$text)
+	function failTask($taskId,$text,$all=false)
 	{
 		$query = "UPDATE ward_task_log set status = 7 , result = '$text' where task_id = '$taskId'";
 		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
-		// print_r($query);
+		if($all){
+			self::failCorrespondingTask($taskId,$text);
+		}
 		$con->query($query);
 		$result = $con->query($query);
 		return $result;	
+	}
+	function failCorrespondingTask($taskId,$text)
+	{
+		$query = "SELECT parent_id from ward_task_log where task_id = $taskId";
+		$con = new MySQLi(DBHOST,DBUSER,DBPASS,DBNAME);
+		$result = $con->query($query);
+		if ($result->num_rows == 1) {
+			$exe = $result->fetch_object();
+			$query = "SELECT task_id from ward_task_log where parent_id = $exe->parent_id and status = 0";
+			$re = $con->query($query);
+			if ($re->num_rows > 0) {
+				while ($e = $re->fetch_object()) 
+				{
+					self::failTask($e->task_id,$text);				
+				}
+			}
+		}
 	}
 	function updateSchedule($task_id,$schedule)
 	{

@@ -127,6 +127,13 @@ $(document).on( 'click', '#patient_details tbody tr', function (){
   $('.reg_id').html($(this).find('td').html());
   $('#add_task').modal('show');
 });
+$(document).on( 'dblclick', '#taskTable tbody tr', function (){
+  // window.location.href = "/View/patient_reg.php?pat_id="+($(this).find('td').html());
+  console.log($(this).find('td').html());
+  var location = '<?php echo domain.'/patient/inpatient.php?reg_id='; ?>';
+  location += $(this).find('td').html();
+  window.open(location,'_blank');
+});
 $(document).on('change','#taskType',function(){
   $('#time2').hide();
   $('#task_date').hide();
@@ -170,7 +177,7 @@ $(document).ready(function(){
   $('#add_task_into_db').on('click',function(){
     var task_desc = $('#task_desc').val();
     var task_time = $('#task_time_hr').val() != "" ? $('#task_time_hr').val() : "00";
-    task_time += $('#task_time_min').val() != "" ? ":" + $('#task_time_min').val() + " " : ":00";
+    task_time += $('#task_time_min').val() != "" ? ":" + $('#task_time_min').val() + " " : ":00 ";
     task_time += $('#task_time_m').val() ;
     var task_days = $('#task_days').val();
     var task_type = $('#taskType').val();
@@ -187,7 +194,6 @@ $(document).ready(function(){
     };
     console.log(task);
     addTask(task);
-    getTasks(window.ward_id);
   });
   
 });
@@ -208,11 +214,16 @@ function markTaskCompleted(taskId)
 }
 function failTask(failedWtlTaskId,failingText)
 {
+  $('#closeParentTask').is
   $.ajax({
         url: '<?php echo controller."cont.nursingStation.php"; ?>',
         method : 'post',
         dataType : 'json',
-        data : {'failTask' : failedWtlTaskId,'failText' : failingText},
+        data : {
+          'failTask' : failedWtlTaskId,
+          'failText' : failingText,
+          'all' : $('#closeParentTask').is(':checked')
+        },
         success: function(response) {
             $('#gatherFailureReason').modal('hide');
               getTasks(window.ward_id);
@@ -251,7 +262,8 @@ function addTask(task)
         dataType : 'json',
         data : {'addTask' : task},
         success: function(response) {
-          
+          $('#add_task').modal('hide');
+          getTasks(window.ward_id);
         }
   }); 
 }

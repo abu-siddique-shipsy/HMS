@@ -34,19 +34,26 @@ $result1 = $DBcon->query($query1);
 
   </div>
 </div>
-<div id="pres" class="modal fade" role="dialog">
-  <div class="modal-dialog">
+<div id="medicine" class="modal fade" role="dialog">
+  <div class="modal-dialog" style="width : 80%">
 
     <!-- Modal content-->
     <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Prescription</h4>
-      </div>
       <div class="modal-body">
         <div class="row">
-          <div class="col-sm-4">
-            <select class="form-control" id="med_nam">
+          <table class="table" >
+            <thead id="pres_table">
+              <th>Medicine Name</th>
+              <th>Morning</th>
+              <th>Afternoon</th>
+              <th>Night</th>
+              <th>Total Days</th>
+              <th>When</th>
+              <th></th>
+            </thead>
+            <tbody>
+            <tr>
+            <td><select class="form-control" id="med_nam">
               <option>Medicine Name</option>
               <?php while ($exe = $result->fetch_assoc()) {
                 echo "<option value=".$exe['id'].">".$exe['medicine_name']."</option>";
@@ -54,38 +61,45 @@ $result1 = $DBcon->query($query1);
 
               ?>
             </select>
-            <p id="price"></p>
-          </div>
-          <div class="col-sm-4">
-            <input type="number" class="form-control" id="qty" placeholder="qty">
-              
+            <p id="price"></p></td>
+          
+          
             
-          </div>
-          <div class="col-sm-4">
-            <button class="btn btn-default" id="add_med"> Add</button>
-              
+              <td><input type="number" class="form-control" id="mor"></td>
             
-          </div>
+            
+              <td><input type="number" class="form-control" id="aft"></td>
+            
+            
+              <td><input type="number" class="form-control" id="nig"></td>
+              <td><input type="number" class="form-control" id="day"></td>
+              <td><label><input type="radio" name="optradio" class="bef_aft" value="1">Before Food</label>
+            
+              <label><input type="radio" name="optradio" class="bef_aft" value="0">After Food</label></td>
+              
+                
+              
+              <td><button class="btn btn-default" id="add_med">Add</button></td>
+            </tr>
+            </tbody>
+          
+            
+              
+          </table>  
+          
+          
         </div>
         <div class="row">
           <div class="col-sm-12">
             <div>
-              <div class="row">
-                <div class="col-md-5 head">
-                  <label>HMS SOLUTIONS</label>
-                </div>
-                <div class="col-md-5 col-md-offset-2">
-                  <label>Report #<span>125</span></label><br>
-                  <label>Created By<span><?php echo $_SESSION['userSession'];?></span></label><br>
-                  <label>Created at<span><?php echo date('Y-M-d');?></span></label><br>
-                </div>
-              </div>
                 
               <table class="table">
                 <thead>
                   <th>Name</th>
-                  <th>Qty</th>
-       
+                  <th>Morning</th>
+                  <th>Afternoon</th>
+                  <th>Night</th>
+                  <th>Total Days</th>
                 </thead>
                 <tbody class="med">
                   
@@ -338,7 +352,7 @@ $result1 = $DBcon->query($query1);
         <div class="col-md-6">
           <div class="panel panel-default">
               <div class="panel-body">
-                <div class="pull-right" style="margin-bottom: 7px"><button class="btn btn-warning" data-toggle="modal" data-target="#pres">Add Medicine</button></div>
+                <div class="pull-right" style="margin-bottom: 7px"><button class="btn btn-warning" data-toggle="modal" data-target="#medicine">Add Medicine</button></div>
                 <table class="table">
                   <thead>
                     <th>Medicine Name</th>
@@ -399,6 +413,10 @@ $result1 = $DBcon->query($query1);
 </div>
 <script type="text/javascript">
 $(document).ready(function() {
+<?php if($_GET['reg_id']){ ?>
+  window.reg_id = <?php echo $_GET['reg_id']; ?>;
+  get_details_with_register_number(window.reg_id);
+<?php } ?>
   var amt = 0;
   var type = 0;
   var price = 0;
@@ -538,12 +556,12 @@ $(document).ready(function() {
   });
   $('#save_test').on('click',function(){
     // console.log(medicines);
-    if(tests.length && reg_id){
+    if(tests.length && window.reg_id){
     $.ajax({
       url: '<?php echo update_op; ?>',
       method : 'post',
       dataType : 'json',
-      data: {'tests' : JSON.stringify(tests) , 'reg_id' :reg_id , 'doc_id': <?php echo $_SESSION['userId'];?>},
+      data: {'tests' : JSON.stringify(tests) , 'reg_id' :window.reg_id , 'doc_id': <?php echo $_SESSION['userId'];?>},
       success: function(response) {
       
         alert("Added Success");
@@ -555,39 +573,71 @@ $(document).ready(function() {
   });
   
   var total = 0;
+  $('#med_nam').on('change',function(){
+    var med_name = $(this).val();
+    $.ajax({
+      url: '<?php echo med_price; ?>',
+      method : 'post',
+      dataType : 'json',
+      data: {'med_id' : med_name},
+      success: function(response) {
+        price = response.data.price;
+        $('#price').html("$"+price);
+      }
+     });
+    
+  });
   $('#add_med').on('click',function(){
-    var qty = $('#qty').val();
-    $('#qty').val("");
+    var morn = $('#mor').val() != "" ? $('#mor').val() : 0;
+    var aft = $('#aft').val() != "" ? $('#aft').val() : 0;
+    var nig = $('#nig').val() != "" ? $('#nig').val() : 0;
+    var days = $('#day').val() != "" ? $('#day').val() : 0;
+    var bef_aft = $('.bef_aft:checked').val();
+    var bef_aft_text  = bef_aft == "1" ? "Before Food" : "After Food";
+
+    
 
     console.log(total);
+
     var name = $('#med_nam').find("option:selected").text();
-    if(qty != "" && name != ""){
-        medicines.push({'id' : $('#med_nam').val(), 'qty' : qty});
+    if(days != "" && name != ""){
+      qty = (parseInt(morn)+parseInt(aft)+parseInt(nig))*days;
+        medicines.push({'id' : $('#med_nam').val(), 'morning' : morn , 'afternoon' : aft,'night' : nig,'days':days , 'qty' : qty,'bef_aft': bef_aft });
       total += parseInt(qty)*parseInt(price);
-       row += "<tr><td>"+name+"</td><td>"+qty+"</td></tr>";
+       row += "<tr><td>"+name+"</td><td>"+morn+"</td><td>"+aft+"</td><td>"+nig+"</td><td>"+days+"</td><td>"+ bef_aft_text +"</td></tr>";
        var tot = "<tr><td>Total Amt:</td><td>"+total+"</td>";
     }
-    $('.med').html(row);
+    $('#mor').empty();
+    $('#aft').empty();
+    $('#nig').empty();
+    $('#day').empty();
+    $('#med_name').empty();
+
+    $('.med').html(row+tot);
   });
   $('#save_pres').on('click',function(){
-    // console.log(medicines);
-    if(medicines.length && reg_id){
+    if(medicines.length && window.reg_id){
     $.ajax({
       url: '<?php echo update_op; ?>',
       method : 'post',
       dataType : 'json',
-      data: {'medicines' : JSON.stringify(medicines) , 'reg_id' :reg_id},
+      data: {'medicines' : JSON.stringify(medicines) , 'reg_id' : window.reg_id},
       success: function(response) {
-      
+      medicines = [];
         alert("Added Success");
         rowq = "";
           for(var i = 0; i< response.data.length ; i++)
           {
-          rowq += "<tr><td>"+response.data[i].medicine_name+"</td><td>"+response.data[i].on_date+"</td></tr>";
+          rowq += "<tr><td>"+response.data[i].medicine_name+"</td><td>"+response.data[i].morning+"</td><td>"+response.data[i].afternoon+"</td><td>"+response.data[i].night+"</td><td>"+response.data[i].days+"</td><td>"+response.data[i].on_date+"</td></tr>";
           }
           $('.med_pres').html(rowq);
+          $('.med').html("");
+          row = "";tot = "";
+          total = 0;
+          // addPrescription(window.reg_id);
       }
      });
+
     }
     else{alert("Please Add Medicines");}
   });

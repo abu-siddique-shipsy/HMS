@@ -14,7 +14,11 @@ if(isset($_POST['getWard']))
 }
 if(isset($_POST['addTask']))
 {
+
 	$response->data = nursingStation::addTask($_POST['addTask']);
+	if (is_numeric($response->data) && $response->data > 0) {
+		$response->status = 'success';
+	}
 }
 if(isset($_POST['getTasks']))
 {
@@ -26,7 +30,7 @@ if(isset($_POST['completeTask']))
 }
 if(isset($_POST['failTask']))
 {
-	$response->data = nursingStation::failTask($_POST['failTask'],$_POST['failText']);
+	$response->data = nursingStation::failTask($_POST['failTask'],$_POST['failText'],$_POST['all']);
 }
 
 echo json_encode($response);

@@ -4,6 +4,21 @@
 .orderDetails{
   padding: 10px;
 }
+
+#sidebar-wrapper {
+    margin-left: -235px;
+    left: 235px;
+    width: 235px;
+    background: #364051;
+    position: fixed;
+    height: 100%;
+    overflow: hidden;
+    overflow-y: auto;
+    transition: all 0.4s ease 0s;
+    top: 51px;
+    padding-top: 15px;
+    z-index: 5;
+}
 .collectPayment{
   height: 35px;
   background: #fff0;
@@ -185,11 +200,12 @@ table.dataTable tbody td {
   border-style: solid;
   border-width: 0px;
   position: absolute;
+  overflow-x: auto;
   left: 0px;
   background-color: #364051;
   /*padding: 10px;*/
   width: 180px;
-  height: 90%;
+  height: 100%;
   text-align: left;
 
 }
@@ -410,7 +426,7 @@ th{
 }
 body,html{
   /*background-image: url(imgs/hosp.jpg);*/
-  background-color: #ffffff;
+  background-color: #FBFBFB;
    font-family: Helvetica;
    font-size: 14px;
     height: 100%;
@@ -427,7 +443,7 @@ thead{
   /*font-size: 20px;*/
   /*font-family: Tahoma*/
   border-radius: 20px;
-  background-color: #167F92;
+  background-color: #2B3643;
   color: #FFFFFF;
 }
 
